@@ -1,0 +1,37 @@
+.search {
+    flex: 1 1 auto;
+    height: 2rem;
+    border: none;
+}
+
+.close {
+    border: none;
+    background-color: transparent;
+    color: rgba(22,22,22,0.5)
+}
+
+.close:hover {
+    color: rgba(22,22,22,1)
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    border: 1px solid grey;
+}
+
+.centerCol {
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    margin: 0rem 20rem;
+}
+
+@media (max-width: 95rem) {
+    .centerCol{
+        margin: 0rem
+    }
+    
+}

@@ -1,0 +1,49 @@
+.center {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2rem;
+}
+
+.buttonBox {
+    flex-flow: row;
+}
+
+.centerCol {
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    margin: 0rem 20rem;
+}
+
+.label {
+    overflow-x: hidden;
+    display: block;
+    flex: 1 1 auto;
+}
+
+.padding {
+    padding-right: 1rem;
+}
+
+.box {
+    background-color: rgba(22, 22, 22, 0.1);
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 1rem;
+    justify-content: space-between;
+}
+
+
+@media (max-width: 95rem) {
+    .centerCol{
+        margin: 0rem
+    }
+    
+}
+
+@media (max-width: 30rem) {
+    .buttonBox {
+        flex-flow: column;
+    }
+}

@@ -1,0 +1,32 @@
+.home {
+	background: #f6f6f6;
+	color: #333;
+}
+
+.session a span {
+	padding: 0.5rem;
+}
+
+.session a span:first-child {
+	width: 7rem;
+	display: inline-block;
+	align-items: center;
+}
+
+.session a {
+	padding: 0.5rem;
+	background-color: teal;
+	display: block;
+	color: white;
+	text-decoration: none;
+}
+
+.main {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+
+.session {
+	padding: 0.25rem;
+}

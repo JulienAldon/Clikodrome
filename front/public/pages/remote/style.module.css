@@ -1,0 +1,80 @@
+section {
+    display: flex;
+    flex-flow: column;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.remoteBox {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    margin: 0px auto 0px auto;
+    width: 30rem;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    padding: 1rem;
+    justify-content: space-between;
+}
+
+.box:nth-child(2n+1) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+
+.label {
+    overflow-x: hidden;
+    display: block;
+    width: 30rem;
+}
+
+.centerCol {
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    margin: 0rem 20rem;
+    transition: all 0.4s;
+}
+
+.padding {
+    padding-right: 1rem;
+}
+
+.remove {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+    color: rgba(22, 22, 22, 0.7);
+}
+
+.remove:hover {
+    color: rgba(22, 22, 22, 1);
+    font-size: 1.5rem;
+}
+
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 65rem) {
+    .remoteBox {
+        margin: unset;
+        width: unset;
+    }
+}
+
+@media (max-width: 95rem) {
+    .centerCol{
+        margin: 0rem
+    }
+    
+}

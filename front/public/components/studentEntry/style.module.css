@@ -1,0 +1,26 @@
+.box {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 1rem;
+    justify-content: space-between;
+}
+
+.label {
+    overflow-x: hidden;
+    display: block;
+}
+
+.box:nth-child(2n+1) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+.line {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.padding {
+    padding-right: 1rem;
+}
