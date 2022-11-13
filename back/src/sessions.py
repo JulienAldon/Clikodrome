@@ -94,12 +94,9 @@ async def sign_all_sessions(date, session_index):
     for to_sign_session in to_sign_sessions:
         edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
-        # sign = await edusign.sign_session(to_sign_session['edusign_id'])
-        # mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
+        sign = await edusign.sign_session(to_sign_session['edusign_id'])
+        mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
         # TODO: Create a lateness function which emit late report for every late_ids ({'login': "", 'delay': "1"})
-        # print(sign)
-        # print(mail)
-
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
