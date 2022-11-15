@@ -44,6 +44,13 @@ export default function Home() {
 									description: "No clikodrome session can be created today (no edusign session available).",
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
+							} else if (res.detail && res.detail==="Session already created") {
+								setToastList((toastList) => {return [...toastList, {
+									id: 'createSession',
+									title: "Error",
+									description: "Session already created for this date and hour",
+									backgroundColor: "rgba(150, 15, 15)",
+								}]});
 							} else {
 								fetchSessions()
 								setToastList((toastList) => {return [...toastList, {

@@ -69,6 +69,9 @@ class SessionNotValidatedException(BaseCustomException):
 class SessionNotAvailableException(BaseCustomException):
     pass
 
+class SessionAlreadyCreated(BaseCustomException):
+    pass
+
 async def sign_all_sessions(date, session_index):
     """Sign all sessions
     """
@@ -83,6 +86,7 @@ async def sign_all_sessions(date, session_index):
     database_session = get_database_event_by_date(date, hour)
     if not database_session:
         raise SessionNotCreatedException("Database session not created")
+
     if database_session[0]['is_approved'] == 0:
         raise SessionNotValidatedException("Session need validation")
 
@@ -147,6 +151,11 @@ async def create_single_session(session_date, session_index):
     session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
     session_id = create_session(session_date, session_hour)
     session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
+
+    database_session = get_database_event_by_date(session_date, session_hour)
+    if database_session:
+        raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
+
     intra_session = Intra.get_events(
         options.event_activity,
         date=session_date,

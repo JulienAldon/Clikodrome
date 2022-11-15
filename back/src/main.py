@@ -8,7 +8,7 @@ from src.auth import router
 from src.identity import token, staff
 from src.configuration import options
 from src.crud import read_sessions, read_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
-from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException
+from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated
 
 app = FastAPI()
 
@@ -51,6 +51,8 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
             await create_single_session(format_date, int(sessionCreation.sessionIndex))
         except SessionNotAvailableException:
             raise HTTPException(400, detail="No edusign session available")
+        except SessionAlreadyCreated:
+            raise HTTPException(400, detail="Session already created")
         except:
             raise HTTPException(400)
     else:
