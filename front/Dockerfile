@@ -1,4 +1,4 @@
-FROM node:16.13-alpine AS build
+FROM node:19.1-alpine AS build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ RUN npm install
 
 COPY front/ .
 
-RUN npm run build --prod
+RUN npm run build
 
 FROM nginx:latest
 

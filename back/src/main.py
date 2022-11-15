@@ -34,7 +34,7 @@ class RemoteStudent(BaseModel):
 class Student(BaseModel):
     login: str
     status: str
-    hour: str
+    late: str
 
 class StudentList(BaseModel):
     data: List[Student]
@@ -84,7 +84,7 @@ async def get_session(session_id: str, token: dict[str, Any] = Depends(token)):
 async def modify_session(students: StudentList, session_id: str, token: dict[str, Any] = Depends(token)):
     res = []
     for student in students.data:
-        res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id, student.hour)})
+        res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id, student.late)})
     return {'result': res}
 
 @app.post('/api/session/{session_id}', dependencies=[Depends(staff)])

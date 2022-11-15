@@ -6,35 +6,70 @@ import styles from './style.module.css';
 import useAuthGuard from '../../context/useUser';
 import SearchBar from '../../components/searchBar';
 import { useToast } from '../../context/toast';
+import useSession from '../../hooks/useSession';
+
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i
+    }
+    return i;
+}
 
 export default function Session(props) {
-    const [students, setStudents] = useState(undefined);
-    const [session, setSession] = useState(undefined);
     const [searchStudent, setSearchStudent] = useState(undefined)
     const token = useAuthGuard()
     const { toastList, setToastList } = useToast();
+    const { students, session, fetchSession } = useSession(props.id);
 
     const handleChange = (login) => {
         if (!students)
             return;
         students.forEach(element => {
             if (element.login === login) {
-                let status = !element.status ? 'present' : null
+                let status = element.status != 'present' ? 'present' : 'NULL'
                 element.status = status;
             }
+        });
+        modifySession(token, props.id, students).then((res) => {
+            if (!res.detail)
+                setToastList((toastList) => {return [...toastList, {
+                    id: props.id,
+                    title: "Info",
+                    description: "Students status has been saved.",
+                    backgroundColor: "rgba(15, 150, 150)",
+                }]});
+            fetchSession();
+        });
+    }
+
+    const onLateChange = (login) => {
+        if (!students)
+            return;
+        const date = new Date();
+        students.forEach(element => {
+            if (element.login === login) {
+                let status = element.status != 'retard' ? 'retard' : 'NULL';
+                let late = status === 'retard' ? `${addZero(date.getHours())}:${addZero(date.getMinutes())}:00` : 'NULL';
+                element.status = status;
+                element.late = late;
+            }
+        });
+        modifySession(token, props.id, students).then((res) => {
+            if (!res.detail)
+                setToastList((toastList) => {return [...toastList, {
+                    id: props.id,
+                    title: "Info",
+                    description: "Students status has been saved.",
+                    backgroundColor: "rgba(15, 150, 150)",
+                }]});
+            fetchSession();
         });
     }
 
     const handleSearchChange = (event) => {
-        setSearchStudent(students.filter((el) => el.login.includes(event.target.value)))
-    }
+        setSearchStudent(students.filter((el) => el.login.includes(event.target.value)));
 
-    useEffect(() => {
-        getSession(token, props.id).then((res) => {
-            setStudents(res.students);
-            setSession(res.session);
-        })
-    }, [token]);
+    }
 
     return (
         <>
@@ -55,7 +90,6 @@ export default function Session(props) {
                     <Button description="Send all mails for the session." title="Send mail" action={() => {
                         modifySession(token, props.id, students).then((res) => {
                             signSession(token, props.id).then((res) => {
-                                console.log(res)
                                 if (res.detail) {
                                     setToastList((toastList) => {return [...toastList, {
                                         id: props.id,
@@ -101,9 +135,11 @@ export default function Session(props) {
                     searchStudent ? (searchStudent ? <StudentEntry
                         students={searchStudent}
                         onChange={handleChange}
+                        lateOnChange={onLateChange}
                        ></StudentEntry> : null) : (students ? <StudentEntry
                          students={students}
                          onChange={handleChange}
+                         lateOnChange={onLateChange}
                         ></StudentEntry> : null) 
                 }
                 </table>
