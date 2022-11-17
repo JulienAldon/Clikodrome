@@ -1,6 +1,7 @@
 from src.sessions import sign_all_sessions
 import datetime
 import argparse
+import asyncio
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -12,4 +13,4 @@ if __name__ == "__main__":
     else:
         current_date = datetime.datetime.today().strftime('%Y-%m-%d')[:10]
     session_index = args.session_index
-    sign_all_sessions(current_date, int(session_index))
+    asyncio.run(sign_all_sessions(current_date, int(session_index)))
