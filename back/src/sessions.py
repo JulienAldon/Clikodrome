@@ -149,12 +149,13 @@ async def create_single_session(session_date, session_index):
 
     choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
     session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
-    session_id = create_session(session_date, session_hour)
-    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
 
     database_session = get_database_event_by_date(session_date, session_hour)
     if database_session:
         raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
+
+    session_id = create_session(session_date, session_hour)
+    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
 
     intra_session = Intra.get_events(
         options.event_activity,

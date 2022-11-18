@@ -1,7 +1,6 @@
 import styles from './style.module.css';
 
 export default function Button(props) {
-    console.log(props.deactivated)
     return (
         <button 
             title={props.description} 
