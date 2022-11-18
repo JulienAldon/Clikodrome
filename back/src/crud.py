@@ -65,6 +65,23 @@ def change_student(login, status, session_id, late):
     connection.commit()
     return True
 
+def delete_session(session_id):
+    cursor = connection.cursor()
+    t = f"""
+        DELETE FROM student WHERE session_id=%s
+    """
+    u = f"""
+        DELETE FROM session WHERE id=%s
+    """
+    try:
+        cursor.execute(t, (session_id))
+        cursor.execute(u, (session_id))
+    except Exception as e:
+        print('Error with sql :', e)
+        return False
+    connection.commit()
+    return True
+
 def change_session(session_id, is_approved):
     cursor = connection.cursor()
     t = f"""

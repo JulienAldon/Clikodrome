@@ -82,6 +82,7 @@ export default function Remote() {
                     onChange={handleEndChange}
                 />
                 <Button 
+                    deactivated={false}
                     action={handleAddRemote} 
                     title="Add"
                     description="Add a new remote student."

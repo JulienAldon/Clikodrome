@@ -1,13 +1,22 @@
 .button {
-    background-color: rgba(15, 150, 150);
     border: none;
     color: white;
     margin: 1rem;
     padding: 1rem 2rem 1rem 2rem;
-    box-shadow: 0 9px rgb(12, 120, 120);
     transition: all 0.5s;
     position: relative;
     top: 0px;
+}
+
+.deactivated {
+    background-color: rgba(150, 150, 150);
+    box-shadow: 0 9px rgba(120, 120, 120);
+
+}
+
+.activated {
+    box-shadow: 0 9px rgb(12, 120, 120);
+    background-color: rgba(15, 150, 150);
 }
 
 .button:active {

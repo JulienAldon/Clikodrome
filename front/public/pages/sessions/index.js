@@ -2,7 +2,7 @@ import styles from './style.module.css';
 import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
 import Button from '../../components/button';
-import { createSession } from '../../api';
+import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 
 export default function Home() {
@@ -15,7 +15,9 @@ export default function Home() {
 			<section class={styles.home}>
 				<main class={styles.main}>
 					<h2>Create session</h2>
-					<Button description="Create morning session" title="Matin" action={() => {
+					<Button 
+						deactivated={false}
+						description="Create morning session" title="Matin" action={() => {
 						createSession(token, '0').then((res) => {
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
@@ -35,7 +37,9 @@ export default function Home() {
 							}
 						})
 					}}></Button>
-					<Button description="Create evening session" title="Soir" action={() => {
+					<Button 
+                    	deactivated={false}
+						description="Create evening session" title="Soir" action={() => {
 						createSession(token, '-1').then((res) => {
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
@@ -74,6 +78,22 @@ export default function Home() {
 								<span>{elem.date}</span>
 								<span>{elem.hour.slice(0, 8)}</span>
 							</a>
+							<Button
+									title=""
+									deactivated={false}
+									description="Delete the session"
+									action={() => {
+										removeSession(token, elem.id).then((res) => {
+											fetchSessions()
+											setToastList((toastList) => {return [...toastList, {
+												id: 'deleteSession',
+												title: "Info",
+												description: "Session deleted.",
+												backgroundColor: "rgba(15, 150, 150)",
+											}]});
+										})
+									}}
+								></Button>
 						</div>
 						);
 					}) : null

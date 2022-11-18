@@ -2,7 +2,7 @@
 	"private": true,
 	"scripts": {
 		"start": "wmr",
-		"build": "wmr build --prerender",
+		"build": "wmr build --no-prerender",
 		"serve": "wmr serve"
 	},
 	"eslintConfig": {

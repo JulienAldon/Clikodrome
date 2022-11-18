@@ -5,6 +5,7 @@
 
 .session a span {
 	padding: 0.5rem;
+	display: inline-block;
 }
 
 .session a span:first-child {
@@ -14,11 +15,18 @@
 }
 
 .session a {
+	max-height: 2.25rem;
 	padding: 0.5rem;
-	background-color: teal;
+	background-color: rgb(15, 150,150);
 	display: block;
 	color: white;
 	text-decoration: none;
+	transition: all 0.5s
+}
+
+.session a:hover {
+    background-color: rgba(22, 22, 22, 0.1);
+	color: rgb(15, 150, 150)
 }
 
 .main {
@@ -27,6 +35,14 @@
 	align-items: center;
 }
 
+.session button {
+	box-shadow: none;
+	margin-left: 0px;
+	padding: 1.1rem 1rem 1.15rem 1rem;
+}
+
 .session {
 	padding: 0.25rem;
+	display: flex;
+	align-items: center;
 }

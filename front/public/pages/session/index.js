@@ -77,9 +77,11 @@ export default function Session(props) {
 
     return (
         <>
+        {
+            session ?
             <section>
                 <div class={`${styles.center} ${styles.buttonBox}`}>
-                    <Button description="Allow session to be automatically signed." title="Validate" action={() => {
+                    <Button deactivated={false} description="Allow session to be signed." title="Validate" action={() => {
                         validateSession(token, props.id).then((res) => {
                             modifySession(token, props.id, students).then((res) => {
                                 setToastList((toastList) => {return [...toastList, {
@@ -91,7 +93,11 @@ export default function Session(props) {
                             });
                         });
                     }}></Button>
-                    <Button description="Send all mails for the session." title="Send mail" action={() => {
+                    <Button 
+                        deactivated={session[0].is_approved === 1 ? false : true } 
+                        description="Send all mails for the session." 
+                        title="Send mail" 
+                        action={() => {
                         modifySession(token, props.id, students).then((res) => {
                             signSession(token, props.id).then((res) => {
                                 if (res.detail) {
@@ -111,8 +117,9 @@ export default function Session(props) {
                                 }
                             })
                         })
-                    }}></Button>
-                    <Button description="Destroy and recreate session, fetching all students an other time." title="Refresh Session" action={() => {
+                        }}>
+                    </Button>
+                    <Button deactivated={false} description="Destroy and recreate session, fetching all students an other time." title="Refresh Session" action={() => {
                         setToastList((toastList) => {return [...toastList, {
                             id: props.id,
                             title: "Info",
@@ -147,7 +154,8 @@ export default function Session(props) {
                         ></StudentEntry> : null) 
                 }
                 </table>
-            </section>
+            </section> : null
+        }
         </>
     )
 }

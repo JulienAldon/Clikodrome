@@ -77,6 +77,18 @@ function modifySession(token, id, student) {
     });
 }
 
+function removeSession(token, session_id) {
+    return fetch(`${settings.SERVICE_URL}/session/${session_id}`, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        },
+    }).then((res) => {
+        return res.json()
+    });
+}
+
 function createSession(token, sessionIndex) {
     let b = {sessionIndex: sessionIndex}
     return fetch(`${settings.SERVICE_URL}/session/create`, {
@@ -139,5 +151,6 @@ export {
     createSession,
     signSession,
     addRemote,
+    removeSession,
     removeRemote
 }

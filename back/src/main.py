@@ -7,7 +7,7 @@ import datetime
 from src.auth import router
 from src.identity import token, staff
 from src.configuration import options
-from src.crud import read_sessions, read_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
+from src.crud import read_sessions, read_session, delete_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
 from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated
 
 app = FastAPI()
@@ -87,6 +87,13 @@ async def modify_session(students: StudentList, session_id: str, token: dict[str
     res = []
     for student in students.data:
         res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id, student.late)})
+    return {'result': res}
+
+@app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
+async def remove_session(session_id, token:dict[str, Any] = Depends(token)):
+    res = delete_session(session_id)
+    if not res:
+        raise HTTPException(400)
     return {'result': res}
 
 @app.post('/api/session/{session_id}', dependencies=[Depends(staff)])
