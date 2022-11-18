@@ -26,8 +26,12 @@ export default function Session(props) {
             return;
         students.forEach(element => {
             if (element.login === login) {
-                let status = element.status != 'present' ? 'present' : 'NULL'
-                element.status = status;
+                if (element.late !== null && element.late !== 'NULL') {
+                    element.late = 'NULL';
+                    element.status = 'NULL';
+                } else {
+                    element.status = element.status === 'present' ? 'NULL' : 'present';
+                }
             }
         });
         modifySession(token, props.id, students).then((res) => {
