@@ -1,0 +1,32 @@
+.button {
+    text-decoration: none;
+    text-align: left;
+    border:none;
+    background: none;
+    display: flex;
+    align-items: center;
+}
+
+.content {
+    transition: max-height 0.4s;
+    max-height: 10em;
+}
+
+.hide {
+    /* display: none; */
+    max-height: 0;
+    overflow: hidden;
+}
+
+.title {
+    padding-right: 0.5rem;
+}
+
+.icon {
+    font-size: 2rem;
+    color: rgba(15,150,150,1);
+}
+
+.icon:hover {
+    color: rgba(12,120,120,1)
+}

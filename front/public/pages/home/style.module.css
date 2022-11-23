@@ -1,17 +1,20 @@
 .about {
 	display: flex;
 	flex-flow: column;
+}
+
+.disconnected {
 	align-items: center;
 }
 
-.about button {
+.about .button {
 	background-color: rgba(15, 150, 150);
 	padding: 1rem;
 	transition: all 0.5s;
 	border: none;
 }
 
-.about button:hover {
+.about .button:hover {
 	background-color: rgba(22, 22, 22, 0.1);
 	color: rgba(15, 150, 150);
 }
@@ -22,6 +25,7 @@
 }
 
 .link {
+	margin-bottom: 1rem;
 	padding: 1rem;
 	background-color: rgba(15, 150, 150);
 	padding: 1rem;

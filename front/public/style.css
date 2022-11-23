@@ -20,6 +20,11 @@ header > nav {
 	display: flex;
 }
 
+header > nav .home {
+	font-size: 2rem;
+	padding: 0 1rem 0 1rem;
+}
+
 header > nav a {
 	color: white;
 	background-color: rgba(15, 150, 150);
