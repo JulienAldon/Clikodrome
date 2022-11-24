@@ -1,13 +1,16 @@
 @font-face {
-    font-family: 'icons-font';
-	src: url('./fonts/roboto-mono.ttf') format('truetype');
+    font-family: 'MesloLGLDZ NF';
+	src: url('../fonts/Meslo LG L DZ Regular Nerd Font Complete Windows Compatible.ttf') format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-stretch: normal;
 }
 
 html,
 body {
 	margin: 0;
 	min-height: 100%;
-	font-family: system-ui, sans-serif, 'icons-font';
+	font-family: 'MesloLGLDZ NF';
 }
 
 header {

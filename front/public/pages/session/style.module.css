@@ -38,6 +38,10 @@
     cursor: pointer;
 }
 
+.sessionTitle {
+    text-align: center;
+}
+
 @media (max-width: 95rem) {
     .centerCol{
         margin: 0rem

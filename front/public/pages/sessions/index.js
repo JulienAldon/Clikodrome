@@ -90,13 +90,14 @@ export default function Home() {
 									description="Delete the session"
 									action={() => {
 										removeSession(token, elem.id).then((res) => {
-											fetchSessions()
 											setToastList((toastList) => {return [...toastList, {
 												id: 'deleteSession',
 												title: "Info",
 												description: "Session deleted.",
 												backgroundColor: "rgba(15, 150, 150)",
 											}]});
+											fetchSessions();
+											fetchSessionStatus();
 										})
 									}}
 								></Button>

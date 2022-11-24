@@ -20,8 +20,8 @@ export default function Session(props) {
     const token = useAuthGuard();
     const { toastList, setToastList } = useToast();
     const { students, session, fetchSession, setStudents } = useSession(props.id);
-    const [ toggleSortPresent, setToggleSortPresent ] = useState(true);
-    const [ toggleSortLate, setToggleSortLate ] = useState(true);
+    const [ toggleSortPresent, setToggleSortPresent ] = useState(undefined);
+    const [ toggleSortLate, setToggleSortLate ] = useState(undefined);
     const [ toggleSortLogin, setToggleSortLogin ] = useState(true);
 
     const handleChange = (login) => {
@@ -79,20 +79,34 @@ export default function Session(props) {
 
     const sortPresent = () => {
         setToggleSortPresent(!toggleSortPresent);
+        setToggleSortLogin(undefined);
+        setToggleSortLate(undefined);
         const sortedStudents = [...students].sort((a, b) => {
             if (a.status === null || a.status === 'NULL') {
-                return toggleSortPresent ? 1 : -1;
-            }
-            if (a.status !== null || a.status !== 'NULL') {
                 return toggleSortPresent ? -1 : 1;
             }
+            if (a.status !== null || a.status !== 'NULL') {
+                return toggleSortPresent ? 1 : -1;
+            }
             return 0
-        })
+        });
+        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+            if (a.status === null || a.status === 'NULL') {
+                return toggleSortPresent ? -1 : 1;
+            }
+            if (a.status !== null || a.status !== 'NULL') {
+                return toggleSortPresent ? 1 : -1;
+            }
+            return 0
+        });
+        setSearchStudent(sortedSearchStudents);
         setStudents(sortedStudents);
     }
 
     const sortLogin = () => {
+        setToggleSortPresent(undefined);
         setToggleSortLogin(!toggleSortLogin);
+        setToggleSortLate(undefined);
         const sortedStudents = [...students].sort((a, b) => {
             if (a.login < b.login) {
                 return toggleSortLogin ? 1 : -1;
@@ -101,21 +115,43 @@ export default function Session(props) {
                 return toggleSortLogin ? -1 : 1;
             }
             return 0
-        })
+        });
+        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+            if (a.login < b.login) {
+                return toggleSortLogin ? 1 : -1;
+            }
+            if (a.login > b.login) {
+                return toggleSortLogin ? -1 : 1;
+            }
+            return 0
+        });
+        setSearchStudent(sortedSearchStudents);
         setStudents(sortedStudents);
     }
 
     const sortLate = () => {
+        setToggleSortPresent(undefined);
         setToggleSortLate(!toggleSortLate);
+        setToggleSortLogin(undefined);
         const sortedStudents = [...students].sort((a, b) => {
             if (a.late === null || a.late === 'NULL') {
-                return toggleSortLate ? 1 : -1;
-            }
-            if (a.late !== null || a.late !== 'NULL') {
                 return toggleSortLate ? -1 : 1;
             }
-            return 0
+            if (a.late !== null || a.late !== 'NULL') {
+                return toggleSortLate ? 1 : -1;
+            }
+            return 0;
         })
+        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+            if (a.late === null || a.late === 'NULL') {
+                return toggleSortLate ? -1 : 1;
+            }
+            if (a.late !== null || a.late !== 'NULL') {
+                return toggleSortLate ? 1 : -1;
+            }
+            return 0;
+        })
+        setSearchStudent(sortedSearchStudents);
         setStudents(sortedStudents);
     }
 
@@ -124,6 +160,9 @@ export default function Session(props) {
         {
             session ?
             <section>
+                <div class={`${styles.sessionTitle}`}>
+                    <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
+                </div>
                 <div class={`${styles.center} ${styles.buttonBox}`}>
                     <Button deactivated={false} description="Allow session to be signed." title="Validate" action={() => {
                         validateSession(token, props.id).then((res) => {
@@ -134,6 +173,7 @@ export default function Session(props) {
                                     description: "Session has been validated, students status has been saved.",
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
+                                fetchSession();
                             });
                         });
                     }}></Button>
@@ -182,9 +222,30 @@ export default function Session(props) {
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>
-                        <th class={`${styles.label} ${styles.tablehead}`} onClick={sortLogin}>login</th>
-                        <th class={`${styles.padding} ${styles.tablehead}`} onClick={sortPresent}>Present</th>
-                        <th class={`${styles.tablehead}`} onClick={sortLate}>Late</th>
+                        <th class={`${styles.label} ${styles.tablehead}`} onClick={sortLogin}>Login { 
+                            toggleSortLogin !== undefined ? 
+                            toggleSortLogin ?
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label>
+                        }
+                        </th>
+                        <th class={`${styles.padding} ${styles.tablehead}`} onClick={sortPresent}>Present { 
+                            toggleSortPresent !== undefined ? 
+                            toggleSortPresent ?
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label>
+                            }
+                        </th>
+                        <th class={`${styles.tablehead}`} onClick={sortLate}>Late { 
+                            toggleSortLate !== undefined ?
+                            toggleSortLate ?
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label> : 
+                                <label class={`${styles.tablehead}`}></label>
+                            }
+                        </th>
                     </tr>
                 {
                     searchStudent ? (searchStudent ? <StudentEntry
