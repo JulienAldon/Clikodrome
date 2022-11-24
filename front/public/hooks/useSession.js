@@ -22,5 +22,6 @@ export default function useSession(id) {
         students,
         session,
         fetchSession,
+        setStudents,
     }
 }
