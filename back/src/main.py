@@ -71,6 +71,18 @@ async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
         raise HTTPException(400)
     return {'result': 'ok'}
 
+@app.get('/api/sessions/status', dependencies=[Depends(staff)])
+async def session_status(token: dict[str, Any] = Depends(token)):
+    session_date = datetime.datetime.today()
+    format_date = session_date.strftime('%Y-%m-%d')
+    sessions = read_sessions(format_date)
+    morning = [a for a in sessions if a['hour'] < "12:00:00.000"]
+    evening = [a for a in sessions if a['hour'] > "12:00:00.000"]
+    return {'result': {
+        'morning': morning if morning != [] else None,
+        'evening': evening if evening != [] else None
+    }}
+
 @app.get('/api/sessions', dependencies=[Depends(staff)])
 async def get_sessions(token: dict[str, Any] = Depends(token)):
     sessions = read_sessions()

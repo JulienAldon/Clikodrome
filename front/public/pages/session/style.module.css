@@ -34,6 +34,9 @@
     justify-content: space-between;
 }
 
+.tablehead {
+    cursor: pointer;
+}
 
 @media (max-width: 95rem) {
     .centerCol{

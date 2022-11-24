@@ -1,12 +1,20 @@
 from src.database import connection
 
-def read_sessions():
+def read_sessions(date=None):
     cursor = connection.cursor()
-    t = f"""
-        SELECT * from session
-    """
+    if date:
+        t = f"""
+            SELECT * from session where date=%s
+        """
+    else:
+        t = f"""
+            SELECT * from session
+        """
     try:
-        cursor.execute(t)
+        if date:
+            cursor.execute(t, (date))
+        else:
+            cursor.execute(t)
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)

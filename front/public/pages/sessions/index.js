@@ -1,22 +1,26 @@
 import styles from './style.module.css';
 import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
+import useSessionStatus from '../../hooks/useSessionStatus';
 import Button from '../../components/button';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 
 export default function Home() {
 	const token = useAuthGuard();
-	const {sessions, fetchSessions} = useSessions();
+	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();
+	const { sessionStatus, fetchSessionStatus } = useSessionStatus();
 
 	return (
 		<>
 			<section class={styles.home}>
-				<main class={styles.main}>
+			{
+				sessionStatus ? <main class={styles.main}>
 					<h2>Create session</h2>
+					
 					<Button 
-						deactivated={false}
+						deactivated={sessionStatus.morning ? true : false}
 						description="Create morning session" title="Matin" action={() => {
 						createSession(token, '0').then((res) => {
 							if (res.detail && res.detail==="No edusign session available") {
@@ -27,7 +31,8 @@ export default function Home() {
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else {
-								fetchSessions()
+								fetchSessions();
+								fetchSessionStatus();
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Info",
@@ -38,7 +43,7 @@ export default function Home() {
 						})
 					}}></Button>
 					<Button 
-                    	deactivated={false}
+                    	deactivated={sessionStatus.evening ? true : false}
 						description="Create evening session" title="Soir" action={() => {
 						createSession(token, '-1').then((res) => {
 							if (res.detail && res.detail==="No edusign session available") {
@@ -56,7 +61,8 @@ export default function Home() {
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else {
-								fetchSessions()
+								fetchSessions();
+								fetchSessionStatus();
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Info",
@@ -98,7 +104,8 @@ export default function Home() {
 						);
 					}) : null
 				}
-				</main>
+				</main> : null
+			}
 			</section>
 		</>
 	);

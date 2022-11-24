@@ -141,6 +141,18 @@ function removeRemote(token, id) {
     })
 }
 
+function checkTodaySession(token) {
+    return fetch(`${settings.SERVICE_URL}/sessions/status`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        }
+    }).then((res) => {
+        return res.json();
+    });
+}
+
 export {
     getSessions,
     getSession,
@@ -152,5 +164,6 @@ export {
     signSession,
     addRemote,
     removeSession,
-    removeRemote
+    removeRemote,
+    checkTodaySession
 }
