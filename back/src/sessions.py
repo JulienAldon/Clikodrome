@@ -1,10 +1,14 @@
 from src.database import connection
 from src.configuration import options
 from src.edusign import EdusignToken
+from operator import itemgetter
+from typing import Any
 import datetime
 import Yawaei
 import asyncio
 import aiohttp
+import heapq
+import itertools
 
 def get_database_event_by_date(date, hour):
     cursor = connection.cursor()
@@ -46,16 +50,33 @@ def get_remote_student(date):
     result = [{**a, 'status': 'present', 'late': 'NULL'} for a in res if a['begin'] < date and a['end'] > date]
     return result
 
+def get_any_student_name(entry: dict[str, Any]) -> str | None:
+    return entry.get('EMAIL', entry.get('login', None))
+
+def late_student_zipper(all_students, late_entries):
+    all_students = sorted(all_students, key=itemgetter('EMAIL'))
+    late_entries = sorted(late_entries, key=itemgetter('login'))
+    queue = heapq.merge(all_students, late_entries, key=get_any_student_name)
+
+    for login, values in itertools.groupby(queue, get_any_student_name):
+        result = dict(map(lambda p: (p[1], p[0].get(p[1], None)), zip(values, ('ID', 'delay'))))
+        if result.get('delay', None) is not None and result.get('ID', None) is not None:
+            yield result
+
 #TODO: Envoyer les retard séparément des présences (retard edusign)
 def get_students_ids(edusign_students, intra_students):
     present_students = [a['login'] for a in intra_students 
-        if a['status'] == 'present' or (a['late'] != 'NULL' and a['late'] < options.late_limit)]
-    late_ids = [{'login': a['login'], 'delay': 
-        divmod((datetime.datetime.strptime(options.late_limit, '%H:%M:%S') 
-        - datetime.datetime.strptime(a['late'], '%H:%M:%S')).total_seconds(), 60)[0]} 
-        for a in intra_students if a['late'] != 'NULL' and a['late'] < options.late_limit]
+        if a['status'] == 'present']
+    late_students = [{
+        'login': a['login'], 
+        'delay': abs(divmod((datetime.datetime.strptime(options.late_limit, '%H:%M:%S') 
+        - datetime.datetime.strptime(a['late'], '%H:%M:%S')).total_seconds(), 60)[0])} 
+        for a in intra_students if a['late'] != 'NULL']
+
     ids = [a['ID'] for a in edusign_students if a['EMAIL'] in present_students]
-    return ids, late_ids
+    late_ids = late_student_zipper(edusign_students, late_students)
+
+    return ids, list(late_ids)
 
 class BaseCustomException(Exception):
     pass
@@ -100,7 +121,7 @@ async def sign_all_sessions(date, session_index):
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
         sign = await edusign.sign_session(to_sign_session['edusign_id'])
         mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
-        # TODO: Create a lateness function which emit late report for every late_ids ({'login': "", 'delay': "1"})
+        late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()

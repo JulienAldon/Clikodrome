@@ -108,6 +108,25 @@ class EdusignToken(Edusign):
                 headers={'Authorization': f'Bearer {self.token}'}
             ) as resp:
                 return await resp.json()
+    
+    async def send_lates(self, student_late_ids, session_id):
+        res = []
+        for late in student_late_ids:
+            res.append(await send_lates(late['ID'], session_id, late['delay'])
+        return res
+
+    async def send_late(self, student_id, session_id, late: int):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f'{options.edusign_url}/professor/courses/student-delay/{self.school_id}/{session_id}',
+                json={
+                    'delay': late,
+                    'studentId': student_id
+                },
+                headers={'Authorization': f'Bearer {self.token}'}
+            ) as resp:
+                return await resp.json()
+        
 
     async def sign_session(self, session_id):
         if await self.get_session_professor_signature(session_id):

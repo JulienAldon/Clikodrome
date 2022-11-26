@@ -76,6 +76,11 @@ async def session_status(token: dict[str, Any] = Depends(token)):
     session_date = datetime.datetime.today()
     format_date = session_date.strftime('%Y-%m-%d')
     sessions = read_sessions(format_date)
+    if not sessions:
+        return {'result': {
+            'morning': None,
+            'evening': None,
+        }}
     morning = [a for a in sessions if a['hour'] < "12:00:00.000"]
     evening = [a for a in sessions if a['hour'] > "12:00:00.000"]
     return {'result': {
