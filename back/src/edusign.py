@@ -112,7 +112,7 @@ class EdusignToken(Edusign):
     async def send_lates(self, student_late_ids, session_id):
         res = []
         for late in student_late_ids:
-            res.append(await send_lates(late['ID'], session_id, late['delay'])
+            res.append(await send_lates(late['ID'], session_id, late['delay']))
         return res
 
     async def send_late(self, student_id, session_id, late: int):
