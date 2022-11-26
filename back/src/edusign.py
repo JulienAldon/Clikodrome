@@ -127,7 +127,6 @@ class EdusignToken(Edusign):
             ) as resp:
                 return await resp.json()
         
-
     async def sign_session(self, session_id):
         if await self.get_session_professor_signature(session_id):
             return {"result": "session already signed"}
@@ -152,6 +151,7 @@ class EdusignToken(Edusign):
                     return True
         return False
     
+    #TODO: return every occurence where mail not sent
     async def get_session_signature(self, session_id):
         """Check if a session has any email already sent
         """

@@ -90,17 +90,19 @@ export default function Session(props) {
             }
             return 0
         });
-        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-            if (a.status === null || a.status === 'NULL') {
-                return toggleSortPresent ? -1 : 1;
-            }
-            if (a.status !== null || a.status !== 'NULL') {
-                return toggleSortPresent ? 1 : -1;
-            }
-            return 0
-        });
-        setSearchStudent(sortedSearchStudents);
         setStudents(sortedStudents);
+        if (searchStudent) {
+            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+                if (a.status === null || a.status === 'NULL') {
+                    return toggleSortPresent ? -1 : 1;
+                }
+                if (a.status !== null || a.status !== 'NULL') {
+                    return toggleSortPresent ? 1 : -1;
+                }
+                return 0
+            });
+            setSearchStudent(sortedSearchStudents);
+        }
     }
 
     const sortLogin = () => {
@@ -116,17 +118,19 @@ export default function Session(props) {
             }
             return 0
         });
-        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-            if (a.login < b.login) {
-                return toggleSortLogin ? 1 : -1;
-            }
-            if (a.login > b.login) {
-                return toggleSortLogin ? -1 : 1;
-            }
-            return 0
-        });
-        setSearchStudent(sortedSearchStudents);
         setStudents(sortedStudents);
+        if (searchStudent) {
+            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+                if (a.login < b.login) {
+                    return toggleSortLogin ? 1 : -1;
+                }
+                if (a.login > b.login) {
+                    return toggleSortLogin ? -1 : 1;
+                }
+                return 0
+            });
+            setSearchStudent(sortedSearchStudents);
+        }
     }
 
     const sortLate = () => {
@@ -141,18 +145,20 @@ export default function Session(props) {
                 return toggleSortLate ? 1 : -1;
             }
             return 0;
-        })
-        const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-            if (a.late === null || a.late === 'NULL') {
-                return toggleSortLate ? -1 : 1;
-            }
-            if (a.late !== null || a.late !== 'NULL') {
-                return toggleSortLate ? 1 : -1;
-            }
-            return 0;
-        })
-        setSearchStudent(sortedSearchStudents);
+        });
         setStudents(sortedStudents);
+        if (searchStudent) {
+            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
+                if (a.late === null || a.late === 'NULL') {
+                    return toggleSortLate ? -1 : 1;
+                }
+                if (a.late !== null || a.late !== 'NULL') {
+                    return toggleSortLate ? 1 : -1;
+                }
+                return 0;
+            });
+            setSearchStudent(sortedSearchStudents);
+        }
     }
 
     return (
@@ -222,29 +228,32 @@ export default function Session(props) {
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>
-                        <th class={`${styles.label} ${styles.tablehead}`} onClick={sortLogin}>Login { 
+                        <th class={`${styles.label} ${styles.tablehead}`} onClick={sortLogin}>Login
+                        { 
                             toggleSortLogin !== undefined ? 
                             toggleSortLogin ?
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label>
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label>
                         }
                         </th>
-                        <th class={`${styles.padding} ${styles.tablehead}`} onClick={sortPresent}>Present { 
+                        <th class={`${styles.padding} ${styles.tablehead}`} onClick={sortPresent}>Present 
+                        { 
                             toggleSortPresent !== undefined ? 
                             toggleSortPresent ?
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label>
-                            }
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label>
+                        }
                         </th>
-                        <th class={`${styles.tablehead}`} onClick={sortLate}>Late { 
+                        <th class={`${styles.tablehead}`} onClick={sortLate}>Late 
+                        { 
                             toggleSortLate !== undefined ?
                             toggleSortLate ?
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label> : 
-                                <label class={`${styles.tablehead}`}></label>
-                            }
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label> : 
+                                <label class={`${styles.tablehead}`}> </label>
+                        }
                         </th>
                     </tr>
                 {
