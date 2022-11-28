@@ -15,14 +15,14 @@
     margin: 0rem 20rem;
 }
 
+.padding {
+    padding-right: 1rem;
+}
+
 .label {
     overflow-x: hidden;
     display: block;
     flex: 1 1 auto;
-}
-
-.padding {
-    padding-right: 1rem;
 }
 
 .box {
@@ -32,10 +32,6 @@
     height: 100%;
     padding: 1rem;
     justify-content: space-between;
-}
-
-.tablehead {
-    cursor: pointer;
 }
 
 .sessionTitle {

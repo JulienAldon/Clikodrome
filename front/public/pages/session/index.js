@@ -7,6 +7,7 @@ import useAuthGuard from '../../context/useUser';
 import SearchBar from '../../components/searchBar';
 import { useToast } from '../../context/toast';
 import useSession from '../../hooks/useSession';
+import { TableHead } from '../../components/tableHead';
 
 function addZero(i) {
     if (i < 10) {
@@ -228,33 +229,23 @@ export default function Session(props) {
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>
-                        <th class={`${styles.label} ${styles.tablehead}`} onClick={sortLogin}>Login
-                        { 
-                            toggleSortLogin !== undefined ? 
-                            toggleSortLogin ?
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label>
-                        }
-                        </th>
-                        <th class={`${styles.padding} ${styles.tablehead}`} onClick={sortPresent}>Present 
-                        { 
-                            toggleSortPresent !== undefined ? 
-                            toggleSortPresent ?
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label>
-                        }
-                        </th>
-                        <th class={`${styles.tablehead}`} onClick={sortLate}>Late 
-                        { 
-                            toggleSortLate !== undefined ?
-                            toggleSortLate ?
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label> : 
-                                <label class={`${styles.tablehead}`}> </label>
-                        }
-                        </th>
+                        <TableHead
+                            title="Login"
+                            sortFunction={sortLogin}
+                            toggleSort={toggleSortLogin}
+                            addStyle={styles.label}
+                        />
+                        <TableHead
+                            title="Present"
+                            sortFunction={sortPresent}
+                            toggleSort={toggleSortPresent}
+                            addStyle={styles.padding}
+                        />
+                        <TableHead
+                            title="Late"
+                            sortFunction={sortLate}
+                            toggleSort={toggleSortLate}
+                        />
                     </tr>
                 {
                     searchStudent ? (searchStudent ? <StudentEntry
