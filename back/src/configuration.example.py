@@ -21,11 +21,13 @@ class Configuration(pydantic.BaseSettings):
     database:           str = os.getenv('DATABASE_NAME')
 
     event_activity:     str = '/module/2021/W-ADM-007/LYN-0-1/acti-505014/'
-    late_limit:         str = '10:00:00'
+    late_limit:         str = '09:30:00'
+    maximum_late_time:  int = 30
 
     edusign_login:      str = os.getenv('EDUSIGN_LOGIN')
     edusign_password:   str = os.getenv('EDUSIGN_PASSWORD')
     edusign_url:        str = 'https://api.edusign.fr'
     edusign_signature:  str = open('signature.txt').readline()
+
 
 options = Configuration()
