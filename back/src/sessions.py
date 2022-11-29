@@ -66,16 +66,17 @@ def late_student_zipper(all_students, late_entries):
 #TODO: Envoyer les retard séparément des présences (retard edusign)
 def get_students_ids(edusign_students, intra_students):
     present_students = [a['login'] for a in intra_students 
-        if a['status'] == 'present' or (a['late'] != 'NULL' and abs(
-            divmod((datetime.datetime.strptime(options.late_limit, '%H:%M:%S') 
-        - datetime.datetime.strptime(a['late'], '%H:%M:%S')).total_seconds(), 60)[0])
-        ) < options.maximum_late_time]
+        if a['status'] == 'present']
 
     late_students = [{
         'login': a['login'], 
         'delay': abs(divmod((datetime.datetime.strptime(options.late_limit, '%H:%M:%S') 
         - datetime.datetime.strptime(a['late'], '%H:%M:%S')).total_seconds(), 60)[0])} 
         for a in intra_students if a['late'] != 'NULL']
+
+    late_login = [a['login'] for a in late_students if a['delay'] < options.maximum_late_time]
+
+    present_students = present_students + late_login
 
     ids = [a['ID'] for a in edusign_students if a['EMAIL'] in present_students]
     late_ids = late_student_zipper(edusign_students, late_students)
@@ -123,10 +124,10 @@ async def sign_all_sessions(date, session_index):
     for to_sign_session in to_sign_sessions:
         edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
-        sign = await edusign.sign_session(to_sign_session['edusign_id'])
-        mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
-        late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
-        print(sign, mail, late)
+        # sign = await edusign.sign_session(to_sign_session['edusign_id'])
+        # mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
+        # late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
+        # print(sign, mail, late)
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
