@@ -1,6 +1,7 @@
 from src.database import connection
 
 def read_sessions(date=None):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     if date:
         t = f"""
@@ -22,6 +23,7 @@ def read_sessions(date=None):
     return result
 
 def read_session(_id):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from session WHERE id=%s
@@ -35,6 +37,7 @@ def read_session(_id):
     return result
 
 def read_students(session_id):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from student WHERE session_id=%s
@@ -48,6 +51,7 @@ def read_students(session_id):
     return result
 
 def read_all_students():
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from student;
@@ -61,6 +65,7 @@ def read_all_students():
     return result
 
 def change_student(login, status, session_id, late):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         UPDATE student SET status=%s, late=%s WHERE session_id=%s and login=%s
@@ -74,6 +79,7 @@ def change_student(login, status, session_id, late):
     return True
 
 def delete_session(session_id):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         DELETE FROM student WHERE session_id=%s
@@ -91,6 +97,7 @@ def delete_session(session_id):
     return True
 
 def change_session(session_id, is_approved):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         UPDATE session SET is_approved=%s WHERE id=%s
@@ -104,6 +111,7 @@ def change_session(session_id, is_approved):
     return True
 
 def create_remote(login, begin, end):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         INSERT INTO remote (login, begin, end) VALUES (%s, %s, %s)
@@ -117,6 +125,7 @@ def create_remote(login, begin, end):
     return True
 
 def read_remotes():
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from remote
@@ -130,6 +139,7 @@ def read_remotes():
     return result
 
 def read_remote(login):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from remote WHERE login=%s
@@ -143,6 +153,7 @@ def read_remote(login):
     return result
 
 def delete_remote(_id):
+    connection.ping(reconnect=True) 
     cursor = connection.cursor()
     t = f"""
         DELETE FROM remote WHERE id=%s
