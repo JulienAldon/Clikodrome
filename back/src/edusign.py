@@ -99,7 +99,11 @@ class EdusignToken(Edusign):
                     return result['result']
 
     async def send_mails(self, student_ids, session_id):
-        if await self.get_session_signature(session_id):
+        remain = await self.get_session_signature(session_id)
+        if remain == []:
+            return {'result': 'mail already sent'}
+        remain_map = list(map(lambda x: x in student_ids, remain))
+        if False in remain_map:
             return {'result': 'mail already sent'}
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -151,7 +155,6 @@ class EdusignToken(Edusign):
                     return True
         return False
     
-    #TODO: return every occurence where mail not sent
     async def get_session_signature(self, session_id):
         """Check if a session has any email already sent
         """
@@ -161,7 +164,9 @@ class EdusignToken(Edusign):
                 headers={'Authorization': f'Bearer {self.token}'}
             ) as resp:
                 a = await resp.json()
+                remain_ids = []
                 for e in a['result']['STUDENTS']:
-                    if e['state']:
-                        return True
-        return False
+                    if not e.get('signature'):
+                        remain_ids.append(e['studentId'])
+                return remain_ids
+        return []
