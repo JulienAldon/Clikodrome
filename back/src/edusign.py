@@ -102,13 +102,13 @@ class EdusignToken(Edusign):
         remain = await self.get_session_signature(session_id)
         if remain == []:
             return {'result': 'mail already sent'}
-        remain_map = list(map(lambda x: x in student_ids, remain))
-        if False in remain_map:
+        remain_ids = list(filter(lambda x: x in student_ids, remain))
+        if remain_ids == []:
             return {'result': 'mail already sent'}
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/courses/massSendSignEmail/{self.school_id}/{session_id}',
-                json={'studentsId': student_ids},
+                json={'studentsId': remain_ids},
                 headers={'Authorization': f'Bearer {self.token}'}
             ) as resp:
                 return await resp.json()
@@ -166,7 +166,7 @@ class EdusignToken(Edusign):
                 a = await resp.json()
                 remain_ids = []
                 for e in a['result']['STUDENTS']:
-                    if not e.get('signature'):
+                    if not e.get('signatureEmail'):
                         remain_ids.append(e['studentId'])
                 return remain_ids
         return []
