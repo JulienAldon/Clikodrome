@@ -126,8 +126,9 @@ async def sign_all_sessions(date, session_index):
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
         sign = await edusign.sign_session(to_sign_session['edusign_id'])
         mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
-        late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
-        print(sign, mail, late)
+        if not mail.get('result') == 'mail already sent':
+            late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
+        print(sign, mail)
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
