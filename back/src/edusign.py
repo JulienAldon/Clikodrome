@@ -41,23 +41,38 @@ class EdusignToken(Edusign):
         self.school_id = ''
 
     async def login(self):
+        """Login to edusign and return school_ids array
+        raise KeyError in case of error with the result
+        return an empty array in case of impossible request
+        """
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/account/getByCredentials',
-                json={'EMAIL': options.edusign_login, 'PASSWORD': options.edusign_password}
+                json={'EMAIL': options.edusign_login, 'PASSWORD': options.edusign_password, 'connexionMode': True}
             ) as resp:
-                obj = await resp.json()
-                if not obj.get('result'):
+                objs = await resp.json()
+                if not objs.get('result'):
                     raise KeyError('No result found')
-                if not obj['result'].get('TOKEN'):
-                    raise KeyError('No token found')
-                self.token = obj['result']['TOKEN']
-                if not obj['result'].get('SCHOOL_ID'):
-                    raise KeyError('No school id')
-                self.school_id = obj['result']['SCHOOL_ID'][0]
-                return True
+                objs = objs.get('result')
+                school_ids = []
+                for obj in objs:
+                    if not obj.get('TOKEN'):
+                        raise KeyError('No token found')
+                    self.token = obj['TOKEN']
+                    if not obj.get('SCHOOL_ID'):
+                        raise KeyError('No school id')
+                    school_ids += obj['SCHOOL_ID']
+                self.school_id = school_ids[0]
+                return school_ids
+        return []
+    
+    async def get_school_id(self):
+        return self.school_id
+    
+    async def set_school_id(self, _school_id: str):
+        self.school_id = _school_id
 
-    async def get_sessions(self, date):
+    async def get_sessions(self, date: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/getCourses/getLastProfessorCourses/{self.school_id}?start={date}&end={date}',
@@ -68,7 +83,7 @@ class EdusignToken(Edusign):
                     raise KeyError('No result found')
                 return [{'edusign_id': res['COURSE_ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']['result']]
 
-    async def get_session(self, session_id):
+    async def get_session(self, session_id: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/{self.school_id}/{session_id}',
@@ -80,7 +95,7 @@ class EdusignToken(Edusign):
                     raise KeyError('No result found')
                 return result['result']['STUDENTS']
 
-    async def get_students(self, session_id):
+    async def get_students(self, session_id: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/{self.school_id}/{session_id}',
@@ -98,7 +113,7 @@ class EdusignToken(Edusign):
                     result = await response.json()
                     return result['result']
 
-    async def send_mails(self, student_ids, session_id):
+    async def send_mails(self, student_ids, session_id: str):
         remain = await self.get_session_signature(session_id)
         if remain == []:
             return {'result': 'mail already sent'}
@@ -113,7 +128,7 @@ class EdusignToken(Edusign):
             ) as resp:
                 return await resp.json()
     
-    async def send_lates(self, student_late_ids, session_id):
+    async def send_lates(self, student_late_ids, session_id: str):
         res = []
         for late in student_late_ids:
             res.append(await self.send_late(late['ID'], session_id, late['delay']))
@@ -131,7 +146,7 @@ class EdusignToken(Edusign):
             ) as resp:
                 return await resp.json()
         
-    async def sign_session(self, session_id):
+    async def sign_session(self, session_id: str):
         if await self.get_session_professor_signature(session_id):
             return {"result": "session already signed"}
         async with aiohttp.ClientSession() as session:
@@ -142,7 +157,7 @@ class EdusignToken(Edusign):
             ) as resp:
                 return await resp.json()
     
-    async def get_session_professor_signature(self, session_id):
+    async def get_session_professor_signature(self, session_id: str):
         """Check professor signature present for a given session
         """
         async with aiohttp.ClientSession() as session:
@@ -155,7 +170,7 @@ class EdusignToken(Edusign):
                     return True
         return False
     
-    async def get_session_signature(self, session_id):
+    async def get_session_signature(self, session_id: str):
         """Check if a session has any email already sent
         """
         async with aiohttp.ClientSession() as session:
