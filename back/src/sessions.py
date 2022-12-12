@@ -98,14 +98,11 @@ class SessionNotAvailableException(BaseCustomException):
 class SessionAlreadyCreated(BaseCustomException):
     pass
 
-async def sign_all_sessions(date, session_index):
-    """Sign all sessions
-    """
-    edusign = EdusignToken()
-    await edusign.login()
+async def sign_single_school(edusign, date, session_index):
     sessions = await edusign.get_sessions(date)
     if not sessions:
-        raise SessionNotAvailableException(f'No session available for the date {date}')
+        return None
+
     choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
     hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
 
@@ -120,7 +117,6 @@ async def sign_all_sessions(date, session_index):
     remote_students = get_remote_student(date)
     edusign_sessions = await edusign.get_sessions(date)
     to_sign_sessions = [e for e in edusign_sessions if e['begin'][11:-1] == hour or e['end'][11:-1] == hour]
-
     for to_sign_session in to_sign_sessions:
         edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
@@ -129,6 +125,16 @@ async def sign_all_sessions(date, session_index):
         if not mail.get('result') == 'mail already sent':
             late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
         print(sign, mail)
+
+async def sign_all_sessions(date, session_index):
+    """Sign all sessions
+    """
+    edusign = EdusignToken()
+    school_ids = await edusign.login()
+    for school_id, token in list(school_ids.items()):
+        edusign.set_school_id(school_id)
+        edusign.set_token(token)
+        await sign_single_school(edusign, date, session_index)
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
@@ -168,9 +174,13 @@ async def create_single_session(session_date, session_index):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
 
     edusign = EdusignToken()
-    await edusign.login()
-
-    sessions = await edusign.get_sessions(session_date)
+    school_ids = await edusign.login()
+    sessions = []
+    for school_id, token in list(school_ids.items()):
+        edusign.set_school_id(school_id)
+        edusign.set_token(token)
+        school_session = await edusign.get_sessions(session_date)
+        sessions += school_session
 
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')

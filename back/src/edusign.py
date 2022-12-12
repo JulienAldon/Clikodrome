@@ -44,18 +44,31 @@ class EdusignToken(Edusign):
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/account/getByCredentials',
-                json={'EMAIL': options.edusign_login, 'PASSWORD': options.edusign_password}
+                json={'EMAIL': options.edusign_login, 'PASSWORD': options.edusign_password, 'connexionMode': True}
             ) as resp:
-                obj = await resp.json()
-                if not obj.get('result'):
+                objs = await resp.json()
+                if not objs.get('result'):
                     raise KeyError('No result found')
-                if not obj['result'].get('TOKEN'):
-                    raise KeyError('No token found')
-                self.token = obj['result']['TOKEN']
-                if not obj['result'].get('SCHOOL_ID'):
-                    raise KeyError('No school id')
-                self.school_id = obj['result']['SCHOOL_ID'][0]
-                return True
+                objs = objs.get('result')
+                school_ids = {}
+                if not objs:
+                    raise KeyError('No result found')
+                self.token = objs[0]['TOKEN']
+                for obj in objs:
+                    if not obj.get('TOKEN'):
+                        raise KeyError('No token found')
+                    if not obj.get('SCHOOL_ID'):
+                        raise KeyError('No school id')
+                    school_ids.update({_id: obj['TOKEN'] for _id in obj['SCHOOL_ID']})
+                self.school_id = school_ids[list(school_ids.keys())[0]]
+                return school_ids
+        return []
+    
+    def set_token(self, token):
+        self.token = token
+
+    def set_school_id(self, school_id):
+        self.school_id = school_id
 
     async def get_sessions(self, date):
         async with aiohttp.ClientSession() as session:
