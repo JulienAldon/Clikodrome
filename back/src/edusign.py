@@ -73,12 +73,15 @@ class EdusignToken(Edusign):
         self.school_id = _school_id
 
     async def get_sessions(self, date: str):
+        print(date)
+        print(self.school_id)
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'{options.edusign_url}/professor/courses/getCourses/getLastProfessorCourses/{self.school_id}?start={date}&end={date}',
+                f'{options.edusign_url}/professor/courses/getCourses/getNextProfessorCourses/{self.school_id}?start={date}&end={date}',
                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
             ) as resp:
                 result = await resp.json()
+                print(result)
                 if not result.get('result'):
                     raise KeyError('No result found')
                 return [{'edusign_id': res['COURSE_ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']['result']]

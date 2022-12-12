@@ -98,17 +98,8 @@ class SessionNotAvailableException(BaseCustomException):
 class SessionAlreadyCreated(BaseCustomException):
     pass
 
-async def sign_all_sessions(date, session_index):
-    """Sign all sessions
-    """
-    edusign = EdusignToken()
-    await edusign.login()
-    sessions = await edusign.get_sessions(date)
-    if not sessions:
-        raise SessionNotAvailableException(f'No session available for the date {date}')
-    choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
-    hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
-
+async def sign_school_session(edusign, date, hour, school_id):
+    edusign.set_school_id(school_id)
     database_session = get_database_event_by_date(date, hour)
     if not database_session:
         raise SessionNotCreatedException("Database session not created")
@@ -129,6 +120,24 @@ async def sign_all_sessions(date, session_index):
         if not mail.get('result') == 'mail already sent':
             late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
         print(sign, mail)
+
+async def sign_all_sessions(date, session_index):
+    """Sign all sessions
+    """
+    edusign = EdusignToken()
+    school_ids = await edusign.login()
+    sessions = await edusign.get_sessions(date)
+    print(sessions)
+    if not sessions:
+        raise SessionNotAvailableException(f'No session available for the date {date}')
+
+    # Select the right session with session_index
+    choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
+    hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
+
+    for school_id in school_ids:
+        sign_school_session(edusign, date, hour, school_id)
+        print(edusign.get_school_id())
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
