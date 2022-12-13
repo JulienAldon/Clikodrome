@@ -63,7 +63,6 @@ def late_student_zipper(all_students, late_entries):
         if result.get('delay', None) is not None and result.get('ID', None) is not None:
             yield result
 
-#TODO: Envoyer les retard séparément des présences (retard edusign)
 def get_students_ids(edusign_students, intra_students):
     present_students = [a['login'] for a in intra_students 
         if a['status'] == 'present']
