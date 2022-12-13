@@ -8,7 +8,7 @@ export default function Volet(props) {
         <>
             <button class={styles.button} onClick={() => {
                 setShow(!show);
-            }}><span class={styles.icon}>{show ? "" : ""}</span><h2 class={styles.title}>{props.title}</h2></button>
+            }}><span class={styles.icon}>{show ? "" : ""}</span><h2 class={styles.title}>{props.title}</h2></button>
             <div class={`${styles.content} ${show ? "" : styles.hide}`}>
                 {props.children}
             </div>
