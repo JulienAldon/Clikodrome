@@ -2,19 +2,18 @@
     text-decoration: none;
     text-align: left;
     border:none;
-    background: none;
+    background: white;
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
 .content {
-    transition: max-height 0.4s;
+    transition: max-height 0.4s ease;
     max-height: 10em;
 }
 
 .hide {
-    /* display: none; */
     max-height: 0;
     overflow: hidden;
 }
