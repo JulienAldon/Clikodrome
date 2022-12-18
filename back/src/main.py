@@ -8,7 +8,7 @@ from src.auth import router
 from src.identity import token, staff
 from src.configuration import options
 from src.crud import read_sessions, read_session, delete_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
-from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated
+from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, refresh_session
 
 app = FastAPI()
 
@@ -41,6 +41,11 @@ class StudentList(BaseModel):
 
 class SessionCreation(BaseModel):
     sessionIndex: str
+
+@app.post('/api/session/{session_id}/refresh', dependencies=[Depends(staff)])
+async def refresh_single_session(session_id: str, token: dict[str, Any] = Depends(token)):
+    await refresh_session(session_id)
+    return {'result': 'Session refreshed'}
 
 @app.post('/api/session/create', dependencies=[Depends(staff)])
 async def create_session(sessionCreation: SessionCreation, token: dict[str, Any] = Depends(token)):

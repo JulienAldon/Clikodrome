@@ -153,6 +153,18 @@ function checkTodaySession(token) {
     });
 }
 
+function refreshSession(token, session_id) {
+    return fetch(`${settings.SERVICE_URL}/session/${session_id}/refresh`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        }
+    }).then((res) => {
+        return res.json()
+    })
+}
+
 export {
     getSessions,
     getSession,
@@ -165,5 +177,6 @@ export {
     addRemote,
     removeSession,
     removeRemote,
-    checkTodaySession
+    checkTodaySession,
+    refreshSession
 }

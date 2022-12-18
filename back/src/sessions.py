@@ -10,6 +10,24 @@ import aiohttp
 import heapq
 import itertools
 
+def update_student(login, status, session_id):
+    connection.ping(reconnect=True)
+    cursor = connection.cursor()
+    if status == 'present':
+        status = 'present'
+    else:
+        status = 'NULL'
+    t = f"""
+        UPDATE student SET status=%s WHERE session_id=%s and login=%s
+    """
+    try:
+        cursor.execute(t, (status, session_id, login))
+    except Exception as e:
+        print('Error with sql :', e)
+        return False
+    connection.commit()
+    return True
+
 def get_database_event_by_date(date, hour):
     cursor = connection.cursor()
     t = f"""
@@ -27,6 +45,19 @@ def get_database_student(event_id):
     cursor = connection.cursor()
     t = f"""
         SELECT * from student WHERE session_id={event_id}
+    """
+    try:
+        cursor.execute(t)
+        result = cursor.fetchall()
+    except Exception as e:
+        print('Error with sql :', e)
+        return False
+    return result
+
+def get_database_session(event_id):
+    cursor = connection.cursor()
+    t = f"""
+        SELECT * from session WHERE id={event_id}
     """
     try:
         cursor.execute(t)
@@ -202,3 +233,26 @@ async def create_single_session(session_date, session_index):
     students = Intra.get_registered_students(options.event_activity + intra_session[0])
     for student in students.keys():
         add_student(student, students[student], session_id)
+
+async def refresh_session(session_id):
+    Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
+    res = get_database_session(session_id)
+    if len(res) != 1:
+        raise KeyError('Session not found')
+    session_date = res[0]['date']
+    session_hour = res[0]['hour']
+    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
+
+    intra_session = Intra.get_events(
+        options.event_activity,
+        date=session_date,
+        hour=session_hour
+    )
+    students = Intra.get_registered_students(options.event_activity + intra_session[0])
+
+    database_students = get_database_student(session_id)    
+
+    for student in students.keys():
+        current_student = filter(lambda x: x['login'] == student, database_students)
+        if list(current_student)[0]['late'] == 'NULL':
+            update_student(student, students[student], session_id)

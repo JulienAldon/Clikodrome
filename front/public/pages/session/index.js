@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import Button from '../../components/button';
 import StudentEntry from '../../components/studentEntry';
-import { getSession, validateSession, modifySession, signSession} from '../../api';
+import { refreshSession, validateSession, modifySession, signSession} from '../../api';
 import styles from './style.module.css';
 import useAuthGuard from '../../context/useUser';
 import SearchBar from '../../components/searchBar';
@@ -211,13 +211,23 @@ export default function Session(props) {
                         }}>
                     </Button>
                     <Button deactivated={false} description="Destroy and recreate session, fetching all students an other time." title="Refresh Session" action={() => {
-                        setToastList((toastList) => {return [...toastList, {
-                            id: props.id,
-                            title: "Info",
-                            description: "Not yet implemented.",
-                            backgroundColor: "rgba(150, 15, 15)",
-                        }]});
-                        // TODO: implement refresh session button
+                        refreshSession(token, props.id).then((res) => {
+                            if (res.detail) {
+                                setToastList((toastList) => {return [...toastList, {
+                                    id: props.id,
+                                    title: "Info",
+                                    description: "Session could not be refreshed",
+                                    backgroundColor: "rgba(150, 15, 15)",
+                                }]});
+                            } else {
+                                setToastList((toastList) => {return [...toastList, {
+                                    id: props.id,
+                                    title: "Info",
+                                    description: "Session correctly refreshed for intranet session.",
+                                    backgroundColor: "rgba(15, 150, 150)",
+                                }]});
+                            }
+                        })
                     }}></Button>
                 </div>
                 <div class={`${styles.center}`}>
