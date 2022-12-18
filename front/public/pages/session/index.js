@@ -226,6 +226,7 @@ export default function Session(props) {
                                     description: "Session correctly refreshed from intranet session.",
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
+                                fetchSession()
                             }
                         })
                     }}></Button>
