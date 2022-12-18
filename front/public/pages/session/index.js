@@ -223,7 +223,7 @@ export default function Session(props) {
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,
                                     title: "Info",
-                                    description: "Session correctly refreshed for intranet session.",
+                                    description: "Session correctly refreshed from intranet session.",
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
                             }
