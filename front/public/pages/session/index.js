@@ -186,8 +186,8 @@ export default function Session(props) {
                     }}></Button>
                     <Button 
                         deactivated={session[0].is_approved === 1 ? false : true } 
-                        description="Send all mails for the session." 
-                        title="Send mail" 
+                        description="Send all emails for the session." 
+                        title="Send email" 
                         action={() => {
                         modifySession(token, props.id, students).then((res) => {
                             signSession(token, props.id).then((res) => {

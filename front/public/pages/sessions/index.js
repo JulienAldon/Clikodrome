@@ -27,7 +27,7 @@ export default function Home() {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Error",
-									description: "No clikodrome session can be created today (no edusign session available).",
+									description: "No clicodrome session can be created today (no edusign session available).",
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else {
@@ -36,7 +36,7 @@ export default function Home() {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Info",
-									description: "Morning clikodrome session created.",
+									description: "Morning clicodrome session created.",
 									backgroundColor: "rgba(15, 150, 150)",
 								}]});
 							}
@@ -50,7 +50,7 @@ export default function Home() {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Error",
-									description: "No clikodrome session can be created today (no edusign session available).",
+									description: "No clicodrome session can be created today (no edusign session available).",
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else if (res.detail && res.detail==="Session already created") {
@@ -66,7 +66,7 @@ export default function Home() {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
 									title: "Info",
-									description: "Evening clikodrome session created.",
+									description: "Evening clicodrome session created.",
 									backgroundColor: "rgba(15, 150, 150)",
 								}]});
 							}

@@ -14,7 +14,7 @@ export default function Header() {
 			<nav>
 				<a class="home" href="/"></a>
 				<a href="/sessions">Sessions</a>
-				<a href="/remote">Distanciel</a>
+				<a href="/remote">Remote</a>
 			</nav>
 			<label>
 			{
