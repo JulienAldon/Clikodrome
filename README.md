@@ -1,7 +1,11 @@
 # Cohesive Listing Initiative Concerning Official Date Recolection Over Mediocre Edusign 
 ## Clicodrome
-Outil d'automatisation des tâches d'émargement
+Outil d'automatisation des tâches d'émargement pour Epitech MSC
 
+# Demo
+![Sessions](front/public/assets/demo_sessions.png)
+![Session](front/public/assets/demo_session.png)
+![Remote](front/public/assets/demo_remote.png)
 
 # Prérequis
 Sessions intranet [exemple](https://intra.epitech.eu/module/2021/W-ADM-007/LYN-0-1/acti-505014/event-521736/registered)
