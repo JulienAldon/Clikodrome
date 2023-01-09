@@ -20,6 +20,7 @@ def update_student(login, status, session_id):
     t = f"""
         UPDATE student SET status=%s WHERE session_id=%s and login=%s
     """
+
     try:
         cursor.execute(t, (status, session_id, login))
     except Exception as e:
@@ -248,11 +249,11 @@ async def refresh_session(session_id):
         date=session_date,
         hour=session_hour
     )
+
     students = Intra.get_registered_students(options.event_activity + intra_session[0])
 
     database_students = get_database_student(session_id)    
-
     for student in students.keys():
-        current_student = filter(lambda x: x['login'] == student, database_students)
-        if list(current_student)[0]['late'] == 'NULL':
+        current_student = list(filter(lambda x: x['login'] == student, database_students))
+        if current_student[0]['late'] == 'NULL' or current_student[0]['late'] == None:
             update_student(student, students[student], session_id)

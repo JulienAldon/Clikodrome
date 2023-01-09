@@ -161,7 +161,6 @@ export default function Session(props) {
             setSearchStudent(sortedSearchStudents);
         }
     }
-
     return (
         <>
         {
@@ -183,7 +182,8 @@ export default function Session(props) {
                                 fetchSession();
                             });
                         });
-                    }}></Button>
+                    }}>
+                    </Button>
                     <Button 
                         deactivated={session[0].is_approved === 1 ? false : true } 
                         description="Send all emails for the session." 

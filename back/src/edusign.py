@@ -41,6 +41,8 @@ class EdusignToken(Edusign):
         self.school_id = ''
 
     async def login(self):
+        """Log in to edusign using options secrets, will select by default the first school_id
+        """
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/account/getByCredentials',
@@ -65,12 +67,18 @@ class EdusignToken(Edusign):
         return []
     
     def set_token(self, token):
+        """Setter for token
+        """
         self.token = token
 
     def set_school_id(self, school_id):
+        """Setter for school_id
+        """
         self.school_id = school_id
 
     async def get_sessions(self, date):
+        """Get last edusign sessions given a date
+        """
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/getCourses/getLastProfessorCourses/{self.school_id}?start={date}&end={date}',
@@ -82,6 +90,8 @@ class EdusignToken(Edusign):
                 return [{'edusign_id': res['COURSE_ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']['result']]
 
     async def get_session(self, session_id):
+        """Return session students for a given session_id
+        """
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/{self.school_id}/{session_id}',
@@ -94,6 +104,8 @@ class EdusignToken(Edusign):
                 return result['result']['STUDENTS']
 
     async def get_students(self, session_id):
+        """Return all students_ids for a given session_id
+        """
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 f'{options.edusign_url}/professor/courses/{self.school_id}/{session_id}',
@@ -112,6 +124,8 @@ class EdusignToken(Edusign):
                     return result['result']
 
     async def send_mails(self, student_ids, session_id):
+        """Send all emails to students_ids for a given session_id
+        """
         remain = await self.get_session_signature(session_id)
         if remain == []:
             return {'result': 'mail already sent'}
@@ -127,12 +141,16 @@ class EdusignToken(Edusign):
                 return await resp.json()
     
     async def send_lates(self, student_late_ids, session_id):
+        """Set delay for all student_late_ids
+        """
         res = []
         for late in student_late_ids:
             res.append(await self.send_late(late['ID'], session_id, late['delay']))
         return res
 
     async def send_late(self, student_id, session_id, late: int):
+        """Set delay (late) for a given student in a given session_id
+        """
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/courses/student-delay/{self.school_id}/{session_id}',
@@ -145,6 +163,8 @@ class EdusignToken(Edusign):
                 return await resp.json()
         
     async def sign_session(self, session_id):
+        """Sign a single session with signature inside edusign_signature option (base64) given a session_id
+        """
         if await self.get_session_professor_signature(session_id):
             return {"result": "session already signed"}
         async with aiohttp.ClientSession() as session:
