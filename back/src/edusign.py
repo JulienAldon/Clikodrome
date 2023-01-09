@@ -121,6 +121,8 @@ class EdusignToken(Edusign):
                     headers={'Authorization': f'Bearer {self.token}'}
                 ) as response:
                     result = await response.json()
+                    if not result.get('result'):
+                        raise KeyError('No students in session')
                     return result['result']
 
     async def send_mails(self, student_ids, session_id):

@@ -18,6 +18,8 @@ Compte Edusign avec toutes les écoles / promotions
 - À la fin de la session d'émargement, créer la session clikodrome (9h30 le matin 17h30 le soir).
 
 # Installation
+You need Docker & Docker-compose
+
 ## Docker Compose
 
 ```docker-compose up --build```

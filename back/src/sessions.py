@@ -149,7 +149,10 @@ async def sign_single_school(edusign, date, session_index):
     edusign_sessions = await edusign.get_sessions(date)
     to_sign_sessions = [e for e in edusign_sessions if e['begin'][11:-1] == hour or e['end'][11:-1] == hour]
     for to_sign_session in to_sign_sessions:
-        edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
+        try:
+            edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
+        except KeyError:
+            continue
         ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
         sign = await edusign.sign_session(to_sign_session['edusign_id'])
         mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
