@@ -10,9 +10,9 @@ export const ToastProvider = ({ children }) => {
     
     // XXX: Probably bugged submit to further testing 
     useEffect(() => {
-        if (toastList.length >= 2) {
+        if (toastList.length > 2) {
             toastList.shift();
-            setToastList(toastList)
+            setToastList([...toastList])
         }
     }, toastList)
 
