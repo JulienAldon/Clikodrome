@@ -24,6 +24,9 @@ export default function Session(props) {
     const [ toggleSortPresent, setToggleSortPresent ] = useState(undefined);
     const [ toggleSortLate, setToggleSortLate ] = useState(undefined);
     const [ toggleSortLogin, setToggleSortLogin ] = useState(true);
+    const [ signLoading, setSignLoading ] = useState(false);
+    const [ validationLoading, setValidationLoading ] = useState(false);
+    const [ refreshLoading, setRefreshLoading ] = useState(false);
 
     const handleChange = (login) => {
         if (!students)
@@ -170,9 +173,11 @@ export default function Session(props) {
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
                 <div class={`${styles.center} ${styles.buttonBox}`}>
-                    <Button deactivated={false} description="Allow session to be signed." title="Validate" action={() => {
+                    <Button deactivated={false} description="Allow session to be signed." title="Validate" loading={validationLoading} action={() => {
+                        setValidationLoading(true);
                         validateSession(token, props.id).then((res) => {
                             modifySession(token, props.id, students).then((res) => {
+                                setValidationLoading(false);
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,
                                     title: "Info",
@@ -188,9 +193,12 @@ export default function Session(props) {
                         deactivated={session[0].is_approved === 1 ? false : true } 
                         description="Send all emails for the session." 
                         title="Send email" 
+                        loading={signLoading}
                         action={() => {
+                        setSignLoading(true);
                         modifySession(token, props.id, students).then((res) => {
                             signSession(token, props.id).then((res) => {
+                                setSignLoading(false);
                                 if (res.detail) {
                                     setToastList((toastList) => {return [...toastList, {
                                         id: props.id,
@@ -210,8 +218,15 @@ export default function Session(props) {
                         })
                         }}>
                     </Button>
-                    <Button deactivated={false} description="Destroy and recreate session, fetching all students an other time." title="Refresh Session" action={() => {
+                    <Button 
+                        deactivated={false} 
+                        description="Destroy and recreate session, fetching all students an other time." 
+                        title="Refresh Session" 
+                        loading={refreshLoading}
+                        action={() => {
+                        setRefreshLoading(true);
                         refreshSession(token, props.id).then((res) => {
+                            setRefreshLoading(false);
                             if (res.detail) {
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,

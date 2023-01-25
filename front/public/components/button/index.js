@@ -9,6 +9,7 @@ export default function Button(props) {
             disabled={props.deactivated}
         >
             {props.title}
+            <div class={`${ props.loading ? styles.ldsEllipsis : ""}`}><div></div><div></div><div></div><div></div></div>
         </button>
     );
 }
