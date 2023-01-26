@@ -1,4 +1,5 @@
 import styles from './style.module.css';
+import { useState } from 'preact/hooks';
 import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
 import useSessionStatus from '../../hooks/useSessionStatus';
@@ -11,6 +12,8 @@ export default function Home() {
 	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();
 	const { sessionStatus, fetchSessionStatus } = useSessionStatus();
+	const [ loadingMorning, setLoadingMorning ] = useState(false);
+	const [ loadingEvening, setLoadingEvening ] = useState(false);
 
 	return (
 		<>
@@ -21,8 +24,13 @@ export default function Home() {
 					
 					<Button 
 						deactivated={sessionStatus.morning ? true : false}
-						description="Create morning session" title="Matin" action={() => {
+						description="Create morning session" 
+						title="Matin"
+						loading={loadingMorning}
+						action={() => {
+						setLoadingMorning(true);
 						createSession(token, '0').then((res) => {
+							setLoadingMorning(false);
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
@@ -44,8 +52,13 @@ export default function Home() {
 					}}></Button>
 					<Button 
                     	deactivated={sessionStatus.evening ? true : false}
-						description="Create evening session" title="Soir" action={() => {
+						description="Create evening session" 
+						title="Soir" 
+						loading={loadingEvening}
+						action={() => {
+						setLoadingEvening(true);
 						createSession(token, '-1').then((res) => {
+							setLoadingEvening(false);
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',

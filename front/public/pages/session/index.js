@@ -173,7 +173,12 @@ export default function Session(props) {
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
                 <div class={`${styles.center} ${styles.buttonBox}`}>
-                    <Button deactivated={false} description="Allow session to be signed." title="Validate" loading={validationLoading} action={() => {
+                    <Button 
+                        deactivated={false} 
+                        description="Allow session to be signed." 
+                        title="Validate" 
+                        loading={validationLoading} 
+                        action={() => {
                         setValidationLoading(true);
                         validateSession(token, props.id).then((res) => {
                             modifySession(token, props.id, students).then((res) => {
