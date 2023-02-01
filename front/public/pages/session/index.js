@@ -8,6 +8,7 @@ import SearchBar from '../../components/searchBar';
 import { useToast } from '../../context/toast';
 import useSession from '../../hooks/useSession';
 import { TableHead } from '../../components/tableHead';
+import { useTranslation } from 'react-i18next';
 
 function addZero(i) {
     if (i < 10) {
@@ -27,6 +28,7 @@ export default function Session(props) {
     const [ signLoading, setSignLoading ] = useState(false);
     const [ validationLoading, setValidationLoading ] = useState(false);
     const [ refreshLoading, setRefreshLoading ] = useState(false);
+	const { t, i18n } = useTranslation();
 
     const handleChange = (login) => {
         if (!students)
@@ -45,8 +47,8 @@ export default function Session(props) {
             if (!res.detail)
                 setToastList((toastList) => {return [...toastList, {
                     id: props.id,
-                    title: "Info",
-                    description: "Students status has been saved.",
+                    title: t("Information"),
+                    description: t("Students status has been saved."),
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
             fetchSession();
@@ -69,8 +71,8 @@ export default function Session(props) {
             if (!res.detail)
                 setToastList((toastList) => {return [...toastList, {
                     id: props.id,
-                    title: "Info",
-                    description: "Students status has been saved.",
+                    title: t("Information"),
+                    description: t("Students status has been saved."),
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
             fetchSession();
@@ -168,15 +170,15 @@ export default function Session(props) {
         <>
         {
             session ?
-            <section>
+            <section class="page-body">
                 <div class={`${styles.sessionTitle}`}>
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
                 <div class={`${styles.center} ${styles.buttonBox}`}>
                     <Button 
                         deactivated={false} 
-                        description="Allow session to be signed." 
-                        title="Validate" 
+                        description={t("Allow session to be signed.")} 
+                        title={t("Validate")} 
                         loading={validationLoading} 
                         action={() => {
                         setValidationLoading(true);
@@ -185,8 +187,8 @@ export default function Session(props) {
                                 setValidationLoading(false);
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,
-                                    title: "Info",
-                                    description: "Session has been validated, students status has been saved.",
+                                    title: t("Information"),
+                                    description: t("Session has been validated."),
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
                                 fetchSession();
@@ -196,8 +198,8 @@ export default function Session(props) {
                     </Button>
                     <Button 
                         deactivated={session[0].is_approved === 1 ? false : true } 
-                        description="Send all emails for the session." 
-                        title="Send email" 
+                        description={t("Send all emails for the session.")} 
+                        title={t("Send emails")} 
                         loading={signLoading}
                         action={() => {
                         setSignLoading(true);
@@ -207,15 +209,15 @@ export default function Session(props) {
                                 if (res.detail) {
                                     setToastList((toastList) => {return [...toastList, {
                                         id: props.id,
-                                        title: "Error",
-                                        description: "Session need validation by clicking on Validate.",
+                                        title: t("Error"),
+                                        description: t("Session need validation by clicking on Validate."),
                                         backgroundColor: "rgba(150, 15, 15)",
                                     }]});
                                 } else {
                                     setToastList((toastList) => {return [...toastList, {
                                         id: props.id,
-                                        title: "Info",
-                                        description: "All emails have been sent, students status has been saved.",
+                                        title: t("Information"),
+                                        description: t("All emails have been sent."),
                                         backgroundColor: "rgba(15, 150, 150)",
                                     }]});
                                 }
@@ -225,8 +227,8 @@ export default function Session(props) {
                     </Button>
                     <Button 
                         deactivated={false} 
-                        description="Destroy and recreate session, fetching all students an other time." 
-                        title="Refresh Session" 
+                        description={t("Destroy and recreate session, fetching all students an other time.")} 
+                        title={t("Refresh Session")} 
                         loading={refreshLoading}
                         action={() => {
                         setRefreshLoading(true);
@@ -235,15 +237,15 @@ export default function Session(props) {
                             if (res.detail) {
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,
-                                    title: "Info",
-                                    description: "Session could not be refreshed",
+                                    title: t("Information"),
+                                    description: t("Session could not be refreshed"),
                                     backgroundColor: "rgba(150, 15, 15)",
                                 }]});
                             } else {
                                 setToastList((toastList) => {return [...toastList, {
                                     id: props.id,
-                                    title: "Info",
-                                    description: "Session correctly refreshed from intranet session.",
+                                    title: t("Information"),
+                                    description: t("Session correctly refreshed."),
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
                                 fetchSession()
@@ -253,27 +255,27 @@ export default function Session(props) {
                 </div>
                 <div class={`${styles.center}`}>
                     <SearchBar 
-                    placeholder="Search Student" 
-                    description="Search student" 
+                    placeholder={t("Search Student")} 
+                    description={t("Search student")} 
                     onChange={handleSearchChange} 
                     onClear={() => {setSearchStudent(students)}}></SearchBar>
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>
                         <TableHead
-                            title="Login"
+                            title={t("Login")}
                             sortFunction={sortLogin}
                             toggleSort={toggleSortLogin}
                             addStyle={styles.label}
                         />
                         <TableHead
-                            title="Present"
+                            title={t("Present")}
                             sortFunction={sortPresent}
                             toggleSort={toggleSortPresent}
                             addStyle={styles.padding}
                         />
                         <TableHead
-                            title="Late"
+                            title={t("Late")}
                             sortFunction={sortLate}
                             toggleSort={toggleSortLate}
                         />

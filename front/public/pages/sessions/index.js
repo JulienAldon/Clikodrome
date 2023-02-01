@@ -6,6 +6,7 @@ import useSessionStatus from '../../hooks/useSessionStatus';
 import Button from '../../components/button';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
 	const token = useAuthGuard();
@@ -15,18 +16,19 @@ export default function Home() {
 	const [ loadingMorning, setLoadingMorning ] = useState(false);
 	const [ loadingEvening, setLoadingEvening ] = useState(false);
 	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
+	const { t, i18n } = useTranslation();
 
 	return (
 		<>
-			<section class={styles.home}>
+			<section class={`page-body ${styles.home}`}>
 			{
 				sessionStatus ? <main class={styles.main}>
-					<h2>Create session</h2>
+					<h2>{t('Create session')}</h2>
 					
 					<Button 
 						deactivated={sessionStatus.morning ? true : false}
-						description="Create morning session" 
-						title="Matin"
+						description={t('Create morning session')}
+						title={t("Morning")}
 						loading={loadingMorning}
 						action={() => {
 						setLoadingMorning(true);
@@ -35,8 +37,8 @@ export default function Home() {
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
-									title: "Error",
-									description: "No clicodrome session can be created today (no edusign session available).",
+									title: t("Error"),
+									description: t("No clicodrome session can be created today : no edusign session available."),
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else {
@@ -44,8 +46,8 @@ export default function Home() {
 								fetchSessionStatus();
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
-									title: "Info",
-									description: "Morning clicodrome session created.",
+									title: t("Information"),
+									description: t("Morning clicodrome session created."),
 									backgroundColor: "rgba(15, 150, 150)",
 								}]});
 							}
@@ -53,8 +55,8 @@ export default function Home() {
 					}}></Button>
 					<Button 
                     	deactivated={sessionStatus.evening ? true : false}
-						description="Create evening session" 
-						title="Soir" 
+						description={t("Create evening session")}
+						title={t('Evening')} 
 						loading={loadingEvening}
 						action={() => {
 						setLoadingEvening(true);
@@ -63,15 +65,15 @@ export default function Home() {
 							if (res.detail && res.detail==="No edusign session available") {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
-									title: "Error",
-									description: "No clicodrome session can be created today (no edusign session available).",
+									title: t("Error"),
+									description: t("No clicodrome session can be created today (no edusign session available)."),
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else if (res.detail && res.detail==="Session already created") {
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
-									title: "Error",
-									description: "Session already created for this date and hour",
+									title: t("Error"),
+									description: t("Session already created for this date and hour"),
 									backgroundColor: "rgba(150, 15, 15)",
 								}]});
 							} else {
@@ -79,15 +81,15 @@ export default function Home() {
 								fetchSessionStatus();
 								setToastList((toastList) => {return [...toastList, {
 									id: 'createSession',
-									title: "Info",
-									description: "Evening clicodrome session created.",
+									title: t("Information"),
+									description: t("Evening clicodrome session created."),
 									backgroundColor: "rgba(15, 150, 150)",
 								}]});
 							}
 						})
 					}}></Button>
 
-					<h2>All sessions</h2> 
+					<h2>{t('All sessions')}</h2> 
 				{
 					sessions ? 
 					sessions.map((elem, index) => {
@@ -101,7 +103,7 @@ export default function Home() {
 							<Button
 								title=""
 								deactivated={false}
-								description="Delete the session"
+								description={t("Delete the session")}
 								loading={loadingSessionList[index]}
 								action={() => {
 									const loadingTmp = [
@@ -114,8 +116,8 @@ export default function Home() {
 									removeSession(token, elem.id).then((res) => {
 										setToastList((toastList) => {return [...toastList, {
 											id: 'deleteSession',
-											title: "Info",
-											description: "Session deleted.",
+											title: t('Information'),
+											description: t("Session deleted successfully."),
 											backgroundColor: "rgba(15, 150, 150)",
 										}]});
 										const loadingTmp = [

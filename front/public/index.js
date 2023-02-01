@@ -5,6 +5,8 @@ import Header from './header.js';
 import {AuthProvider} from './context/auth';
 import { ToastProvider } from './context/toast.js';
 import Toast from './components/toast/index.js';
+import './i18n';
+import Footer from './pages/footer/index.js';
 
 const Home = lazy(() => import('./pages/home/index.js'));
 const Sessions = lazy(() => import('./pages/sessions/index.js'));
@@ -15,7 +17,7 @@ export function App() {
 		<AuthProvider>
 			<ToastProvider>
 				<LocationProvider>
-					<div class="app">
+					<div class="app wrapper">
 						<Header />
 						<ErrorBoundary>
 							<Router>
@@ -29,6 +31,7 @@ export function App() {
 						<Toast 
 							position="top-right"
 						/>
+						<Footer></Footer>
 					</div>
 				</LocationProvider>
 			</ToastProvider>

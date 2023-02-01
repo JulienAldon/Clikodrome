@@ -8,6 +8,7 @@ import useAuthGuard from "../../context/useUser";
 import useRemotes from "../../hooks/useRemote";
 import useStudents from "../../hooks/useStudents";
 import styles from './style.module.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Remote() {
     const token = useAuthGuard()
@@ -21,6 +22,8 @@ export default function Remote() {
     const [end, setEnd] = useState(undefined)
     const [student, setStudent] = useState(undefined)
 
+	const { t, i18n } = useTranslation();
+
     function handleStudentChange(event) {
         if (event.target.value)
             setStudent(event.target.value)
@@ -32,16 +35,16 @@ export default function Remote() {
                 fetchRemotes();
                 setToastList((toastList) => {return [...toastList, {
                     id: student,
-                    title: "Info",
-                    description: `Remote period added for ${student}.`,
+                    title: t("Information"),
+                    description: `${t('Remote period added for')} ${student}.`,
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
             })
         } else {
             setToastList((toastList) => {return [...toastList, {
                 id: student,
-                title: "Error",
-                description: `Please fill out all input.`,
+                title: t("Error"),
+                description: t('Please fill out all input.'),
                 backgroundColor: "rgba(150, 15, 15)",
             }]});
         }
@@ -58,11 +61,11 @@ export default function Remote() {
     }
 
     return (
-        <section>
+        <section class="page-body">
             <div class={`${styles.remoteBox}`}>
-                <h2 class={styles.center}>Remote Students</h2>
+                <h2 class={styles.center}>{t('Remote Students')}</h2>
                 <ComboBox 
-                    title="Select student" 
+                    title={t("Select student")} 
                     onChange={handleStudentChange}>
                     {
                     students ?
@@ -72,29 +75,29 @@ export default function Remote() {
                     }
                 </ComboBox>
                 <DateInput
-                    description="Date of the start of remote."
-                    title="Begin"
+                    description={t("Date of the start of remote.")}
+                    title={t("Begin")}
                     onChange={handleBeginChange}
                 />
                 <DateInput
-                    description="Date of the end of remote."
-                    title="End"
+                    description={t("Date of the end of remote.")}
+                    title={t("End")}
                     onChange={handleEndChange}
                 />
                 <Button 
                     deactivated={false}
                     action={handleAddRemote} 
-                    title="Add"
-                    description="Add a new remote student."
+                    title={t("Add")}
+                    description={t("Add a new remote student.")}
                 />
             </div>
             <table class={styles.centerCol}>
                 <tr class={styles.box}>
-                    <th title="Logins" class={styles.label}>Login</th>
-                    <th title="Start date" class={styles.padding}>Start</th>
-                    <th title="End date">End</th>
+                    <th title={t("Login")} class={styles.label}>Login</th>
+                    <th title={t("Start date")} class={styles.padding}>Start</th>
+                    <th title={t("End date")}>End</th>
 {/* TODO: Add a button to remove all remote entries */}
-                    <th title="Remove"></th>
+                    <th title={t("Remove")}></th>
                 </tr>
                     {
                         remoteStudents ? 
@@ -110,8 +113,8 @@ export default function Remote() {
                                             fetchRemotes();
                                             setToastList((toastList) => {return [...toastList, {
                                                 id: 'a' + el.id,
-                                                title: "Info",
-                                                description: `Remote period removed for ${el.login}.`,
+                                                title: t("Information"),
+                                                description: `${t('Remote period removed for')} ${el.login}.`,
                                                 backgroundColor: "rgba(15, 150, 150)",
                                             }]});
                                         })
