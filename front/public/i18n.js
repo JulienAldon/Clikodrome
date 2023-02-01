@@ -65,7 +65,7 @@ const resources = {
   },
   fr: {
     translation: {
-        'Create session' : 'Créer session',
+        'Create session' : 'Créer la session',
         'Create morning session' : 'Créer la session du matin',
         'Morning': 'Matin',
         'Error': 'Erreur',
