@@ -14,6 +14,7 @@ export default function Home() {
 	const { sessionStatus, fetchSessionStatus } = useSessionStatus();
 	const [ loadingMorning, setLoadingMorning ] = useState(false);
 	const [ loadingEvening, setLoadingEvening ] = useState(false);
+	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
 
 	return (
 		<>
@@ -86,10 +87,10 @@ export default function Home() {
 						})
 					}}></Button>
 
-					<h2>All sessions</h2>
+					<h2>All sessions</h2> 
 				{
 					sessions ? 
-					sessions.map((elem) => {
+					sessions.map((elem, index) => {
 						return (
 						<div class={styles.session}>
 							<a href={`/session/${elem.id}`}>
@@ -98,22 +99,36 @@ export default function Home() {
 								<span>{elem.hour.slice(0, 8)}</span>
 							</a>
 							<Button
-									title=""
-									deactivated={false}
-									description="Delete the session"
-									action={() => {
-										removeSession(token, elem.id).then((res) => {
-											setToastList((toastList) => {return [...toastList, {
-												id: 'deleteSession',
-												title: "Info",
-												description: "Session deleted.",
-												backgroundColor: "rgba(15, 150, 150)",
-											}]});
-											fetchSessions();
-											fetchSessionStatus();
-										})
-									}}
-								></Button>
+								title=""
+								deactivated={false}
+								description="Delete the session"
+								loading={loadingSessionList[index]}
+								action={() => {
+									const loadingTmp = [
+										...loadingSessionList.slice(0, index),
+										true,
+										...loadingSessionList.slice(index + 1)
+									];
+									setLoadingSessionList(loadingTmp);
+									loadingSessionList[index] = true;
+									removeSession(token, elem.id).then((res) => {
+										setToastList((toastList) => {return [...toastList, {
+											id: 'deleteSession',
+											title: "Info",
+											description: "Session deleted.",
+											backgroundColor: "rgba(15, 150, 150)",
+										}]});
+										const loadingTmp = [
+											...loadingSessionList.slice(0, index),
+											false, 
+											...loadingSessionList.slice(index + 1)
+										];
+										setLoadingSessionList(loadingTmp);
+										fetchSessions();
+										fetchSessionStatus();
+									})
+								}}
+							></Button>
 						</div>
 						);
 					}) : null
