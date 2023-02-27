@@ -55,6 +55,7 @@ class EdusignToken(Edusign):
                 school_ids = {}
                 if not objs:
                     raise KeyError('No result found')
+                print(objs)
                 self.token = objs[0]['TOKEN']
                 for obj in objs:
                     if not obj.get('TOKEN'):
