@@ -209,6 +209,7 @@ async def create_single_session(session_date, session_index):
 
     edusign = EdusignToken()
     school_ids = await edusign.login()
+    print('azeaze')
     sessions = []
     for school_id, token in list(school_ids.items()):
         edusign.set_school_id(school_id)
