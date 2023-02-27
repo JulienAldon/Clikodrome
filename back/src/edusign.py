@@ -55,13 +55,16 @@ class EdusignToken(Edusign):
                 school_ids = {}
                 if not objs:
                     raise KeyError('No result found')
+                print('before token =') 
                 self.token = objs[0]['TOKEN']
+                print('after token =') 
                 for obj in objs:
                     if not obj.get('TOKEN'):
                         raise KeyError('No token found')
                     if not obj.get('SCHOOL_ID'):
                         raise KeyError('No school id')
                     school_ids.update({_id: obj['TOKEN'] for _id in obj['SCHOOL_ID']})
+                print('end')
                 self.school_id = school_ids[list(school_ids.keys())[0]]
                 return school_ids
         return []
