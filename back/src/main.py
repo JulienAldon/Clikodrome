@@ -58,7 +58,8 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
             raise HTTPException(400, detail="No edusign session available")
         except SessionAlreadyCreated:
             raise HTTPException(400, detail="Session already created")
-        except:
+        except Exception as e:
+            print(e)
             raise HTTPException(400)
     else:
         raise HTTPException(422)
