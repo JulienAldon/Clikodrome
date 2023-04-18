@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
 import { createContext } from "preact";
-import { useState, useContext } from "preact/hooks";
+import { useState, useContext, useEffect } from "preact/hooks";
+import jwt_decode from "jwt-decode";
+import { logout } from './useUser.js';
 
 const AuthContext = createContext(null);
 
@@ -14,6 +16,16 @@ function AuthProvider(props) {
 
 function useAuth() {
     const context = useContext(AuthContext);
+
+    // useEffect(() => {
+    //     let decodedToken = jwt_decode(context);
+    //     let currentDate = new Date();
+
+    //     if (decodedToken.exp * 1000 < currentDate.getTime()) {
+    //         logout()
+    //         console.log('logout because token was expired')
+    //     }
+    // }, [])
 
     if (AuthContext === undefined) {
         throw new Error ('Context Provider is missing')

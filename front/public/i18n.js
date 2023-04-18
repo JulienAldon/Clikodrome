@@ -60,7 +60,7 @@ const resources = {
         'Justified absences are not supported, you still need to upload manually for each edusign session. (this might be a future feature)': 'Justified absences are not supported, you still need to upload manually for each edusign session. (this might be a future feature)',
         'Login with office 365': 'Login with office 365',
         'Sessions': 'Sessions',
-        'Logout': 'Logout',
+        'Logout': 'Logout'
     }
   },
   fr: {

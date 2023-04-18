@@ -6,7 +6,6 @@ export default function Footer() {
     const changeLanguage = (lng) => {
         i18n.changeLanguage(lng)
     }
-    console.log(i18n.language);
     return (
         <footer class={`page-footer`}>
             <button class={`${i18n.language === 'en' ? style.selected : ""} ${style.langIcon}`} onClick={() => changeLanguage('en')}>

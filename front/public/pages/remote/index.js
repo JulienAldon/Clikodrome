@@ -93,9 +93,9 @@ export default function Remote() {
             </div>
             <table class={styles.centerCol}>
                 <tr class={styles.box}>
-                    <th title={t("Login")} class={styles.label}>Login</th>
-                    <th title={t("Start date")} class={styles.padding}>Start</th>
-                    <th title={t("End date")}>End</th>
+                    <th title={t("Login")} class={styles.label}>{t('Login')}</th>
+                    <th title={t("Start date")} class={styles.padding}>{t('Begin')}</th>
+                    <th title={t("End date")}>{t('End')}</th>
 {/* TODO: Add a button to remove all remote entries */}
                     <th title={t("Remove")}></th>
                 </tr>
