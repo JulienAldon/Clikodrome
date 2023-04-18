@@ -18,8 +18,7 @@ You need to setup every environment variables present in configuration.py
 - db_password : Clikodrome Database password
 - database : Clikodrome Database name
 - event_activity : Intranet Activity url to retreive sign sessions
-- edusign_login : Login edusign (with preferably rights on all promotions)
-- edusign_password : Password edusign
+- all_edusign_credentials : List of credential (if there is mutltiple account in charge of differents promotions)
 
 Create a `signature.txt` file at the root of the repository, this will be the signature sent everyday to edusign.
 

@@ -24,8 +24,9 @@ class Configuration(pydantic.BaseSettings):
     late_limit:         str = '09:30:00'
     maximum_late_time:  int = 30
 
-    edusign_login:      str = os.getenv('EDUSIGN_LOGIN')
-    edusign_password:   str = os.getenv('EDUSIGN_PASSWORD')
+    all_edusign_credentials = [
+        {'login': os.getenv('EDUSIGN_LOGIN'), 'password': os.getenv('EDUSIGN_PASSWORD')},
+    ]
     edusign_url:        str = 'https://api.edusign.fr'
     edusign_signature:  str = open('signature.txt').readline()
 

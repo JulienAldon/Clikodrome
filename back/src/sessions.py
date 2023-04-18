@@ -164,11 +164,12 @@ async def sign_all_sessions(date, session_index):
     """Sign all sessions
     """
     edusign = EdusignToken()
-    school_ids = await edusign.login()
-    for school_id, token in list(school_ids.items()):
-        edusign.set_school_id(school_id)
-        edusign.set_token(token)
-        await sign_single_school(edusign, date, session_index)
+    for cred in options.all_edusign_credentials:
+        school_ids = await edusign.login(cred['login'], cred['password'])
+        for school_id, token in list(school_ids.items()):
+            edusign.set_school_id(school_id)
+            edusign.set_token(token)
+            await sign_single_school(edusign, date, session_index)
 
 def create_session(date, hour, is_approved=False):
     cursor = connection.cursor()
@@ -208,35 +209,36 @@ async def create_single_session(session_date, session_index):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
 
     edusign = EdusignToken()
-    school_ids = await edusign.login()
-    sessions = []
-    for school_id, token in list(school_ids.items()):
-        edusign.set_school_id(school_id)
-        edusign.set_token(token)
-        school_session = await edusign.get_sessions(session_date)
-        sessions += school_session
+    for cred in options.all_edusign_credentials:
+        school_ids = await edusign.login(cred['login'], cred['password'])
+        sessions = []
+        for school_id, token in list(school_ids.items()):
+            edusign.set_school_id(school_id)
+            edusign.set_token(token)
+            school_session = await edusign.get_sessions(session_date)
+            sessions += school_session
 
-    if not sessions:
-        raise SessionNotAvailableException(f'No session available for the date {session_date}')
+        if not sessions:
+            raise SessionNotAvailableException(f'No session available for the date {session_date}')
 
-    choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
-    session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
+        choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
+        session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
 
-    database_session = get_database_event_by_date(session_date, session_hour)
-    if database_session:
-        raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
+        database_session = get_database_event_by_date(session_date, session_hour)
+        if database_session:
+            raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
 
-    session_id = create_session(session_date, session_hour)
-    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
+        session_id = create_session(session_date, session_hour)
+        session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
 
-    intra_session = Intra.get_events(
-        options.event_activity,
-        date=session_date,
-        hour=session_hour
-    )
-    students = Intra.get_registered_students(options.event_activity + intra_session[0])
-    for student in students.keys():
-        add_student(student, students[student], session_id)
+        intra_session = Intra.get_events(
+            options.event_activity,
+            date=session_date,
+            hour=session_hour
+        )
+        students = Intra.get_registered_students(options.event_activity + intra_session[0])
+        for student in students.keys():
+            add_student(student, students[student], session_id)
 
 async def refresh_session(session_id):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')

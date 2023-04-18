@@ -1,11 +1,10 @@
 from src.configuration import options
 from abc import ABC, abstractmethod
 import aiohttp
-from src.configuration import options
 
 class Edusign(ABC):
     @abstractmethod
-    async def login(self):
+    async def login(self, username, password):
         ...
 
     @abstractmethod
@@ -40,13 +39,13 @@ class EdusignToken(Edusign):
         self.token = ''
         self.school_id = ''
 
-    async def login(self):
+    async def login(self, username, password):
         """Log in to edusign using options secrets, will select by default the first school_id
         """
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/account/getByCredentials',
-                json={'EMAIL': options.edusign_login, 'PASSWORD': options.edusign_password, 'connexionMode': True}
+                json={'EMAIL': username, 'PASSWORD': password, 'connexionMode': True}
             ) as resp:
                 objs = await resp.json()
                 if not objs.get('result'):
