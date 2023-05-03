@@ -203,6 +203,15 @@ def convert_time_utc_local_intra(iso_date):
     date = datetime.datetime.fromisoformat(iso_date)
     return (date + options.timezone.utcoffset(date)).strftime('%H:00')
 
+async def get_edusign_sessions(edusign, school_ids, session_date):
+    sessions = []
+    for school_id, token in list(school_ids.items()):
+        edusign.set_school_id(school_id)
+        edusign.set_token(token)
+        school_session = await edusign.get_sessions(session_date)
+        sessions += school_session
+    return sessions
+
 async def create_single_session(session_date, session_index):
     """Create a session : fetch students, create db session and create students attendance entries
     """
@@ -211,15 +220,11 @@ async def create_single_session(session_date, session_index):
     edusign = EdusignToken()
     for cred in options.all_edusign_credentials:
         school_ids = await edusign.login(cred['login'], cred['password'])
-        sessions = []
-        for school_id, token in list(school_ids.items()):
-            edusign.set_school_id(school_id)
-            edusign.set_token(token)
-            school_session = await edusign.get_sessions(session_date)
-            sessions += school_session
-
+        sessions = await get_edusign_sessions(edusign, school_ids, session_date)
         if not sessions:
-            raise SessionNotAvailableException(f'No session available for the date {session_date}')
+            if cred == options.all_edusign_credentials[-1]:
+                raise SessionNotAvailableException(f'No session available for the date {session_date}')
+            continue
 
         choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
         session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
@@ -239,6 +244,8 @@ async def create_single_session(session_date, session_index):
         students = Intra.get_registered_students(options.event_activity + intra_session[0])
         for student in students.keys():
             add_student(student, students[student], session_id)
+        if session_id:
+            return 
 
 async def refresh_session(session_id):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
