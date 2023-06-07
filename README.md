@@ -1,5 +1,4 @@
-# Cohesive Listing Initiative Concerning Official Date Recolection Over Mediocre Edusign 
-## Clicodrome
+# Clicodrome
 Outil d'automatisation des tâches d'émargement pour Epitech MSC
 
 # Demo

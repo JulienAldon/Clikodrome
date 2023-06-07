@@ -11,7 +11,6 @@ export default function About() {
 	return (
 		<section class={`page-body ${styles.about} ${token ? "" : styles.disconnected}`}>
 			<h1>{t('Welcome to Clicodrome')}</h1>
-			<h2>{t('Cohesive Listing Initiative Concerning Official Date Recollection Over Mediocre Edusign')}</h2>
 			{
 				token ?
 				<div class={`${styles.divLink}`}>
