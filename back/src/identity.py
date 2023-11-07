@@ -77,9 +77,9 @@ class TokenVerifier:
         try:
             claims = jwt.decode(token, key.rsa_key(), key.alg, **self._options)
         except:
-            raise HTTPException(401)
+            raise HTTPException(status_code=401)
         if 'upn' not in claims:
-            raise HTTPError(401, 'Invalid Token')
+            raise HTTPError(status_code=401, detail='Invalid Token')
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["upn"]}?format=json') as response:
                 profile = await response.json()
@@ -91,14 +91,14 @@ class TokenVerifier:
         if token is not None:
             return await self.validate(token)
         if authorization is None:
-            raise HTTPException(401)
+            raise HTTPException(status_code=401)
         try:
             split_header = authorization.split(maxsplit=1)
             if split_header[0] != 'Bearer' and len(split_header) != 2:
-                raise HTTPException(401, 'Invalid Authorization header (not a bearer token)')
+                raise HTTPException(status_code=401, detail='Invalid Authorization header (not a bearer token)')
             return await self.validate(split_header[1]) 
         except Exception as e:
-            raise HTTPException(401, str(e))
+            raise HTTPException(status_code=401, detail=str(e))
 
 token = TokenVerifier(
     origin=options.jwt_origin,
@@ -112,4 +112,4 @@ token = TokenVerifier(
 
 def staff(token: dict[str, Any] = Depends(token)):
     if token['intra-role'] != 'staff':
-        raise HTTPException(403)
+        raise HTTPException(status_code=403)

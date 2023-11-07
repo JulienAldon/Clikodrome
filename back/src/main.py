@@ -55,14 +55,14 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
         try:
             await create_single_session(format_date, int(sessionCreation.sessionIndex))
         except SessionNotAvailableException:
-            raise HTTPException(400, detail="No edusign session available")
+            raise HTTPException(status_code=400, detail="No edusign session available")
         except SessionAlreadyCreated:
-            raise HTTPException(400, detail="Session already created")
+            raise HTTPException(status_code=400, detail="Session already created")
         except Exception as e:
             print(e)
-            raise HTTPException(400)
+            raise HTTPException(status_code=400)
     else:
-        raise HTTPException(422)
+        raise HTTPException(status_code=422)
     return {'result': 'Session created'}
 
 @app.post('/api/session/{session_id}/sign', dependencies=[Depends(staff)])
@@ -74,7 +74,7 @@ async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
         elif session['hour'] > "12:00:00.000":
             await sign_all_sessions(session['date'], -1)
     except SessionNotValidatedException:
-        raise HTTPException(400)
+        raise HTTPException(status_code=400)
     return {'result': 'ok'}
 
 @app.get('/api/sessions/status', dependencies=[Depends(staff)])
@@ -116,7 +116,7 @@ async def modify_session(students: StudentList, session_id: str, token: dict[str
 async def remove_session(session_id, token:dict[str, Any] = Depends(token)):
     res = delete_session(session_id)
     if not res:
-        raise HTTPException(400)
+        raise HTTPException(status_code=400)
     return {'result': res}
 
 @app.post('/api/session/{session_id}', dependencies=[Depends(staff)])
@@ -129,7 +129,7 @@ async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(tok
     already = read_remote(student.login)
     res = create_remote(student.login, student.begin, student.end)    
     if not res:
-        raise HTTPException(422)
+        raise HTTPException(status_code=422)
     return {'result': res}
 
 @app.delete('/api/remote/{remote_id}', dependencies=[Depends(staff)])
@@ -151,7 +151,7 @@ async def get_remotes(student_id: str, token: dict[str, Any] = Depends(token)):
 async def get_students(token: dict[str, Any] = Depends(token)):
     database_students = read_all_students()
     if not database_students:
-        raise HTTPException(404)
+        raise HTTPException(status_code=404)
     students = [a['login'] for a in database_students]
     result = sorted(list(set(students)))
     return {'result': result}
