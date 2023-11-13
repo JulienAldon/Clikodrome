@@ -9,6 +9,7 @@ from src.identity import token, staff
 from src.configuration import options
 from src.crud import read_sessions, read_session, delete_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
 from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, refresh_session
+from src.bocal import card_login, get_card_information
 
 app = FastAPI()
 
@@ -33,8 +34,10 @@ class RemoteStudent(BaseModel):
 
 class Student(BaseModel):
     login: str
+    session_id: str
     status: str
     late: str
+    id: str
 
 class StudentList(BaseModel):
     data: List[Student]
@@ -155,3 +158,12 @@ async def get_students(token: dict[str, Any] = Depends(token)):
     students = [a['login'] for a in database_students]
     result = sorted(list(set(students)))
     return {'result': result}
+ 
+@app.get('/api/scan/card/{card_id}', dependencies=[Depends(staff)])
+async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
+    bocal_token = await card_login()
+    try:
+        result = await get_card_information(card_id, bocal_token)
+    except KeyError:
+        raise HTTPException(404)
+    return result

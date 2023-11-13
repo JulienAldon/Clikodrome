@@ -59,17 +59,17 @@ async def finalize_auth(
             print(data.id_token)
             claims = await token.validate(data.id_token)
             response.set_cookie('token', data.id_token)
-            response.set_cookie('user', claims['upn'])
+            response.set_cookie('user', claims['email'])
             response.set_cookie('role', claims['intra-role'])
             return response
 
-@router.get('/token')
+@router.post('/token')
 async def finalize_token(
     code: str | None = None,
     state: str | None = None,
-    error: str | None = None,
-    error_description: str | None = None,
     redirect_uri: str | None = None,
+    error_description: str | None = None,
+    error: str | None = None,
 ):
     print(code)
     if code is None:
@@ -93,6 +93,6 @@ async def finalize_token(
             claims = await token.validate(data.id_token)
             return {
                 'token': data.id_token,
-                'user': claims['upn'],
+                'user': claims['email'],
                 'role': claims['intra-role']
             }

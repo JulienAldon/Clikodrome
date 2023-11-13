@@ -48,7 +48,7 @@ class TokenVerifier:
 
     async def fetch_keys(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'{self._origin}/.well-known/openid-configuration') as response:
+            async with session.get(f'{self._origin}/V2.0/.well-known/openid-configuration') as response:
                 self.configuration = OpenIDConfiguration.parse_raw(await response.read())
             if self.configuration is None:
                 self.keys.clear()
@@ -57,7 +57,6 @@ class TokenVerifier:
                 for key in JSONWebKeySet.parse_raw(await response.read()).keys:
                     self.keys[key.kid] = key
             self._last_update = time.time()
-
 
     async def refresh_keys(self):
         now = time.time()
@@ -76,12 +75,12 @@ class TokenVerifier:
                 return self.validate_token(token, _has_retried=True)
         try:
             claims = jwt.decode(token, key.rsa_key(), key.alg, **self._options)
-        except:
+        except Exception as e:
             raise HTTPException(status_code=401)
-        if 'upn' not in claims:
-            raise HTTPError(status_code=401, detail='Invalid Token')
+        if 'email' not in claims:
+            raise HTTPException(status_code=401)
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["upn"]}?format=json') as response:
+            async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["email"]}?format=json') as response:
                 profile = await response.json()
                 is_staff = any(g.get('name', '') == 'pedago' for g in profile.get('groups', []))
                 claims['intra-role'] = 'staff' if is_staff else 'student'

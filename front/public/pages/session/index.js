@@ -33,6 +33,7 @@ export default function Session(props) {
     const handleChange = (login) => {
         if (!students)
             return;
+        console.log(students)
         students.forEach(element => {
             if (element.login === login) {
                 if (element.late !== null && element.late !== 'NULL') {
