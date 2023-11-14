@@ -9,3 +9,5 @@ connection = pymysql.connect(
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
 )
+cursor = connection.cursor()
+cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")

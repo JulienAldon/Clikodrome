@@ -172,6 +172,7 @@ async def sign_all_sessions(date, session_index):
             await sign_single_school(edusign, date, session_index)
 
 def create_session(date, hour, is_approved=False):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         INSERT INTO session (date, hour, is_approved)
@@ -186,6 +187,7 @@ def create_session(date, hour, is_approved=False):
     return cursor.lastrowid
 
 def add_student(login, status, session_id):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         INSERT INTO student (login, status, session_id)
@@ -267,5 +269,5 @@ async def refresh_session(session_id):
     database_students = get_database_student(session_id)    
     for student in students.keys():
         current_student = list(filter(lambda x: x['login'] == student, database_students))
-        if current_student[0]['late'] == 'NULL' or current_student[0]['late'] == None:
+        if (current_student[0]['late'] == 'NULL' or current_student[0]['late'] == None) and (current_student[0]['status'] == None or current_student[0]['status'] == 'NULL'):
             update_student(student, students[student], session_id)
