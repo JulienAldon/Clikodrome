@@ -16,10 +16,12 @@ Outil d'automatisation des tâches d'émargement pour Epitech MSC
 - Docker
 - Docker-compose
 
-# Procedure
-- Créer toutes les session d'émargement sur l'intranet au début de la semaine ([utilitaire](https://github.com/JulienAldon/EEPlanner))
-- Faire émarger pendant les sessions d'émargement à l'aide d'etoken et des cartes étudiantes
-- À la fin de la session d'émargement, créer la session clikodrome (9h30 le matin 17h30 le soir).
+# Procedure (DEPRECATED)
+- Create all attendance sessions on epitech intranet ([tool](https://github.com/JulienAldon/EEPlanner)).
+- Create session for clikodrome
+- Sign student attendance using [clicoscan](https://github.com/JulienAldon/Clicoscan).
+
+> **_NOTE:_** The procedure will change to incorporate Clicoscan in the future.
 
 # Setup
 ## Oauth2 application
