@@ -82,7 +82,7 @@ class TokenVerifier:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["email"]}?format=json') as response:
                 profile = await response.json()
-                is_staff = any(g.get('name', '') in configuration.authorized_groups for g in profile.get('groups', []))
+                is_staff = any(g.get('name', '') in options.authorized_groups for g in profile.get('groups', []))
                 claims['intra-role'] = 'staff' if is_staff else 'student'
         return claims
 
