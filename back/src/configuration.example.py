@@ -9,7 +9,6 @@ class Configuration(pydantic.BaseSettings):
 
     jwt_origin:         str = os.getenv('JWT_ORIGIN')
     jwt_issuer:         str = os.getenv('JWT_ISSUER')
-    jwt_audience:       str = os.getenv('JWT_AUDIENCE')
 
     client_id:          str = os.getenv('AZURE_CLIENT_ID')
     client_secret:      str = os.getenv('AZURE_CLIENT_SECRET')
@@ -19,6 +18,8 @@ class Configuration(pydantic.BaseSettings):
     db_user:            str = os.getenv('DATABASE_USER')
     db_password:        str = os.getenv('DATABASE_PASSWORD')
     database:           str = os.getenv('DATABASE_NAME')
+
+    authorized_groups = ['pedago', 'assistants-wac-lyon']
 
     event_activity:     str = '/module/2021/W-ADM-007/LYN-0-1/acti-505014/'
     late_limit:         str = '09:30:00'

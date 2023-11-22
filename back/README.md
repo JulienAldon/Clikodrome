@@ -9,7 +9,6 @@ You need to setup every environment variables present in configuration.py
 - public_uri : Uri of the backend
 - jwt_origin : Microsoft app origin
 - jwt_issuer : Microsoft app JWT issuer
-- jwt_audience : Azure Client ID
 - client_id : Azure Client ID
 - client_secret : Azure Client Secret
 - intranet_secret : Autologin
@@ -61,7 +60,7 @@ Theses hours can be tweaked during the deployment process. We recommand to send 
 - Get All students for a given session (edusign) (request )edusign
 - Get Presence List from intranet (json of intranet logins) (request intranet )
   - Filter out the "absent" students (logic)
-- (Append the remote students (csv of intranet logins) (request sharepoint)
+- Append the remote students (csv of intranet logins) (request sharepoint)
 - Create logins (intranet) and IDs (edusign) object {'login': 'test@epitech.eu', 'edusign_id': 'xzaazep13afr'} (logic)
 - Send signature for session (request edusign)
 - Send MassSendSignEmail (for each students in session object) (request edusign)

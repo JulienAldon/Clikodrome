@@ -101,7 +101,7 @@ class TokenVerifier:
 
 token = TokenVerifier(
     origin=options.jwt_origin,
-    audience=options.jwt_audience,
+    audience=options.client_id,
     issuer=options.jwt_issuer,
     options={
         'require_aud': True,
