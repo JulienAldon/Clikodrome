@@ -14,9 +14,6 @@ export default function StudentEntry(props) {
                             <td class={styles.padding}>
                                 <Toggle description="Toggle if student has been seen for this session." login={elem.login} onChange={props.onChange} checked={elem.status === "present" || elem.status === "retard" ? true : false}></Toggle>
                             </td>
-                            <td>
-                                <Toggle description="Toggle if student has been late for this session, the time is automatically saved." login={elem.login} onChange={props.lateOnChange} checked={elem.late === "NULL" || elem.late === null ? false : true}></Toggle>
-                            </td>
                         </tr>
                     );
                 })

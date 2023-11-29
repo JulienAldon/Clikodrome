@@ -23,7 +23,6 @@ export default function Session(props) {
     const { toastList, setToastList } = useToast();
     const { students, session, fetchSession, setStudents } = useSession(props.id);
     const [ toggleSortPresent, setToggleSortPresent ] = useState(undefined);
-    const [ toggleSortLate, setToggleSortLate ] = useState(undefined);
     const [ toggleSortLogin, setToggleSortLogin ] = useState(true);
     const [ signLoading, setSignLoading ] = useState(false);
     const [ validationLoading, setValidationLoading ] = useState(false);
@@ -36,36 +35,7 @@ export default function Session(props) {
         console.log(students)
         students.forEach(element => {
             if (element.login === login) {
-                if (element.late !== null && element.late !== 'NULL') {
-                    element.late = 'NULL';
-                    element.status = 'NULL';
-                } else {
-                    element.status = element.status === 'present' ? 'NULL' : 'present';
-                }
-            }
-        });
-        modifySession(token, props.id, students).then((res) => {
-            if (!res.detail)
-                setToastList((toastList) => {return [...toastList, {
-                    id: props.id,
-                    title: t("Information"),
-                    description: t("Students status has been saved."),
-                    backgroundColor: "rgba(15, 150, 150)",
-                }]});
-            fetchSession();
-        });
-    }
-
-    const onLateChange = (login) => {
-        if (!students)
-            return;
-        const date = new Date();
-        students.forEach(element => {
-            if (element.login === login) {
-                let status = element.status != 'retard' ? 'retard' : 'NULL';
-                let late = status === 'retard' ? `${addZero(date.getHours())}:${addZero(date.getMinutes())}:00` : 'NULL';
-                element.status = status;
-                element.late = late;
+                element.status = element.status === 'present' ? 'NULL' : 'present';
             }
         });
         modifySession(token, props.id, students).then((res) => {
@@ -87,7 +57,6 @@ export default function Session(props) {
     const sortPresent = () => {
         setToggleSortPresent(!toggleSortPresent);
         setToggleSortLogin(undefined);
-        setToggleSortLate(undefined);
         const sortedStudents = [...students].sort((a, b) => {
             if (a.status === null || a.status === 'NULL') {
                 return toggleSortPresent ? -1 : 1;
@@ -115,7 +84,6 @@ export default function Session(props) {
     const sortLogin = () => {
         setToggleSortPresent(undefined);
         setToggleSortLogin(!toggleSortLogin);
-        setToggleSortLate(undefined);
         const sortedStudents = [...students].sort((a, b) => {
             if (a.login < b.login) {
                 return toggleSortLogin ? 1 : -1;
@@ -140,33 +108,6 @@ export default function Session(props) {
         }
     }
 
-    const sortLate = () => {
-        setToggleSortPresent(undefined);
-        setToggleSortLate(!toggleSortLate);
-        setToggleSortLogin(undefined);
-        const sortedStudents = [...students].sort((a, b) => {
-            if (a.late === null || a.late === 'NULL') {
-                return toggleSortLate ? -1 : 1;
-            }
-            if (a.late !== null || a.late !== 'NULL') {
-                return toggleSortLate ? 1 : -1;
-            }
-            return 0;
-        });
-        setStudents(sortedStudents);
-        if (searchStudent) {
-            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-                if (a.late === null || a.late === 'NULL') {
-                    return toggleSortLate ? -1 : 1;
-                }
-                if (a.late !== null || a.late !== 'NULL') {
-                    return toggleSortLate ? 1 : -1;
-                }
-                return 0;
-            });
-            setSearchStudent(sortedSearchStudents);
-        }
-    }
     return (
         <>
         {
@@ -275,21 +216,14 @@ export default function Session(props) {
                             toggleSort={toggleSortPresent}
                             addStyle={styles.padding}
                         />
-                        <TableHead
-                            title={t("Late")}
-                            sortFunction={sortLate}
-                            toggleSort={toggleSortLate}
-                        />
                     </tr>
                 {
                     searchStudent ? (searchStudent ? <StudentEntry
                         students={searchStudent}
                         onChange={handleChange}
-                        lateOnChange={onLateChange}
                        ></StudentEntry> : null) : (students ? <StudentEntry
                          students={students}
                          onChange={handleChange}
-                         lateOnChange={onLateChange}
                         ></StudentEntry> : null) 
                 }
                 </table>
