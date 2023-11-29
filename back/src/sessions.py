@@ -1,3 +1,5 @@
+from src.crud import update_student, get_database_event_by_date, get_database_student, get_database_session, get_remote_student, create_session, add_student, add_promotion_student, create_promotion, get_database_promotion_by_name, create_weekplan_entry
+from src.bocal import card_login, get_user_information
 from src.database import connection
 from src.configuration import options
 from src.edusign import EdusignToken
@@ -10,109 +12,14 @@ import aiohttp
 import heapq
 import itertools
 
-def update_student(login, status, session_id):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    if status == 'present':
-        status = 'present'
-    else:
-        status = 'NULL'
-    t = f"""
-        UPDATE student SET status=%s WHERE session_id=%s and login=%s
-    """
-
-    try:
-        cursor.execute(t, (status, session_id, login))
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    connection.commit()
-    return True
-
-def get_database_event_by_date(date, hour):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from session WHERE date="{date}" and hour="{hour}"
-    """
-    try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def get_database_student(event_id):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from student WHERE session_id={event_id}
-    """
-    try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def get_database_session(event_id):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from session WHERE id={event_id}
-    """
-    try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def get_remote_student(date):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from remote
-    """
-    try:
-        cursor.execute(t)
-        res = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    result = [{**a, 'status': 'present', 'late': 'NULL'} for a in res if a['begin'] < date and a['end'] > date]
-    return result
-
 def get_any_student_name(entry: dict[str, Any]) -> str | None:
     return entry.get('EMAIL', entry.get('login', None))
-
-def late_student_zipper(all_students, late_entries):
-    all_students = sorted(all_students, key=itemgetter('EMAIL'))
-    late_entries = sorted(late_entries, key=itemgetter('login'))
-    queue = heapq.merge(all_students, late_entries, key=get_any_student_name)
-
-    for login, values in itertools.groupby(queue, get_any_student_name):
-        result = dict(map(lambda p: (p[1], p[0].get(p[1], None)), zip(values, ('ID', 'delay'))))
-        if result.get('delay', None) is not None and result.get('ID', None) is not None:
-            yield result
 
 def get_students_ids(edusign_students, intra_students):
     present_students = [a['login'] for a in intra_students 
         if a['status'] == 'present']
-
-    late_students = [{
-        'login': a['login'], 
-        'delay': abs(divmod((datetime.datetime.strptime(options.late_limit, '%H:%M:%S') 
-        - datetime.datetime.strptime(a['late'], '%H:%M:%S')).total_seconds(), 60)[0])} 
-        for a in intra_students if a['late'] != 'NULL']
-
-    late_login = [a['login'] for a in late_students if a['delay'] < options.maximum_late_time]
-
-    present_students = present_students + late_login
-
     ids = [a['ID'] for a in edusign_students if a['EMAIL'] in present_students]
-    late_ids = late_student_zipper(edusign_students, late_students)
-
-    return ids, list(late_ids)
+    return ids
 
 class BaseCustomException(Exception):
     pass
@@ -127,6 +34,12 @@ class SessionNotAvailableException(BaseCustomException):
     pass
 
 class SessionAlreadyCreated(BaseCustomException):
+    pass
+
+class PromotionAlreadyCreated(BaseCustomException):
+    pass
+
+class PromotionStudentCardMissing(BaseCustomException):
     pass
 
 async def sign_single_school(edusign, date, session_index):
@@ -153,11 +66,9 @@ async def sign_single_school(edusign, date, session_index):
             edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
         except KeyError:
             continue
-        ids, late_ids = get_students_ids(edusign_students, intra_students+remote_students)
+        ids = get_students_ids(edusign_students, intra_students+remote_students)
         sign = await edusign.sign_session(to_sign_session['edusign_id'])
         mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
-        if not mail.get('result') == 'mail already sent':
-            late = await edusign.send_lates(late_ids, to_sign_session['edusign_id'])
         print(sign, mail)
 
 async def sign_all_sessions(date, session_index):
@@ -170,36 +81,6 @@ async def sign_all_sessions(date, session_index):
             edusign.set_school_id(school_id)
             edusign.set_token(token)
             await sign_single_school(edusign, date, session_index)
-
-def create_session(date, hour, is_approved=False):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        INSERT INTO session (date, hour, is_approved)
-        VALUES (%s, %s, %s)
-    """
-    try:
-        cursor.execute(t, (date, hour, is_approved))
-    except Exception as e:
-        print('Error with sql : ', e)
-        return False
-    connection.commit()
-    return cursor.lastrowid
-
-def add_student(login, status, session_id):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        INSERT INTO student (login, status, session_id)
-        VALUES (%s, %s, %s)
-    """
-    try:
-        cursor.execute(t, (login, status, session_id))
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    connection.commit()
-    return True
 
 def convert_time_utc_local_intra(iso_date):
     date = datetime.datetime.fromisoformat(iso_date)
@@ -217,7 +98,6 @@ async def get_edusign_sessions(edusign, school_ids, session_date):
 async def create_single_session(session_date, session_index):
     """Create a session : fetch students, create db session and create students attendance entries
     """
-    Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
 
     edusign = EdusignToken()
     for cred in options.all_edusign_credentials:
@@ -237,37 +117,72 @@ async def create_single_session(session_date, session_index):
 
         session_id = create_session(session_date, session_hour)
         session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
+        # Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
 
-        intra_session = Intra.get_events(
-            options.event_activity,
-            date=session_date,
-            hour=session_hour
-        )
-        students = Intra.get_registered_students(options.event_activity + intra_session[0])
+        # intra_session = Intra.get_events(
+        #     options.event_activity,
+        #     date=session_date,
+        #     hour=session_hour
+        # )
+        # students = Intra.get_registered_students(options.event_activity + intra_session[0])
+        # Get students from promotion registered today (Monday, Tuesday, Wednesday, Thursday, Friday)
         for student in students.keys():
             add_student(student, students[student], session_id)
         if session_id:
-            return 
+            return
 
-async def refresh_session(session_id):
+async def create_single_promotion(name, year):
+    """Create a promotion entry, create related students from intranet
+    """
+    database_promotion = get_database_promotion_by_name(name, year)
+    if database_promotion == []:
+        raise PromotionAlreadyCreated("Promotion already created for {name} and {year}")
+    bocal_token = await card_login()
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
-    res = get_database_session(session_id)
-    if len(res) != 1:
-        raise KeyError('Session not found')
-    session_date = res[0]['date']
-    session_hour = res[0]['hour']
-    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
+    
+    students = Intra.get_students(name, year)
+    promotion_id = create_promotion(name, year)
+    students_card_fail = []
+    for student in students:
+        try:
+            card = await get_user_information(student, bocal_token)['card_id']
+        except KeyError:
+            students_card_fail.append(student)
+        add_promotion_student(student, card, promotion_id)
+    
+    if len(students_card_fail) > 0:
+        raise PromotionStudentCardMissing(f"Please register {' '.join(students_card_fail)} to the bocal access control")
 
-    intra_session = Intra.get_events(
-        options.event_activity,
-        date=session_date,
-        hour=session_hour
-    )
+async def create_weekplan(plan):
+    """
+    plan format : {'Monday': [promotion_id], 'Tuesday': [], 'Wednesday': [], 'Thursday': [], 'Friday': []}
+    """
+    for day in plan.keys():
+        for promo in plan[day]:
+            create_weekplan_entry(day, promo)
+    return 'Created'
 
-    students = Intra.get_registered_students(options.event_activity + intra_session[0])
+# FIXME
+async def refresh_session(session_id):
+    pass
+    # Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
+    # res = get_database_session(session_id)
+    # if len(res) != 1:
+    #     raise KeyError('Session not found')
+    # session_date = res[0]['date']
+    # session_hour = res[0]['hour']
+    # session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
 
-    database_students = get_database_student(session_id)    
-    for student in students.keys():
-        current_student = list(filter(lambda x: x['login'] == student, database_students))
-        if (current_student[0]['late'] == 'NULL' or current_student[0]['late'] == None) and (current_student[0]['status'] == None or current_student[0]['status'] == 'NULL'):
-            update_student(student, students[student], session_id)
+    # intra_session = Intra.get_events(
+    #     options.event_activity,
+    #     date=session_date,
+    #     hour=session_hour
+    # )
+
+    # students = Intra.get_registered_students(options.event_activity + intra_session[0])
+
+    # database_students = get_database_student(session_id)    
+    # for student in students.keys():
+    #     current_student = list(filter(lambda x: x['login'] == student, database_students))
+    #     if current_student[0]['status'] == None or current_student[0]['status'] == 'NULL':
+    #         update_student(student, students[student], session_id)

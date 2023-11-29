@@ -22,8 +22,6 @@ class Configuration(pydantic.BaseSettings):
     authorized_groups = ['pedago', 'assistants-wac-lyon']
 
     event_activity:     str = '/module/2021/W-ADM-007/LYN-0-1/acti-505014/'
-    late_limit:         str = '09:30:00'
-    maximum_late_time:  int = 30
 
     all_edusign_credentials = [
         {'login': os.getenv('EDUSIGN_LOGIN'), 'password': os.getenv('EDUSIGN_PASSWORD')},

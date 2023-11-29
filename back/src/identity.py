@@ -48,7 +48,7 @@ class TokenVerifier:
 
     async def fetch_keys(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'{self._origin}/V2.0/.well-known/openid-configuration') as response:
+            async with session.get(f'{self._origin}/v2.0/.well-known/openid-configuration') as response:
                 self.configuration = OpenIDConfiguration.parse_raw(await response.read())
             if self.configuration is None:
                 self.keys.clear()

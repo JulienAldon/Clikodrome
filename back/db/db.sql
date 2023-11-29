@@ -6,12 +6,11 @@ CREATE TABLE session (
     is_approved tinyint(1)
 ) ENGINE=INNODB;
 
-CREATE TABLE student (
+CREATE TABLE student_session (
     id INT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
     login VARCHAR(200),
     status VARCHAR(200),
-    late VARCHAR(200),
     session_id INT,
     INDEX sess_ind(session_id),
     FOREIGN KEY (session_id) 
@@ -26,3 +25,30 @@ CREATE TABLE remote (
     end VARCHAR(200)
 ) ENGINE=INNODB;
 
+CREATE TABLE student (
+    id INT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+    login VARCHAR(200),
+    card VARCHAR(200),
+    promotion_id INT,
+    INDEX promo_ind(promotion_id),
+    FOREIGN KEY (promotion_id) 
+        REFERENCES promotion(id)
+) ENGINE=INNODB;
+
+CREATE TABLE promotion (
+    id INT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+    name VARCHAR(200), -- wac1, wac2, tek1, tek2, tek3, msc1, msc2, premsc
+    year VARCHAR(200),
+) ENGINE=INNODB;
+
+CREATE TABLE week_plan (
+    id INT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+    day VARCHAR(200),
+    promotion_id INT,
+    INDEX promo_ind(promotion_id),
+    FOREIGN KEY (promotion_id) 
+        REFERENCES promotion(id)
+) ENGINE=INNODB;

@@ -169,6 +169,7 @@ class EdusignToken(Edusign):
         """
         if await self.get_session_professor_signature(session_id):
             return {"result": "session already signed"}
+        print(f'signing for {session_id} now')
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{options.edusign_url}/professor/courses/setProfessorSignature/{self.school_id}/{session_id}',
@@ -186,7 +187,10 @@ class EdusignToken(Edusign):
                 headers={'Authorization': f'Bearer {self.token}'}
             ) as resp:
                 a = await resp.json()
-                if a['result']['PROFESSOR_SIGNATURE'] != None or a['result']['PROFESSOR_SIGNATURE_2'] != None:
+                if (a['result']['PROFESSOR_SIGNATURE'] != None \
+                    and a['result']['PROFESSOR_SIGNATURE'] != '') \
+                    or (a['result']['PROFESSOR_SIGNATURE_2'] != None \
+                    and a['result']['PROFESSOR_SIGNATURE_2'] != ''):
                     return True
         return False
     

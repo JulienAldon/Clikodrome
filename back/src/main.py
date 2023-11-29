@@ -8,7 +8,7 @@ from src.auth import router
 from src.identity import token, staff
 from src.configuration import options
 from src.crud import read_sessions, read_session, delete_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
-from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, refresh_session
+from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, refresh_session, create_weekplan
 from src.bocal import card_login, get_card_information
 
 app = FastAPI()
@@ -36,7 +36,6 @@ class Student(BaseModel):
     login: str
     session_id: str
     status: str
-    late: str
     id: str
 
 class StudentList(BaseModel):
@@ -44,6 +43,13 @@ class StudentList(BaseModel):
 
 class SessionCreation(BaseModel):
     sessionIndex: str
+
+class WeekplanCreation(BaseModel):
+    monday: List[str]
+    tuesday: List[str]
+    wednesday: List[str]
+    thursday: List[str]
+    friday: List[str]
 
 @app.post('/api/session/{session_id}/refresh', dependencies=[Depends(staff)])
 async def refresh_single_session(session_id: str, token: dict[str, Any] = Depends(token)):
@@ -112,7 +118,7 @@ async def get_session(session_id: str, token: dict[str, Any] = Depends(token)):
 async def modify_session(students: StudentList, session_id: str, token: dict[str, Any] = Depends(token)):
     res = []
     for student in students.data:
-        res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id, student.late)})
+        res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id)})
     return {'result': res}
 
 @app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
@@ -167,3 +173,18 @@ async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
     except KeyError:
         raise HTTPException(404)
     return result
+
+@app.post('/api/weekplan', dependencies=[Depends(staff)])
+async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
+    result = create_weekplan({
+        'Monday': plan.monday, 
+        'Tuesday': plan.tuesday, 
+        'Wednesday': plan.wednesday, 
+        'Thursday': plan.thursday, 
+        'Friday': plan.friday
+    })
+    return {'result': result}
+
+@app.post('/api/promotion', dependencies=[Depends(staff)])
+async def add_promotion(token: dict[str, Any] = Depends(token)):
+    ...

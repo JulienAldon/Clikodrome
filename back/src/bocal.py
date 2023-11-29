@@ -21,3 +21,14 @@ async def get_card_information(_id, token):
             if not result.get('card'):
                 KeyError('Card not found')
         return result
+
+async def get_user_information(login, token):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'{options.bocal_url}/api/epitech.eu/users/{login}', headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }) as resp:
+            result = await resp.json()
+            if not result.get('card_id'):
+                KeyError('User not registered to bocal access control')
+        return result
