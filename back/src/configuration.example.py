@@ -19,10 +19,14 @@ class Configuration(pydantic.BaseSettings):
     db_password:        str = os.getenv('DATABASE_PASSWORD')
     database:           str = os.getenv('DATABASE_NAME')
 
-    authorized_groups = ['pedago', 'assistants-wac-lyon']
-
     event_activity:     str = '/module/2021/W-ADM-007/LYN-0-1/acti-505014/'
 
+    assistant_authorized_groups = ['assistants-wac-lyon']
+    pedago_authorized_groups = ['pedago']
+
+    bocal_url:          str = 'https://console.bocal.org'
+    bocal_email:        str = os.getenv('BOCAL_EMAIL')
+    bocal_password:     str = os.getenv('BOCAL_PASSWORD')
     all_edusign_credentials = [
         {'login': os.getenv('EDUSIGN_LOGIN'), 'password': os.getenv('EDUSIGN_PASSWORD')},
     ]
