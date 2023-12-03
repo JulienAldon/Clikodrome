@@ -7,8 +7,15 @@ import datetime
 from src.auth import router
 from src.identity import token, staff
 from src.configuration import options
-from src.crud import read_sessions, read_session, delete_session, delete_remote, read_students, read_all_students, change_student, change_session, create_remote, read_remote, read_remotes
-from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, refresh_session, create_weekplan
+
+from src.crud.student_session import read_student_session, read_student_sessions, change_student_session
+from src.crud.session import read_sessions, read_session, delete_session, change_session
+from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
+from src.crud.promotion import read_promotions, delete_promotion
+from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
+from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
+from src.promotions import create_single_promotion, PromotionStudentCardMissing
+from src.weekplans import create_weekplan
 from src.bocal import card_login, get_card_information
 
 app = FastAPI()
@@ -45,15 +52,16 @@ class SessionCreation(BaseModel):
     sessionIndex: str
 
 class WeekplanCreation(BaseModel):
-    monday: List[str]
-    tuesday: List[str]
-    wednesday: List[str]
-    thursday: List[str]
-    friday: List[str]
+    day: str
+    promotion_id: str
+
+class PromotionCreation(BaseModel):
+    year: str
+    name: str
 
 @app.post('/api/session/{session_id}/refresh', dependencies=[Depends(staff)])
 async def refresh_single_session(session_id: str, token: dict[str, Any] = Depends(token)):
-    await refresh_session(session_id)
+    await fetch_session_from_intra(session_id)
     return {'result': 'Session refreshed'}
 
 @app.post('/api/session/create', dependencies=[Depends(staff)])
@@ -111,14 +119,14 @@ async def get_sessions(token: dict[str, Any] = Depends(token)):
 @app.get('/api/session/{session_id}', dependencies=[Depends(staff)])
 async def get_session(session_id: str, token: dict[str, Any] = Depends(token)):
     session = read_session(session_id)
-    students = read_students(session_id)
+    students = read_student_session(session_id)
     return {'session': session, 'students': students}
 
 @app.put('/api/session/{session_id}', dependencies=[Depends(staff)])
 async def modify_session(students: StudentList, session_id: str, token: dict[str, Any] = Depends(token)):
     res = []
     for student in students.data:
-        res.append({'login': student.login, 'updated': change_student(student.login, student.status, session_id)})
+        res.append({'login': student.login, 'updated': change_student_session(student.login, student.status, session_id)})
     return {'result': res}
 
 @app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
@@ -158,7 +166,7 @@ async def get_remotes(student_id: str, token: dict[str, Any] = Depends(token)):
 
 @app.get('/api/students', dependencies=[Depends(staff)])
 async def get_students(token: dict[str, Any] = Depends(token)):
-    database_students = read_all_students()
+    database_students = read_student_sessions()
     if not database_students:
         raise HTTPException(status_code=404)
     students = [a['login'] for a in database_students]
@@ -174,17 +182,35 @@ async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
         raise HTTPException(404)
     return result
 
+@app.post('/api/promotion', dependencies=[Depends(staff)])
+async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
+    try:
+        result = await create_single_promotion(promotion.name, promotion.year)
+    except PromotionStudentCardMissing as e:
+        return {'result': e}
+    return {'result': 'ok'}
+
+@app.get('/api/promotion', dependencies=[Depends(staff)])
+async def read_promotion(token: dict[str, Any] = Depends(token)):
+    return {'result': read_promotions()}
+
+@app.delete('/api/promotion/{promotion_id}', dependencies=[Depends(staff)])
+async def remove_promotion(promotion_id: str, token: dict[str, Any] = Depends(token)):
+    return {'result': delete_promotion(promotion_id)}
+
+@app.get('/api/weekplan', dependencies=[Depends(staff)])
+async def read_weekplan(token: dict[str, Any] = Depends(token)):
+    return {'result': get_weekplans()}
+
 @app.post('/api/weekplan', dependencies=[Depends(staff)])
 async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
-    result = create_weekplan({
-        'Monday': plan.monday, 
-        'Tuesday': plan.tuesday, 
-        'Wednesday': plan.wednesday, 
-        'Thursday': plan.thursday, 
-        'Friday': plan.friday
-    })
+    result = create_weekplan_entry(plan.day, plan.promotion_id)
     return {'result': result}
 
-@app.post('/api/promotion', dependencies=[Depends(staff)])
-async def add_promotion(token: dict[str, Any] = Depends(token)):
-    ...
+@app.delete('/api/weekplan/{plan_id}', dependencies=[Depends(staff)])
+async def remove_weekplan(plan_id: str, token: dict[str, Any] = Depends(token)):
+    return {'result': delete_weekplan(plan_id)}
+
+# @app.put('/api/weekplan/{plan_id}', dependencies=[Depends(staff)])
+# async def read_promotion(plan: WeekplanCreation, plan_id: str, token: dict[str, Any] = Depends(token)):
+#     return {'result': read_promotions()}
