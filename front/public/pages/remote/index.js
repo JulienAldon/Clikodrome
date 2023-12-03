@@ -11,7 +11,7 @@ import styles from './style.module.css';
 import { useTranslation } from 'react-i18next';
 
 export default function Remote() {
-    const token = useAuthGuard()
+    const { token, intraRole } = useAuthGuard("pedago");
     
     const {toasList, setToastList} = useToast()
 

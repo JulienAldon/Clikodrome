@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function useSessionStatus() {
     const [sessionStatus, setSessionStatus] = useState(undefined);
-    const token = useAuth();
+    const { token, intraRole} = useAuth()
     
     async function fetchSessionStatus() {
         checkTodaySession(token).then((res) => {

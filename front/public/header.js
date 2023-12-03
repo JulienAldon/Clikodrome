@@ -1,23 +1,24 @@
 import settings from './settings';
 import {useAuth} from './context/auth'
-import { logout } from './context/useUser'
+import { logout, login } from './context/useUser'
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'preact/hooks';
 
 export default function Header() {
-	const token = useAuth()
+	const {token, intraRole} = useAuth()
 	const { t, i18n } = useTranslation();
 
-	function login() {
-		window.location.replace(`${settings.SERVICE_URL}/auth/azure`)
-	}
+	useEffect(() => {
+		console.log(intraRole);
+	}, []);
 
 	return (
 		<header class="page-header">
 			<nav>
 				<a class="home" href="/"></a>
 				<a href="/sessions">{t('Sessions')}</a>
-				<a href="/remote">{t('Remote')}</a>
-				<a href="/manager">{t('Manager')}</a>
+				{ intraRole === "pedago" ? <a href="/remote">{t('Remote')}</a> : null}
+				{ intraRole === "pedago" ? <a href="/manager">{t('Manager')}</a> : null}	
 			</nav>
 			<label>
 			{

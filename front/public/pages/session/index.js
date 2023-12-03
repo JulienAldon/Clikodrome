@@ -10,16 +10,9 @@ import useSession from '../../hooks/useSession';
 import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
 
-function addZero(i) {
-    if (i < 10) {
-        i = "0" + i
-    }
-    return i;
-}
-
 export default function Session(props) {
     const [searchStudent, setSearchStudent] = useState(undefined);
-    const token = useAuthGuard();
+    const { token, intraRole } = useAuthGuard(undefined);
     const { toastList, setToastList } = useToast();
     const { students, session, fetchSession, setStudents } = useSession(props.id);
     const [ toggleSortPresent, setToggleSortPresent ] = useState(undefined);
@@ -116,6 +109,7 @@ export default function Session(props) {
                 <div class={`${styles.sessionTitle}`}>
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
+                {intraRole === "pedago" ? 
                 <div class={`${styles.center} ${styles.buttonBox}`}>
                     <Button 
                         deactivated={false} 
@@ -194,7 +188,7 @@ export default function Session(props) {
                             }
                         })
                     }}></Button>
-                </div>
+                </div> : null}
                 <div class={`${styles.center}`}>
                     <SearchBar 
                     placeholder={t("Search Student")} 

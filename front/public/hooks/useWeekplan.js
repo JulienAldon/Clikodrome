@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function useWeekplan() {
     const [ weekplans, setWeekplan ] = useState(undefined);
-    const token = useAuth()
+    const { token, intraRole} = useAuth()
 
     async function fetchWeekplan() {
         getWeekplans(token).then((res) => {

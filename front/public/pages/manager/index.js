@@ -11,7 +11,7 @@ import useWeekplan from "../../hooks/useWeekplan";
 import styles from './style.module.css';
 
 export default function Manager() {
-    const token = useAuthGuard();
+    const { token, intraRole } = useAuthGuard("pedago");
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
     const [ promotion, setPromotion ] = useState("");
@@ -106,55 +106,61 @@ export default function Manager() {
 
     return (
         <section class="page-body">
-            <h2>{t('Manage promotions')}</h2>
+            <h1>{t('Manage promotions')}</h1>
             <div className={styles.managerPanel}>
-                <ComboBox 
-                    class={styles.managerInputCombo}
-                    title={t("Select promotion name")} 
-                    onChange={handlePromotionChange}
-                    datalist_id={"promotion_list"}>
-                    {
-                        allowed_promotions.map((el) => {
-                            return <option value={el}></option>
-                        })
-                    }
-                    
-                </ComboBox>
-                <DateInput
-                    class={styles.managerInputDate}
-                    description={t("Year of the promotion.")}
-                    title={t("Year")}
-                    onChange={handleYearChange}
-                />
+                <div>
+                    <ComboBox 
+                        class={styles.managerInputCombo}
+                        title={t("Select promotion name")} 
+                        onChange={handlePromotionChange}
+                        datalist_id={"promotion_list"}>
+                        {
+                            allowed_promotions.map((el) => {
+                                return <option value={el}></option>
+                            })
+                        }
+                        
+                    </ComboBox>
+                    <DateInput
+                        class={styles.managerInputDate}
+                        description={t("Year of the promotion.")}
+                        title={t("Year")}
+                        onChange={handleYearChange}
+                    />
+                </div>
                 <Button
+                    class={styles.manageButton}
                     deactivated={false}
                     action={handleCreatePromotion} 
-                    title={t("Add")}
+                    title={"+"}
                     description={t("Add a new promotion.")}
                 />
-            </div>
-            <h2>{t('Promotions')}</h2>
-            {
-                    promotions ? 
-                    <ul>
-                        {promotions.map((el) => {
-                            return <li id={el.id}>
-                                    <label>{el.name}_{el.year}</label>
-                                    <Button
-                                        class={`${styles.manageButton}`}
-                                        id={el.id}
-                                        deactivated={false}
-                                        action={handleDeletePromotion} 
-                                        title={"X"}
-                                        description={t("Remove promotion.")}
-                                    />
-                                </li>
-                        }) }
-                    </ul> : null
 
-                }
+                <div>
+                    <h2>{t('Promotions')}</h2>
+                    {
+                        promotions ? 
+                        <ul>
+                            {promotions.map((el) => {
+                                return <li id={el.id}>
+                                        <label>{el.name}_{el.year}</label>
+                                        <Button
+                                            class={`${styles.manageButton}`}
+                                            id={el.id}
+                                            deactivated={false}
+                                            action={handleDeletePromotion} 
+                                            title={"X"}
+                                            description={t("Remove promotion.")}
+                                        />
+                                    </li>
+                            }) }
+                        </ul> : null
+                    }
+                </div>
+            </div>
+
             <div id="weekplan">
-                <table>
+                <table className={styles.table}>
                     <caption>
                        {
                         promotions ?
@@ -172,8 +178,8 @@ export default function Manager() {
                     }
                     </caption>
                     <thead>
-                        <tr>
-                            <th>
+                        <tr className={styles.tr}>
+                            <th className={styles.th}>
                                 <label>
                                     {t('Monday')}
                                 </label>
@@ -187,7 +193,7 @@ export default function Manager() {
                                     description={t("Add")}
                                 />
                             </th>
-                            <th>
+                            <th className={styles.th}>
                                 <label>
                                     {t('Tuesday')}
                                 </label>
@@ -201,7 +207,7 @@ export default function Manager() {
                                     description={t("Add")}
                                 />
                             </th>
-                            <th>
+                            <th className={styles.th}>
                                 <label>
                                     {t('Wednesday')}
                                 </label>
@@ -215,7 +221,7 @@ export default function Manager() {
                                     description={t("Add")}
                                 />
                             </th>
-                            <th>
+                            <th className={styles.th}>
                                 <label>
                                     {t('Thursday')}
                                 </label>
@@ -229,7 +235,7 @@ export default function Manager() {
                                     description={t("Add")}
                                 />
                             </th>
-                            <th>
+                            <th className={styles.th}>
                                 <label>
                                     {t('Friday')}
                                 </label>
@@ -250,20 +256,20 @@ export default function Manager() {
                             weekplans && promotions ? 
                             weekplans.map((plans) => {
                                 return (
-                                    <tr>
+                                    <tr className={styles.tr}>
                                         {
                                             days.map((day) => {
                                                 let current_plan = plans.filter(el => el.day === day);
                                                 if (current_plan.length < 1) {
-                                                    return <td></td>;
+                                                    return <td className={styles.td}></td>;
                                                 }
                                                 let elem = promotions.filter(e => e.id === current_plan[0].promotion_id)
                                                 if (elem.length < 1) {
-                                                    return <td></td>;
+                                                    return <td className={styles.td}></td>;
                                                 }
                                                 console.log(elem)
                                                 return (
-                                                    <td>
+                                                    <td className={styles.td}>
                                                         <label>{elem[0].name}</label>
                                                         <Button
                                                             class={`${styles.manageButton}`}

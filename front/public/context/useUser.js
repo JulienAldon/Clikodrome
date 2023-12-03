@@ -10,20 +10,26 @@ function login() {
 
 function logout() {
     Cookies.remove('token');
-	window.location.replace(`${settings.ORIGIN}/`);
+    Cookies.remove('intra-role');
+    Cookies.remove('user');
+    window.location.replace(`${settings.ORIGIN}/`)
 }
 
-export default function useAuthGuard() {
-    const token = useAuth();
+export default function useAuthGuard(role) {
+    const {token, intraRole} = useAuth();
+
     useEffect(() => {
         getSessions(token).then((res) => {
             if (res.hasOwnProperty('detail')) {
-                Cookies.remove('token');
-                window.location.replace(`${settings.ORIGIN}/`)
+                logout();
             }            
         });
-    }, []);
-    return token
+
+        if (role && intraRole !== role) {
+            logout();
+        }
+    }, [token]);
+    return {token, intraRole};
 }
 
 export {

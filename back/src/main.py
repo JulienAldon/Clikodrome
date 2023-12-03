@@ -5,7 +5,7 @@ import Yawaei
 from pydantic import BaseModel
 import datetime
 from src.auth import router
-from src.identity import token, staff
+from src.identity import token, staff, manager
 from src.configuration import options
 
 from src.crud.student_session import read_student_session, read_student_sessions, change_student_session
@@ -59,12 +59,12 @@ class PromotionCreation(BaseModel):
     year: str
     name: str
 
-@app.post('/api/session/{session_id}/refresh', dependencies=[Depends(staff)])
+@app.post('/api/session/{session_id}/refresh', dependencies=[Depends(manager)])
 async def refresh_single_session(session_id: str, token: dict[str, Any] = Depends(token)):
     await fetch_session_from_intra(session_id)
     return {'result': 'Session refreshed'}
 
-@app.post('/api/session/create', dependencies=[Depends(staff)])
+@app.post('/api/session/create', dependencies=[Depends(manager)])
 async def create_session(sessionCreation: SessionCreation, token: dict[str, Any] = Depends(token)):
     session_date = datetime.datetime.today()
     format_date = session_date.strftime('%Y-%m-%d')
@@ -82,7 +82,7 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
         raise HTTPException(status_code=422)
     return {'result': 'Session created'}
 
-@app.post('/api/session/{session_id}/sign', dependencies=[Depends(staff)])
+@app.post('/api/session/{session_id}/sign', dependencies=[Depends(manager)])
 async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
     session = read_session(session_id)[0]
     try:
@@ -129,19 +129,19 @@ async def modify_session(students: StudentList, session_id: str, token: dict[str
         res.append({'login': student.login, 'updated': change_student_session(student.login, student.status, session_id)})
     return {'result': res}
 
-@app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
+@app.delete('/api/session/{session_id}', dependencies=[Depends(manager)])
 async def remove_session(session_id, token:dict[str, Any] = Depends(token)):
     res = delete_session(session_id)
     if not res:
         raise HTTPException(status_code=400)
     return {'result': res}
 
-@app.post('/api/session/{session_id}', dependencies=[Depends(staff)])
+@app.post('/api/session/{session_id}', dependencies=[Depends(manager)])
 async def validate_session(session_id, token: dict[str, Any] = Depends(token)):
     res = change_session(session_id, 1)
     return {'result': res}    
 
-@app.post('/api/remote', dependencies=[Depends(staff)])
+@app.post('/api/remote', dependencies=[Depends(manager)])
 async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(token)):
     already = read_remote(student.login)
     res = create_remote(student.login, student.begin, student.end)    
@@ -149,22 +149,22 @@ async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(tok
         raise HTTPException(status_code=422)
     return {'result': res}
 
-@app.delete('/api/remote/{remote_id}', dependencies=[Depends(staff)])
+@app.delete('/api/remote/{remote_id}', dependencies=[Depends(manager)])
 async def remove_remote(remote_id: str, token: dict[str, Any] = Depends(token)):
     res = delete_remote(remote_id)
     return {'result': 'Success' if res else 'Error'}
 
-@app.get('/api/remotes', dependencies=[Depends(staff)])
+@app.get('/api/remotes', dependencies=[Depends(manager)])
 async def get_remotes(token: dict[str, Any] = Depends(token)):
     result = read_remotes()
     return {'result': result}
 
-@app.get('/api/remote/{student_id}', dependencies=[Depends(staff)])
+@app.get('/api/remote/{student_id}', dependencies=[Depends(manager)])
 async def get_remotes(student_id: str, token: dict[str, Any] = Depends(token)):
     result = read_remote(student_id)
     return {'result': result}
 
-@app.get('/api/students', dependencies=[Depends(staff)])
+@app.get('/api/students', dependencies=[Depends(manager)])
 async def get_students(token: dict[str, Any] = Depends(token)):
     database_students = read_student_sessions()
     if not database_students:
@@ -173,16 +173,16 @@ async def get_students(token: dict[str, Any] = Depends(token)):
     result = sorted(list(set(students)))
     return {'result': result}
  
-@app.get('/api/scan/card/{card_id}', dependencies=[Depends(staff)])
-async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
-    bocal_token = await card_login()
-    try:
-        result = await get_card_information(card_id, bocal_token)
-    except KeyError:
-        raise HTTPException(404)
-    return result
+# @app.get('/api/scan/card/{card_id}', dependencies=[Depends(staff)])
+# async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
+#     bocal_token = await card_login()
+#     try:
+#         result = await get_card_information(card_id, bocal_token)
+#     except KeyError:
+#         raise HTTPException(404)
+#     return result
 
-@app.post('/api/promotion', dependencies=[Depends(staff)])
+@app.post('/api/promotion', dependencies=[Depends(manager)])
 async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
     try:
         result = await create_single_promotion(promotion.name, promotion.year)
@@ -190,27 +190,27 @@ async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = De
         return {'result': e}
     return {'result': 'ok'}
 
-@app.get('/api/promotion', dependencies=[Depends(staff)])
+@app.get('/api/promotion', dependencies=[Depends(manager)])
 async def read_promotion(token: dict[str, Any] = Depends(token)):
     return {'result': read_promotions()}
 
-@app.delete('/api/promotion/{promotion_id}', dependencies=[Depends(staff)])
+@app.delete('/api/promotion/{promotion_id}', dependencies=[Depends(manager)])
 async def remove_promotion(promotion_id: str, token: dict[str, Any] = Depends(token)):
     return {'result': delete_promotion(promotion_id)}
 
-@app.get('/api/weekplan', dependencies=[Depends(staff)])
+@app.get('/api/weekplan', dependencies=[Depends(manager)])
 async def read_weekplan(token: dict[str, Any] = Depends(token)):
     return {'result': get_weekplans()}
 
-@app.post('/api/weekplan', dependencies=[Depends(staff)])
+@app.post('/api/weekplan', dependencies=[Depends(manager)])
 async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
     result = create_weekplan_entry(plan.day, plan.promotion_id)
     return {'result': result}
 
-@app.delete('/api/weekplan/{plan_id}', dependencies=[Depends(staff)])
+@app.delete('/api/weekplan/{plan_id}', dependencies=[Depends(manager)])
 async def remove_weekplan(plan_id: str, token: dict[str, Any] = Depends(token)):
     return {'result': delete_weekplan(plan_id)}
 
-# @app.put('/api/weekplan/{plan_id}', dependencies=[Depends(staff)])
+# @app.put('/api/weekplan/{plan_id}', dependencies=[Depends(manager)])
 # async def read_promotion(plan: WeekplanCreation, plan_id: str, token: dict[str, Any] = Depends(token)):
 #     return {'result': read_promotions()}

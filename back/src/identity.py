@@ -82,8 +82,15 @@ class TokenVerifier:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["email"]}?format=json') as response:
                 profile = await response.json()
-                is_staff = any(g.get('name', '') in options.authorized_groups for g in profile.get('groups', []))
-                claims['intra-role'] = 'staff' if is_staff else 'student'
+                is_pedago = any(g.get('name', '') in options.pedago_authorized_groups for g in profile.get('groups', []))
+                is_assistant = any(g.get('name', '') in options.assistant_authorized_groups for g in profile.get('groups', []))
+                if is_pedago:
+                    role = 'pedago'
+                elif is_assistant:
+                    role = 'assistant'
+                else:
+                    role = 'student'
+                claims['intra-role'] = role
         return claims
 
     async def __call__(self, authorization: str | None = Header(default=None), token: str | None = Cookie(default=None)) -> dict[str, Any]:
@@ -110,5 +117,9 @@ token = TokenVerifier(
 )
 
 def staff(token: dict[str, Any] = Depends(token)):
-    if token['intra-role'] != 'staff':
+    if token['intra-role'] != 'assistant' and token['intra-role'] != 'pedago':
+        raise HTTPException(status_code=403)
+
+def manager(token: dict[str, Any] = Depends(token)):
+    if token['intra-role'] != 'pedago':
         raise HTTPException(status_code=403)

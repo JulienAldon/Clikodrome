@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function usePromotion() {
     const [ promotions, setPromotion ] = useState(undefined);
-    const token = useAuth()
+    const { token, intraRole} = useAuth()
 
     async function fetchPromotion() {
         getPromotion(token).then((res) => {

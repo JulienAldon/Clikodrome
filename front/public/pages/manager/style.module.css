@@ -5,17 +5,17 @@
     margin-left: 0.5rem
 }
 
-th, td {
+.th, .td {
     width: 15rem;
     text-align: center;
     height: 3rem;
 }
 
-th, td > label {
+.th, .td > label {
     margin-right: 2rem
 }
 
-tr:nth-child(2n+1) {
+.tr:nth-child(2n+1) {
     background-color: rgba(22, 22, 22, 0.1);
 }
 
@@ -55,13 +55,13 @@ li {
     width: 15rem;
 }
 
-table {
+.table {
     display: flex;
     flex-direction: column;
     margin: 0px 10vw;
     align-items: center;
 }
 
-h2 {
+h1, h2 {
     text-align: center;
 }

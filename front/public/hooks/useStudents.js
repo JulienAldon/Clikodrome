@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function useStudents() {
     const [students, setStudents] = useState(undefined);
-    const token = useAuth();
+    const { token, intraRole} = useAuth()
     
     async function fetchStudents() {
         getStudents(token).then((res) => {

@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function useSessions() {
     const [sessions, setSessions] = useState(undefined)
-    const token = useAuth()
+    const { token, intraRole} = useAuth()
 
     async function fetchSessions() {
         getSessions(token).then((res) => {

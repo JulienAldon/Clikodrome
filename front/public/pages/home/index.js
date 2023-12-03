@@ -5,7 +5,7 @@ import Volet from '../../components/volet';
 import { useTranslation } from 'react-i18next';
 
 export default function About() {
-	const token = useAuth()
+    const { token, intraRole} = useAuth()
 	const { t, i18n } = useTranslation();
 
 	return (

@@ -9,7 +9,7 @@ import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';
 
 export default function Home() {
-	const token = useAuthGuard();
+    const { token, intraRole } = useAuthGuard(undefined);
 	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();
 	const { sessionStatus, fetchSessionStatus } = useSessionStatus();
@@ -23,71 +23,75 @@ export default function Home() {
 			<section class={`page-body ${styles.home}`}>
 			{
 				sessionStatus ? <main class={styles.main}>
-					<h2>{t('Create session')}</h2>
-					
-					<Button 
-						deactivated={sessionStatus.morning ? true : false}
-						description={t('Create morning session')}
-						title={t("Morning")}
-						loading={loadingMorning}
-						action={() => {
-						setLoadingMorning(true);
-						createSession(token, '0').then((res) => {
-							setLoadingMorning(false);
-							if (res.detail && res.detail==="No edusign session available") {
-								setToastList((toastList) => {return [...toastList, {
-									id: 'createSession',
-									title: t("Error"),
-									description: t("No clicodrome session can be created today : no edusign session available."),
-									backgroundColor: "rgba(150, 15, 15)",
-								}]});
-							} else {
-								fetchSessions();
-								fetchSessionStatus();
-								setToastList((toastList) => {return [...toastList, {
-									id: 'createSession',
-									title: t("Information"),
-									description: t("Morning clicodrome session created."),
-									backgroundColor: "rgba(15, 150, 150)",
-								}]});
-							}
-						})
-					}}></Button>
-					<Button 
-                    	deactivated={sessionStatus.evening ? true : false}
-						description={t("Create evening session")}
-						title={t('Evening')} 
-						loading={loadingEvening}
-						action={() => {
-						setLoadingEvening(true);
-						createSession(token, '-1').then((res) => {
-							setLoadingEvening(false);
-							if (res.detail && res.detail==="No edusign session available") {
-								setToastList((toastList) => {return [...toastList, {
-									id: 'createSession',
-									title: t("Error"),
-									description: t("No clicodrome session can be created today (no edusign session available)."),
-									backgroundColor: "rgba(150, 15, 15)",
-								}]});
-							} else if (res.detail && res.detail==="Session already created") {
-								setToastList((toastList) => {return [...toastList, {
-									id: 'createSession',
-									title: t("Error"),
-									description: t("Session already created for this date and hour"),
-									backgroundColor: "rgba(150, 15, 15)",
-								}]});
-							} else {
-								fetchSessions();
-								fetchSessionStatus();
-								setToastList((toastList) => {return [...toastList, {
-									id: 'createSession',
-									title: t("Information"),
-									description: t("Evening clicodrome session created."),
-									backgroundColor: "rgba(15, 150, 150)",
-								}]});
-							}
-						})
-					}}></Button>
+					{
+						intraRole === "pedago" ? 
+						<>
+							<h2>{t('Create session')}</h2>
+							<Button 
+								deactivated={sessionStatus.morning ? true : false}
+								description={t('Create morning session')}
+								title={t("Morning")}
+								loading={loadingMorning}
+								action={() => {
+								setLoadingMorning(true);
+								createSession(token, '0').then((res) => {
+									setLoadingMorning(false);
+									if (res.detail && res.detail==="No edusign session available") {
+										setToastList((toastList) => {return [...toastList, {
+											id: 'createSession',
+											title: t("Error"),
+											description: t("No clicodrome session can be created today : no edusign session available."),
+											backgroundColor: "rgba(150, 15, 15)",
+										}]});
+									} else {
+										fetchSessions();
+										fetchSessionStatus();
+										setToastList((toastList) => {return [...toastList, {
+											id: 'createSession',
+											title: t("Information"),
+											description: t("Morning clicodrome session created."),
+											backgroundColor: "rgba(15, 150, 150)",
+										}]});
+									}
+								})
+							}}></Button>
+							<Button 
+								deactivated={sessionStatus.evening ? true : false}
+								description={t("Create evening session")}
+								title={t('Evening')} 
+								loading={loadingEvening}
+								action={() => {
+								setLoadingEvening(true);
+								createSession(token, '-1').then((res) => {
+									setLoadingEvening(false);
+									if (res.detail && res.detail==="No edusign session available") {
+										setToastList((toastList) => {return [...toastList, {
+											id: 'createSession',
+											title: t("Error"),
+											description: t("No clicodrome session can be created today (no edusign session available)."),
+											backgroundColor: "rgba(150, 15, 15)",
+										}]});
+									} else if (res.detail && res.detail==="Session already created") {
+										setToastList((toastList) => {return [...toastList, {
+											id: 'createSession',
+											title: t("Error"),
+											description: t("Session already created for this date and hour"),
+											backgroundColor: "rgba(150, 15, 15)",
+										}]});
+									} else {
+										fetchSessions();
+										fetchSessionStatus();
+										setToastList((toastList) => {return [...toastList, {
+											id: 'createSession',
+											title: t("Information"),
+											description: t("Evening clicodrome session created."),
+											backgroundColor: "rgba(15, 150, 150)",
+										}]});
+									}
+								})
+							}}></Button>
+						</> : null
+					}
 
 					<h2>{t('All sessions')}</h2> 
 				{

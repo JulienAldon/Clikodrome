@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth";
 
 export default function useRemotes() {
     const [remoteStudents, setRemoteStudents] = useState(undefined);
-    const token = useAuth();
+    const { token, intraRole} = useAuth()
     
     async function fetchRemotes() {
         getRemotes(token).then((res) => {
