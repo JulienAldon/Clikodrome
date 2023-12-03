@@ -66,7 +66,8 @@ export default function Remote() {
                 <h2 class={styles.center}>{t('Remote Students')}</h2>
                 <ComboBox 
                     title={t("Select student")} 
-                    onChange={handleStudentChange}>
+                    onChange={handleStudentChange}
+                    datalist_id={"remote_list"}>
                     {
                     students ?
                     students.map((el) => {

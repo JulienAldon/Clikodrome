@@ -169,8 +169,8 @@ export default function Session(props) {
                     </Button>
                     <Button 
                         deactivated={false} 
-                        description={t("Destroy and recreate session, fetching all students an other time.")} 
-                        title={t("Refresh Session")} 
+                        description={t("Fetch session presence status from epitech intranet")} 
+                        title={t("Fetch from intra")} 
                         loading={refreshLoading}
                         action={() => {
                         setRefreshLoading(true);

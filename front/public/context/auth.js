@@ -1,8 +1,6 @@
 import Cookies from "js-cookie";
 import { createContext } from "preact";
 import { useState, useContext, useEffect } from "preact/hooks";
-import jwt_decode from "jwt-decode";
-import { logout } from './useUser.js';
 
 const AuthContext = createContext(null);
 

@@ -17,6 +17,7 @@ export default function Header() {
 				<a class="home" href="/"></a>
 				<a href="/sessions">{t('Sessions')}</a>
 				<a href="/remote">{t('Remote')}</a>
+				<a href="/manager">{t('Manager')}</a>
 			</nav>
 			<label>
 			{

@@ -1,0 +1,67 @@
+.manageButton {
+    padding: 1px 0.5rem;
+    box-shadow: 1px 3px #0c7878;
+    margin: 0px;
+    margin-left: 0.5rem
+}
+
+th, td {
+    width: 15rem;
+    text-align: center;
+    height: 3rem;
+}
+
+th, td > label {
+    margin-right: 2rem
+}
+
+tr:nth-child(2n+1) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+.managerPanel {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.managerInputCombo {
+    max-width: 15rem;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.managerInputDate {
+    max-width: 15rem;
+    padding-bottom: 0px !important;
+}
+
+ul {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+}
+
+li:nth-child(2n+1) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+li {
+    justify-content: space-between;
+    display: flex;
+    width: 15rem;
+}
+
+table {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 10vw;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+}

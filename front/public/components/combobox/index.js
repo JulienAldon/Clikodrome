@@ -8,19 +8,20 @@ export default function ComboBox(props) {
         if (inputRef.current)
             inputRef.current.value = null
     }
+
     return (
-        <div class={styles.center}>
+        <div class={`${props.class} ${styles.center}`}>
             <input 
                 ref={inputRef}
                 onChange={props.onChange}
-                id="input"
-                class={styles.search}
+                id={props.id}
+                className={`${styles.search}`}
                 type="text"
-                list="elements"
+                list={props.datalist_id}
                 placeholder={props.title}
                 title={props.title}
             />
-            <datalist id="elements">
+            <datalist id={props.datalist_id}>
                 {props.children}
             </datalist>
             <button onClick={handleClear} class={styles.close}></button>
