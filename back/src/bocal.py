@@ -31,4 +31,5 @@ async def get_user_information(login, token):
             result = await resp.json()
             if result == []:
                 raise KeyError('User not registered to bocal access control')
-        return result[0]
+        sorted(result, key=lambda x: x['assigned_date'])
+        return result[-1]
