@@ -7,12 +7,12 @@ export default function StudentEntry(props) {
             {
                 props.students.map((elem) => {
                     return (
-                        <tr class={styles.box}>
+                        <tr id={elem.id} class={styles.box}>
                             <td class={styles.line}>
                                 <label class={styles.label}>{elem.login}</label>
                             </td>
                             <td class={styles.padding}>
-                                <Toggle description="Toggle if student has been seen for this session." login={elem.login} onChange={props.onChange} checked={elem.status === "present" || elem.status === "retard" ? true : false}></Toggle>
+                                <Toggle description="Toggle if student has been seen for this session." login={elem.login} onChange={props.onChange} checked={elem.status === "present" ? true : false}></Toggle>
                             </td>
                         </tr>
                     );

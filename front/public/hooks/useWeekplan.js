@@ -16,7 +16,6 @@ export default function useWeekplan() {
                         return e.promotion_id === id;
                     }));
                 });
-                console.log(result);
                 return result;
             });
          })

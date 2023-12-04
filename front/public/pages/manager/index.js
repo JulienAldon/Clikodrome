@@ -100,7 +100,6 @@ export default function Manager() {
     }
 
     const handleWeekplanPromotionText = (event) => {
-        console.log(event.target.value);
         setWeekplanPromotion(event.target.value)
     }
 
@@ -170,7 +169,6 @@ export default function Manager() {
                             datalist_id={"weekplan_list"}>
                             {
                                 promotions.map((el) => {
-                                    console.log(el)
                                     return <option id={el.id} value={el.name}></option>
                                 })
                             }
@@ -267,7 +265,6 @@ export default function Manager() {
                                                 if (elem.length < 1) {
                                                     return <td className={styles.td}></td>;
                                                 }
-                                                console.log(elem)
                                                 return (
                                                     <td className={styles.td}>
                                                         <label>{elem[0].name}</label>

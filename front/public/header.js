@@ -8,10 +8,6 @@ export default function Header() {
 	const {token, intraRole} = useAuth()
 	const { t, i18n } = useTranslation();
 
-	useEffect(() => {
-		console.log(intraRole);
-	}, []);
-
 	return (
 		<header class="page-header">
 			<nav>

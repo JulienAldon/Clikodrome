@@ -11,7 +11,8 @@ import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
 
 export default function Session(props) {
-    const [searchStudent, setSearchStudent] = useState(undefined);
+    const [ displayStudents, setDisplayStudents ] = useState([]);
+    const [ currentSearch, setCurrentSearch ] = useState("");
     const { token, intraRole } = useAuthGuard(undefined);
     const { toastList, setToastList } = useToast();
     const { students, session, fetchSession, setStudents } = useSession(props.id);
@@ -22,56 +23,48 @@ export default function Session(props) {
     const [ refreshLoading, setRefreshLoading ] = useState(false);
 	const { t, i18n } = useTranslation();
 
+    const handleSearchChange = (event) => {
+        setDisplayStudents(students.filter((el) => el.login.includes(event.target.value)));
+        setCurrentSearch(event.target.value);
+    }
+
     const handleChange = (login) => {
         if (!students)
             return;
-        console.log(students)
-        students.forEach(element => {
-            if (element.login === login) {
-                element.status = element.status === 'present' ? 'NULL' : 'present';
+        const s = students.map((stud) => {
+            if (stud.login === login) {
+                stud.status = stud.status === "present" ? "absent" : "present";
+                return stud;
             }
+            return stud;
         });
-        modifySession(token, props.id, students).then((res) => {
-            if (!res.detail)
+        setStudents([...s]);
+        modifySession(token, props.id, s).then((res) => {
+            if (!res.detail) {
                 setToastList((toastList) => {return [...toastList, {
                     id: props.id,
                     title: t("Information"),
                     description: t("Students status has been saved."),
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
-            fetchSession();
+                fetchSession();
+            }
         });
-    }
-
-    const handleSearchChange = (event) => {
-        setSearchStudent(students.filter((el) => el.login.includes(event.target.value)));
     }
 
     const sortPresent = () => {
         setToggleSortPresent(!toggleSortPresent);
         setToggleSortLogin(undefined);
         const sortedStudents = [...students].sort((a, b) => {
-            if (a.status === null || a.status === 'NULL') {
+            if (a.status === null || a.status === 'absent') {
                 return toggleSortPresent ? -1 : 1;
             }
-            if (a.status !== null || a.status !== 'NULL') {
+            if (a.status !== null || a.status !== 'absent') {
                 return toggleSortPresent ? 1 : -1;
             }
             return 0
         });
-        setStudents(sortedStudents);
-        if (searchStudent) {
-            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-                if (a.status === null || a.status === 'NULL') {
-                    return toggleSortPresent ? -1 : 1;
-                }
-                if (a.status !== null || a.status !== 'NULL') {
-                    return toggleSortPresent ? 1 : -1;
-                }
-                return 0
-            });
-            setSearchStudent(sortedSearchStudents);
-        }
+        setStudents([...sortedStudents]);
     }
 
     const sortLogin = () => {
@@ -86,20 +79,20 @@ export default function Session(props) {
             }
             return 0
         });
-        setStudents(sortedStudents);
-        if (searchStudent) {
-            const sortedSearchStudents = [...searchStudent].sort((a, b) => {
-                if (a.login < b.login) {
-                    return toggleSortLogin ? 1 : -1;
-                }
-                if (a.login > b.login) {
-                    return toggleSortLogin ? -1 : 1;
-                }
-                return 0
-            });
-            setSearchStudent(sortedSearchStudents);
-        }
+        setStudents([...sortedStudents]);
     }
+
+    useEffect(() => {
+        if (students) {
+            setDisplayStudents(students.filter((el) => el.login.includes(currentSearch)));
+        }
+    }, [students]);
+
+    useEffect(() => {
+        if (students) {
+            setDisplayStudents(students.filter((el) => el.login.includes(currentSearch)));
+        }
+    }, [currentSearch])
 
     return (
         <>
@@ -194,7 +187,7 @@ export default function Session(props) {
                     placeholder={t("Search Student")} 
                     description={t("Search student")} 
                     onChange={handleSearchChange} 
-                    onClear={() => {setSearchStudent(students)}}></SearchBar>
+                    onClear={() => {setCurrentSearch(students)}}></SearchBar>
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>
@@ -212,13 +205,10 @@ export default function Session(props) {
                         />
                     </tr>
                 {
-                    searchStudent ? (searchStudent ? <StudentEntry
-                        students={searchStudent}
+                    displayStudents ? <StudentEntry
+                        students={displayStudents}
                         onChange={handleChange}
-                       ></StudentEntry> : null) : (students ? <StudentEntry
-                         students={students}
-                         onChange={handleChange}
-                        ></StudentEntry> : null) 
+                       ></StudentEntry> : null
                 }
                 </table>
             </section> : null

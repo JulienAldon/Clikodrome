@@ -21,7 +21,6 @@ function useAuth() {
     useEffect(() => {
         let decodedToken = jwtDecode(token);
         let currentDate = new Date();
-        console.log(token, intraRole);
         if (decodedToken.exp * 1000 < currentDate.getTime()) {
             logout();
             console.log('logout because token was expired')
