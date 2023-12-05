@@ -11,16 +11,20 @@ import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
 
 export default function Session(props) {
+    const { students, session, fetchSession, setStudents } = useSession(props.id);
     const [ displayStudents, setDisplayStudents ] = useState([]);
     const [ currentSearch, setCurrentSearch ] = useState("");
+
     const { token, intraRole } = useAuthGuard(undefined);
-    const { toastList, setToastList } = useToast();
-    const { students, session, fetchSession, setStudents } = useSession(props.id);
+    
     const [ toggleSortPresent, setToggleSortPresent ] = useState(undefined);
     const [ toggleSortLogin, setToggleSortLogin ] = useState(true);
+    
     const [ signLoading, setSignLoading ] = useState(false);
     const [ validationLoading, setValidationLoading ] = useState(false);
     const [ refreshLoading, setRefreshLoading ] = useState(false);
+    
+    const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
 
     const handleSearchChange = (event) => {
@@ -39,7 +43,8 @@ export default function Session(props) {
             return stud;
         });
         setStudents([...s]);
-        modifySession(token, props.id, s).then((res) => {
+        const added_stud = students.filter(el => el.login === login);
+        modifySession(token, props.id, added_stud).then((res) => {
             if (!res.detail) {
                 setToastList((toastList) => {return [...toastList, {
                     id: props.id,
@@ -47,7 +52,6 @@ export default function Session(props) {
                     description: t("Students status has been saved."),
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
-                fetchSession();
             }
         });
     }
@@ -120,7 +124,6 @@ export default function Session(props) {
                                     description: t("Session has been validated."),
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
-                                fetchSession();
                             });
                         });
                     }}>
@@ -177,7 +180,6 @@ export default function Session(props) {
                                     description: t("Session correctly refreshed."),
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
-                                fetchSession()
                             }
                         })
                     }}></Button>
