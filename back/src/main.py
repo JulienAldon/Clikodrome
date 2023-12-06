@@ -64,7 +64,7 @@ async def refresh_single_session(session_id: str, token: dict[str, Any] = Depend
     await fetch_session_from_intra(session_id)
     return {'result': 'Session refreshed'}
 
-@app.post('/api/session/create', dependencies=[Depends(manager)])
+@app.post('/api/session/create', dependencies=[Depends(staff)])
 async def create_session(sessionCreation: SessionCreation, token: dict[str, Any] = Depends(token)):
     session_date = datetime.datetime.today()
     format_date = session_date.strftime('%Y-%m-%d')
@@ -129,7 +129,7 @@ async def modify_session(students: StudentList, session_id: str, token: dict[str
         res.append({'login': student.login, 'updated': change_student_session(student.login, student.status, session_id)})
     return {'result': res}
 
-@app.delete('/api/session/{session_id}', dependencies=[Depends(manager)])
+@app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
 async def remove_session(session_id, token:dict[str, Any] = Depends(token)):
     res = delete_session(session_id)
     if not res:
