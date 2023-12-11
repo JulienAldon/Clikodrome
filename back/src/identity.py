@@ -79,18 +79,15 @@ class TokenVerifier:
             raise HTTPException(status_code=401)
         if 'email' not in claims:
             raise HTTPException(status_code=401)
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://intra.epitech.eu/auth-{options.intranet_secret}/user/{claims["email"]}?format=json') as response:
-                profile = await response.json()
-                is_pedago = any(g.get('name', '') in options.pedago_authorized_groups for g in profile.get('groups', []))
-                is_assistant = any(g.get('name', '') in options.assistant_authorized_groups for g in profile.get('groups', []))
-                if is_pedago:
-                    role = 'pedago'
-                elif is_assistant:
-                    role = 'assistant'
-                else:
-                    role = 'student'
-                claims['intra-role'] = role
+        is_pedago = any(g in options.pedago_authorized_groups for g in claims.get('roles', []))
+        is_assistant = any(g in options.assistant_authorized_groups for g in claims.get('roles', []))
+        if is_pedago:
+            role = 'pedago'
+        elif is_assistant:
+            role = 'assistant'
+        else:
+            role = 'student'
+        claims['intra-role'] = role
         return claims
 
     async def __call__(self, authorization: str | None = Header(default=None), token: str | None = Cookie(default=None)) -> dict[str, Any]:

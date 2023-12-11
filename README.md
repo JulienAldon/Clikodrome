@@ -29,6 +29,7 @@ Outil d'automatisation des tâches d'émargement pour Epitech MSC
 - Create a new application, save the `CLIENT_SECRET`.
 - Get the `TENANT_ID` and `CLIENT_ID` these variables are required for the application to work properly.
 - Configure the redirect URIs : Go to `Authentification > Web > Redirect URIs > Add URI` and add `https://<your-uri>/api/auth/redirect` `your-uri` can be anything even localhost for development purposes.
+- Configure app roles : Pédago & Assistant under `App role`
 - Finally configure the app permission : go to `API Permissions > Add a permission > Microsof Graph` add `email`, `openid`, `User.Read`, `User.ReadBasic.All`
 
 ## Configuration
