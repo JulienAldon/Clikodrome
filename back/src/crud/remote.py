@@ -29,6 +29,7 @@ def read_remotes():
     return result
 
 def get_remote_by_date(date):
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
         SELECT * from remote

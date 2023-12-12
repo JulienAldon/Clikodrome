@@ -49,7 +49,7 @@ export default function Session(props) {
                 setToastList((toastList) => {return [...toastList, {
                     id: props.id,
                     title: t("Information"),
-                    description: t("Students status has been saved."),
+                    description: t("Students status has been saved.") + " " + added_stud[0].login,
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
             }

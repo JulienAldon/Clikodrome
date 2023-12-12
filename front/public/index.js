@@ -30,9 +30,7 @@ export function App() {
 								<Route default component={NotFound} />
 							</Router>
 						</ErrorBoundary>
-						<Toast 
-							position="top-right"
-						/>
+						<Toast />
 						<Footer></Footer>
 					</div>
 				</LocationProvider>

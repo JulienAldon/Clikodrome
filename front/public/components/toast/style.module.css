@@ -72,7 +72,12 @@
     top: 4em;
     right: 1em;
     transition: transform .6s ease-in-out;
-    animation: toast-in-right .7s;
+}
+
+.bottomLeft {
+	bottom: 4em;
+    left: 1em;
+    transition: transform .6s ease-in-out;
 }
 
 @media (max-width: 40rem) {
