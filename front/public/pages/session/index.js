@@ -32,9 +32,7 @@ export default function Session(props) {
         setCurrentSearch(event.target.value);
     }
 
-    const handleChange = (login) => {
-        if (!students)
-            return;
+    const setStudentStatus = (login) => {
         const s = students.map((stud) => {
             if (stud.login === login) {
                 stud.status = stud.status === "present" ? "absent" : "present";
@@ -43,6 +41,12 @@ export default function Session(props) {
             return stud;
         });
         setStudents([...s]);
+    }
+
+    const handleChange = (login) => {
+        if (!students)
+            return;
+        setStudentStatus(login);
         const added_stud = students.filter(el => el.login === login);
         modifySession(token, props.id, added_stud).then((res) => {
             if (!res.detail) {
@@ -52,6 +56,8 @@ export default function Session(props) {
                     description: t("Students status has been saved.") + " " + added_stud[0].login,
                     backgroundColor: "rgba(15, 150, 150)",
                 }]});
+            } else {
+                setStudentStatus(login);
             }
         });
     }
@@ -60,10 +66,10 @@ export default function Session(props) {
         setToggleSortPresent(!toggleSortPresent);
         setToggleSortLogin(undefined);
         const sortedStudents = [...students].sort((a, b) => {
-            if (a.status === null || a.status === 'absent') {
+            if (a.status === null || a.status === 'absent' || a.status === "NULL") {
                 return toggleSortPresent ? -1 : 1;
             }
-            if (a.status !== null || a.status !== 'absent') {
+            if (a.status !== null || a.status !== 'absent' || a.status === "NULL") {
                 return toggleSortPresent ? 1 : -1;
             }
             return 0
@@ -124,6 +130,7 @@ export default function Session(props) {
                                     description: t("Session has been validated."),
                                     backgroundColor: "rgba(15, 150, 150)",
                                 }]});
+                                fetchSession();
                             });
                         });
                     }}>
