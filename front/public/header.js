@@ -1,6 +1,6 @@
 import settings from './settings';
-import {useAuth} from './context/auth'
-import { logout, login } from './context/useUser'
+import {useAuth, logout} from './context/auth'
+import { login } from './context/useUser'
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'preact/hooks';
 

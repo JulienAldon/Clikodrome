@@ -1,18 +1,10 @@
-import { useAuth } from "./auth";
-import Cookies from 'js-cookie';
+import { useAuth, logout } from "./auth";
 import { getSessions } from "../api";
-import settings from '../settings';
 import { useEffect } from "preact/hooks";
+import settings from "../settings";
 
 function login() {
 	window.location.replace(`${settings.SERVICE_URL}/auth/azure`);
-}
-
-function logout() {
-    Cookies.remove('token');
-    Cookies.remove('intra-role');
-    Cookies.remove('user');
-    window.location.replace(`${settings.ORIGIN}/`)
 }
 
 export default function useAuthGuard(role) {
@@ -34,6 +26,5 @@ export default function useAuthGuard(role) {
 
 export {
     login,
-    logout,
     useAuthGuard
 }

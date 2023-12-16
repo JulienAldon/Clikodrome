@@ -8,7 +8,7 @@ function getSessions(token) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
+        return res.json();
     });
 }
 
@@ -20,7 +20,7 @@ function getStudents(token) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
+        return res.json();
     });
 }
 
@@ -32,7 +32,7 @@ function getRemotes(token) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
+        return res.json();
     });
 }
 
@@ -73,7 +73,7 @@ function modifySession(token, id, student) {
         },
         body: JSON.stringify(stu)
     }).then((res) => {
-        return res.json()
+        return res.json();
     });
 }
 
@@ -85,7 +85,7 @@ function removeSession(token, session_id) {
 			"Authorization": "Bearer " + token
         },
     }).then((res) => {
-        return res.json()
+        return res.json();
     });
 }
 
@@ -99,8 +99,8 @@ function createSession(token, sessionIndex) {
         },
         body: JSON.stringify(b)
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function signSession(token, id) {
@@ -111,8 +111,8 @@ function signSession(token, id) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function addRemote(token, student) {
@@ -125,8 +125,8 @@ function addRemote(token, student) {
         },
         body: JSON.stringify(b)
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function removeRemote(token, id) {
@@ -137,8 +137,8 @@ function removeRemote(token, id) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function checkTodaySession(token) {
@@ -153,16 +153,19 @@ function checkTodaySession(token) {
     });
 }
 
-function refreshSession(token, session_id) {
+function refreshSession(token, session_id, event_session) {
+    let data = {'intra_activity_url': event_session};
+
     return fetch(`${settings.SERVICE_URL}/session/${session_id}/refresh`, {
         method: 'POST',
+        body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json",
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function createPromotion(token, name, year) {
@@ -176,8 +179,8 @@ function createPromotion(token, name, year) {
         },
         body: JSON.stringify(promo)
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function getPromotion(token) {
@@ -188,8 +191,8 @@ function getPromotion(token) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function removePromotion(token, id) {
@@ -200,8 +203,8 @@ function removePromotion(token, id) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function getWeekplans(token) {
@@ -212,8 +215,8 @@ function getWeekplans(token) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 
@@ -225,8 +228,8 @@ function removeWeekplan(token, id) {
 			"Authorization": "Bearer " + token
         }
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 function createWeekplan(token, day, promotion_id) {
@@ -240,8 +243,8 @@ function createWeekplan(token, day, promotion_id) {
         },
         body: JSON.stringify(weekplan)
     }).then((res) => {
-        return res.json()
-    })
+        return res.json();
+    });
 }
 
 export {

@@ -6,6 +6,9 @@
     transition: all 0.5s;
     position: relative;
     top: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .deactivated {

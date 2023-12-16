@@ -78,7 +78,7 @@ const resources = {
         'Weekplan created': 'Weekplan created',
         'Manage promotions': 'Manage promotions',
         'Promotions': 'Promotions',
-
+        'Enter activity url': 'Enter activity url',
     }
   },
   fr: {
@@ -154,7 +154,7 @@ const resources = {
         'Weekplan created': 'Weekplan créé',
         'Manage promotions': 'Gerer les promotions',
         'Promotions': 'Promotions',
-
+        'Enter activity url': 'Entrer l\'url de l\'activité',
       }
   }
 };

@@ -1,5 +1,6 @@
 import aiohttp
 from src.configuration import options
+import datetime
 
 async def card_login():
     async with aiohttp.ClientSession() as session:
@@ -23,6 +24,18 @@ async def get_card_information(_id, token):
         return result
 
 async def get_user_information(login, token):
+    """Get latest card ID from a login.
+
+    Args:
+        login (String): Login of the student.
+        token (String): Bocal token.
+
+    Raises:
+        KeyError: User not registered to bocal access control can be raised by this function.
+
+    Returns:
+        dict: object containing the `card` and the `assigned_date`.
+    """
     async with aiohttp.ClientSession() as session:
         async with session.get(f'{options.bocal_url}/api/epitech.eu/users/{login}/card', headers={
             'Content-Type': 'application/json',
@@ -31,5 +44,5 @@ async def get_user_information(login, token):
             result = await resp.json()
             if result == []:
                 raise KeyError('User not registered to bocal access control')
-        sorted(result, key=lambda x: x['assigned_date'])
+        result = sorted(result, key=lambda x: datetime.datetime.strptime(x['assigned_date'], '%d-%m-%Y %H:%M:%S'))
         return result[-1]

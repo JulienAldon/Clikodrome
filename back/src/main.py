@@ -59,9 +59,17 @@ class PromotionCreation(BaseModel):
     year: str
     name: str
 
+class RefreshSession(BaseModel):
+    intra_activity_url: str
+
 @app.post('/api/session/{session_id}/refresh', dependencies=[Depends(manager)])
-async def refresh_single_session(session_id: str, token: dict[str, Any] = Depends(token)):
-    await fetch_session_from_intra(session_id)
+async def refresh_single_session(session_id: str, data: RefreshSession,  token: dict[str, Any] = Depends(token)):
+    if not data.intra_activity_url:
+        raise HTTPException(status_code=400, detail="Intra activity does not exist")
+    try:
+        await fetch_session_from_intra(session_id, data.intra_activity_url)
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Intra activity does not exist")
     return {'result': 'Session refreshed'}
 
 @app.post('/api/session/create', dependencies=[Depends(staff)])

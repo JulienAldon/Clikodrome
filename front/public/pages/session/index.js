@@ -9,6 +9,7 @@ import { useToast } from '../../context/toast';
 import useSession from '../../hooks/useSession';
 import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
+import FetchButton from '../../components/fetchButton';
 
 export default function Session(props) {
     const { students, session, fetchSession, setStudents } = useSession(props.id);
@@ -60,6 +61,28 @@ export default function Session(props) {
                 setStudentStatus(login);
             }
         });
+    }
+
+    const fetchFromIntra = (id, activity) => {
+        setRefreshLoading(true);
+        refreshSession(token, id, activity).then((res) => {
+            setRefreshLoading(false);
+            if (res.detail) {
+                setToastList((toastList) => {return [...toastList, {
+                    id: id,
+                    title: t("Information"),
+                    description: t("Session could not be refreshed"),
+                    backgroundColor: "rgba(150, 15, 15)",
+                }]});
+            } else {
+                setToastList((toastList) => {return [...toastList, {
+                    id: id,
+                    title: t("Information"),
+                    description: t("Session correctly refreshed."),
+                    backgroundColor: "rgba(15, 150, 150)",
+                }]});
+            }
+        })
     }
 
     const sortPresent = () => {
@@ -164,39 +187,18 @@ export default function Session(props) {
                         })
                         }}>
                     </Button>
-                    <Button 
-                        deactivated={false} 
-                        description={t("Fetch session presence status from epitech intranet")} 
-                        title={t("Fetch from intra")} 
-                        loading={refreshLoading}
-                        action={() => {
-                        setRefreshLoading(true);
-                        refreshSession(token, props.id).then((res) => {
-                            setRefreshLoading(false);
-                            if (res.detail) {
-                                setToastList((toastList) => {return [...toastList, {
-                                    id: props.id,
-                                    title: t("Information"),
-                                    description: t("Session could not be refreshed"),
-                                    backgroundColor: "rgba(150, 15, 15)",
-                                }]});
-                            } else {
-                                setToastList((toastList) => {return [...toastList, {
-                                    id: props.id,
-                                    title: t("Information"),
-                                    description: t("Session correctly refreshed."),
-                                    backgroundColor: "rgba(15, 150, 150)",
-                                }]});
-                            }
-                        })
-                    }}></Button>
+                    <FetchButton
+                        refreshLoading={refreshLoading}
+                        command={fetchFromIntra}
+                        id={props.id}
+                    />
                 </div> : null}
                 <div class={`${styles.center}`}>
                     <SearchBar 
                     placeholder={t("Search Student")} 
                     description={t("Search student")} 
                     onChange={handleSearchChange} 
-                    onClear={() => {setCurrentSearch(students)}}></SearchBar>
+                    onClear={() => {setCurrentSearch("")}}></SearchBar>
                 </div>
                 <table class={styles.centerCol}>
                     <tr class={styles.box}>

@@ -2,9 +2,16 @@ import Cookies from "js-cookie";
 import { createContext } from "preact";
 import { useState, useContext, useEffect } from "preact/hooks";
 import { jwtDecode } from "jwt-decode";
-import { logout } from "./useUser";
+import settings from '../settings';
 
 const AuthContext = createContext(null);
+
+function logout() {
+    Cookies.remove('token');
+    Cookies.remove('intra-role');
+    Cookies.remove('user');
+    window.location.replace(`${settings.ORIGIN}/`)
+}
 
 function AuthProvider(props) {
     const [token, setToken] = useState(() => Cookies.get('token'));
@@ -33,4 +40,4 @@ function useAuth() {
     return {token, intraRole};
 }
 
-export { useAuth, AuthProvider }
+export { useAuth, AuthProvider, logout }

@@ -6,7 +6,7 @@ from src.crud.week_plan import get_weekplan
 from src.database import connection
 from src.configuration import options
 from src.edusign import EdusignToken
-
+from urllib.parse import urlparse
 import datetime
 import Yawaei
 
@@ -114,22 +114,17 @@ async def create_single_session(session_date, session_index):
         if session_id:
             return
 
-async def fetch_session_from_intra(session_id):
+async def fetch_session_from_intra(session_id, intra_event):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
-    res = read_session(session_id)
-    if len(res) != 1:
-        raise KeyError('Session not found')
-    session_date = res[0]['date']
-    session_hour = res[0]['hour']
-    session_hour = convert_time_utc_local_intra(f'{session_date} {session_hour}')
-
-    intra_session = Intra.get_events(
-        options.event_activity,
-        date=session_date,
-        hour=session_hour
-    )
-
-    students = Intra.get_registered_students(options.event_activity + intra_session[0])
+    intra_url = urlparse(intra_event)
+    session_path = intra_url.path
+    if "registered" in session_path:
+        session_path = session_path.replace('/registered', '')
+    try:
+        students = Intra.get_registered_students(session_path)
+    except:
+        print(f'Unable to find intranet activity, please provide a correct url : {intra_event} is not valid')
+        raise KeyError("Event activity does not exist")
 
     database_students = read_student_session(session_id)    
     for student in students.keys():
