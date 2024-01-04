@@ -29,7 +29,6 @@ async def create_single_promotion(name, year):
     for student in students:
         try:
             card = await get_user_information(student, bocal_token)
-            print(card)
         except KeyError:
             students_card_fail.append(student)
             continue

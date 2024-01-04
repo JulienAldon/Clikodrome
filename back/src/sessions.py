@@ -36,20 +36,28 @@ async def sign_single_session(edusign, date, session_index):
     if not sessions:
         return None
 
+    # Get Hour of the choosen session
     choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
     hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
 
+    # Get session from database
     database_session = get_session_by_date(date, hour)
     if not database_session:
         raise SessionNotCreatedException("Database session not created")
 
+    # Check Approval session state
     if database_session[0]['is_approved'] == 0:
         raise SessionNotValidatedException("Session need validation")
 
+    # Get student attendence list (student_session)
     intra_students = read_student_session(str(database_session[0]['id']))
+    # Get Remote students
     remote_students = get_remote_by_date(date)
+
+    # Get Edusign sessions to sign
     edusign_sessions = await edusign.get_sessions(date)
     to_sign_sessions = [e for e in edusign_sessions if e['begin'][11:-1] == hour or e['end'][11:-1] == hour]
+
     for to_sign_session in to_sign_sessions:
         try:
             edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
@@ -61,15 +69,14 @@ async def sign_single_session(edusign, date, session_index):
         print(sign, mail)
 
 async def sign_all_sessions(date, session_index):
-    """Sign all sessions
+    """Sign all schools sessions
     """
     edusign = EdusignToken()
-    for cred in options.all_edusign_credentials:
-        school_ids = await edusign.login(cred['login'], cred['password'])
-        for school_id, token in list(school_ids.items()):
-            edusign.set_school_id(school_id)
-            edusign.set_token(token)
-            await sign_single_session(edusign, date, session_index)
+    school_ids = await edusign.login(options.all_edusign_credentials['login'], options.all_edusign_credentials['password'])
+    for school_id, token in list(school_ids.items()):
+        edusign.set_school_id(school_id)
+        edusign.set_token(token)
+        await sign_single_session(edusign, date, session_index)
 
 def convert_time_utc_local_intra(iso_date):
     date = datetime.datetime.fromisoformat(iso_date)
@@ -88,31 +95,26 @@ async def create_single_session(session_date, session_index):
     """Create a session : fetch students, create db session and create students attendance entries
     """
     edusign = EdusignToken()
-    for cred in options.all_edusign_credentials:
-        school_ids = await edusign.login(cred['login'], cred['password'])
-        sessions = await get_edusign_sessions(edusign, school_ids, session_date)
-        if not sessions:
-            if cred == options.all_edusign_credentials[-1]:
-                raise SessionNotAvailableException(f'No session available for the date {session_date}')
-            continue
+    school_ids = await edusign.login(options.all_edusign_credentials['login'], options.all_edusign_credentials['password'])
+    sessions = await get_edusign_sessions(edusign, school_ids, session_date)
+    if not sessions:
+        raise SessionNotAvailableException(f'No session available for the date {session_date}')
 
-        choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
-        session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
+    choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
+    session_hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
 
-        database_session = get_session_by_date(session_date, session_hour)
-        if database_session:
-            raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
+    database_session = get_session_by_date(session_date, session_hour)
+    if database_session:
+        raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
 
-        session_id = create_session(session_date, session_hour)
-        day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
-        students = []
-        for plan in get_weekplan(day):
-            students += read_student(plan['promotion_id'])
+    session_id = create_session(session_date, session_hour)
+    day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
+    students = []
+    for plan in get_weekplan(day):
+        students += read_student(plan['promotion_id'])
 
-        for student in students:
-            add_student_session(student['login'], student['card'], "NULL", session_id)
-        if session_id:
-            return
+    for student in students:
+        add_student_session(student['login'], student['card'], "NULL", session_id)
 
 async def fetch_session_from_intra(session_id, intra_event):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')

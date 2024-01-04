@@ -10,9 +10,6 @@ class Edusign(ABC):
     @abstractmethod
     async def get_sessions(self, date):
         ...
-    
-    async def get_session(self, session_id):
-        ...
 
     @abstractmethod
     async def get_students(self, session_id):
@@ -88,20 +85,6 @@ class EdusignToken(Edusign):
                 if not result.get('result'):
                     raise KeyError('No result found')
                 return [{'edusign_id': res['COURSE_ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']['result']]
-
-    async def get_session(self, session_id):
-        """Return session students for a given session_id
-        """
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f'{options.edusign_url}/professor/courses/{self.school_id}/{session_id}',
-                headers={'Authorization': f'Bearer {self.token}'}
-            ) as resp:
-                result = await resp.json()
-                if not result.get('result') and result.get('status') != 'success':
-                    print(result)
-                    raise KeyError('No result found')
-                return result['result']['STUDENTS']
 
     async def get_students(self, session_id):
         """Return all students_ids for a given session_id
@@ -209,3 +192,99 @@ class EdusignToken(Edusign):
                         remain_ids.append(e['studentId'])
                 return remain_ids
         return []
+
+# class SignInterface:
+#     def __init__(self, token, baseurl):
+#         self.token = token
+#         self.baseurl = baseurl
+    
+#     def get_sessions(self, uri, date, group_id):
+#         """Get last edusign sessions given a date
+#         """
+#         async with aiohttp.ClientSession() as session:
+#             async with session.get(
+#                 f'{self.baseurl}{uri}?start={date}&end={date}&groupid={group_id}',
+#                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
+#             ) as resp:
+#                 result = await resp.json()
+#                 if not result.get('result'):
+#                     raise KeyError('No result found')
+#                 return result
+#         return []
+
+#     def get_session(self, uri, session_id):
+#         async with aiohttp.ClientSession() as session:
+#             async with session.get(
+#                 f'{self.baseurl}{uri}/{session_id}',
+#                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
+#             ) as resp:
+#                 result = await resp.json()
+#                 if not result.get('result'):
+#                     raise KeyError('No result found')
+#                 return result
+#         return []
+
+#     def get_session_professor_signlink(self, uri, session_id):
+#         async with aiohttp.ClientSession() as session:
+#             async with session.get(
+#                 f'{self.baseurl}{uri}/{session_id}',
+#                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
+#             ) as resp:
+#                 result = await resp.json()
+#                 if not result.get('result'):
+#                     raise KeyError('No result found')
+#                 return result
+#         return []
+
+#     def send_presence_status(self, uri, student_ids, session_id):
+#         async with aiohttp.ClientSession() as session:
+#             async with session.post(
+#                 f'{options.edusign_url}/professor/courses/massSendSignEmail/{self.school_id}/{session_id}',
+#                 json={'studentsId': remain_ids},
+#                 headers={'Authorization': f'Bearer {self.token}'}
+#             ) as resp:
+#                 return await resp.json()
+#         return []
+
+# class Edusign(SignInterface):
+#     def __init__(self, token):
+#         super().__init__(token, "https://ext.edusign.fr/v1")
+
+#     def get_sessions(self, date, group_id):
+#         result = super().get_sessions('/course', date, group_id)
+#         return [{'edusign_id': res['ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']]
+    
+#     def get_session(self, session_id):
+#         result = super().get_session('/course', session_id)
+#         return result['result']
+
+#     def get_session_professor_signature_status(self, session_id):
+#         result = super().get_session('/course', session_id)
+#         if (result['result']['PROFESSOR_SIGNATURE'] != None \
+#             and result['result']['PROFESSOR_SIGNATURE'] != '') \
+#             or (result['result']['PROFESSOR_SIGNATURE_2'] != None \
+#             and result['result']['PROFESSOR_SIGNATURE_2'] != ''):
+#             return True
+#         return False
+    
+#     def get_session_students_to_sign(self, session_id):
+#         students_to_sign = []
+#         result = super().get_session('/course', session_id)
+#         for elem in result['result']['STUDENTS']:
+#             if not elem.get('signatureEmail'):
+#                 students_to_sign.append(elem['studentId'])
+#         return students_to_sign
+
+#     def get_session_professor_signlink(self, session_id):
+#         result = super().get_session_professor_signlink('/course/get-professors-signature-links', session_id)
+#         return result['result']
+
+#     def send_presence_status(self, student_ids, session_id):
+#         remain = await self.get_session_students_to_sign(session_id)
+#         if remain == []:
+#             return {'result': 'mail already sent'}
+#         remain_ids = list(filter(lambda x: x in student_ids, remain))
+#         if remain_ids == []:
+#             return {'result': 'mail already sent'}
+#         result = super().send_presence_status()
+#         return result
