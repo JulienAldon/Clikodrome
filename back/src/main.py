@@ -18,6 +18,8 @@ from src.promotions import create_single_promotion, PromotionStudentCardMissing
 from src.weekplans import create_weekplan
 from src.bocal import card_login, get_card_information
 
+from src.edusign import Edusign
+
 app = FastAPI()
 
 origins = [
@@ -58,6 +60,8 @@ class WeekplanCreation(BaseModel):
 class PromotionCreation(BaseModel):
     year: str
     name: str
+    sign_name: str
+    sign_id: str
 
 class RefreshSession(BaseModel):
     intra_activity_url: str
@@ -190,10 +194,19 @@ async def get_students(token: dict[str, Any] = Depends(token)):
 #         raise HTTPException(404)
 #     return result
 
+@app.get('/api/edusign/promotions', dependencies=[Depends(manager)])
+async def get_edusign_groups(token: dict[str, Any] = Depends(token)):
+    edusign = Edusign(options.edusign_secret)
+    try:
+        result = await edusign.get_groups()
+    except:
+        raise HTTPException(status_code=404)
+    return result
+
 @app.post('/api/promotion', dependencies=[Depends(manager)])
 async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
     try:
-        result = await create_single_promotion(promotion.name, promotion.year)
+        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_name, promotion.sign_id)
     except PromotionStudentCardMissing as e:
         return {'result': e}
     return {'result': 'ok'}

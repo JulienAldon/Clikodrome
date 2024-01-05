@@ -10,6 +10,8 @@ CREATE TABLE promotion (
     id INT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
     name VARCHAR(200), -- wac1, wac2, tek1, tek2, tek3, msc1, msc2, premsc
+    sign_id VARCHAR(200), -- edusign id or sign interface id (2w8jtzqdq84q6e8)
+    sign_name VARCHAR(200), -- edusign name or sign interface name (LYN202)
     year VARCHAR(200)
 ) ENGINE=INNODB;
 
