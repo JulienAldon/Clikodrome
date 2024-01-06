@@ -79,6 +79,7 @@ const resources = {
         'Manage promotions': 'Manage promotions',
         'Promotions': 'Promotions',
         'Enter activity url': 'Enter activity url',
+        'Add Promotion': 'Add promotion',
     }
   },
   fr: {
@@ -155,6 +156,7 @@ const resources = {
         'Manage promotions': 'Gerer les promotions',
         'Promotions': 'Promotions',
         'Enter activity url': 'Entrer l\'url de l\'activité',
+        'Add Promotion': 'Ajouter une promotion',
       }
   }
 };

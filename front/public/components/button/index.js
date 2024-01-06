@@ -10,8 +10,9 @@ export default function Button(props) {
             disabled={props.deactivated || props.loading}
             onBlur={props.onBlur}
             onMouseDown={props.onMouseDown}
+            value={props.id}
         >
-            <label>{props.title}</label>
+            <label value={props.id} for={props.id}>{props.title}</label>
             {props.children}
             <div class={`${ props.loading ? styles.ldsEllipsis : ""}`}><div></div><div></div><div></div><div></div></div>
         </button>

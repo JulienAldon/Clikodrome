@@ -19,8 +19,6 @@ You need to setup every environment variables present in configuration.py
 - event_activity : Intranet Activity url to retreive sign sessions
 - all_edusign_credentials : List of credential (if there is mutltiple account in charge of differents promotions)
 
-Create a `signature.txt` file at the root of the repository, this will be the signature sent everyday to edusign.
-
 # Deploy
 - Backend : FastAPI using uvicorn and pipenv or hatch if you prefer
 - FrontEnd : React classic build folder with nginx

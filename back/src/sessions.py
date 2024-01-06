@@ -5,7 +5,7 @@ from src.crud.remote import get_remote_by_date
 from src.crud.week_plan import get_weekplan
 from src.database import connection
 from src.configuration import options
-from src.edusign import EdusignToken
+from src.edusign import Edusign
 from urllib.parse import urlparse
 import datetime
 import Yawaei
@@ -32,7 +32,7 @@ def get_students_ids(edusign_students, intra_students):
     return ids
 
 async def sign_single_session(edusign, date, session_index):
-    sessions = await edusign.get_sessions(date)
+    sessions = await get_all_sessions(groups, date)
     if not sessions:
         return None
 
@@ -55,48 +55,43 @@ async def sign_single_session(edusign, date, session_index):
     remote_students = get_remote_by_date(date)
 
     # Get Edusign sessions to sign
-    edusign_sessions = await edusign.get_sessions(date)
     to_sign_sessions = [e for e in edusign_sessions if e['begin'][11:-1] == hour or e['end'][11:-1] == hour]
 
     for to_sign_session in to_sign_sessions:
         try:
-            edusign_students = await edusign.get_students(to_sign_session['edusign_id'])
+            edusign_students = await edusign.get_session_students_to_sign(to_sign_session['edusign_id'])
         except KeyError:
             continue
         ids = get_students_ids(edusign_students, intra_students+remote_students)
-        sign = await edusign.sign_session(to_sign_session['edusign_id'])
-        mail = await edusign.send_mails(ids, to_sign_session['edusign_id'])
+        # TODO: return signatures link for professors
+        mail = await edusign.send_presence_status(ids, to_sign_session['edusign_id'])
         print(sign, mail)
 
 async def sign_all_sessions(date, session_index):
     """Sign all schools sessions
     """
-    edusign = EdusignToken()
-    school_ids = await edusign.login(options.all_edusign_credentials['login'], options.all_edusign_credentials['password'])
-    for school_id, token in list(school_ids.items()):
-        edusign.set_school_id(school_id)
-        edusign.set_token(token)
-        await sign_single_session(edusign, date, session_index)
+    edusign = Edusign(options.edusign_secret)
+    await sign_single_session(edusign, date, session_index)
 
 def convert_time_utc_local_intra(iso_date):
     date = datetime.datetime.fromisoformat(iso_date)
     return (date + options.timezone.utcoffset(date)).strftime('%H:00')
 
-async def get_edusign_sessions(edusign, school_ids, session_date):
+async def get_all_sessions(groups, session_date):
+    edusign = Edusign(options.edusign_secret)
     sessions = []
-    for school_id, token in list(school_ids.items()):
-        edusign.set_school_id(school_id)
-        edusign.set_token(token)
-        school_session = await edusign.get_sessions(session_date)
-        sessions += school_session
-    return sessions
+    for group in groups:
+        sessions.append(await edusign.get_sessions(session_date, group))
+    return [x for xs in sessions for x in xs]
 
 async def create_single_session(session_date, session_index):
     """Create a session : fetch students, create db session and create students attendance entries
     """
-    edusign = EdusignToken()
-    school_ids = await edusign.login(options.all_edusign_credentials['login'], options.all_edusign_credentials['password'])
-    sessions = await get_edusign_sessions(edusign, school_ids, session_date)
+    day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
+    plans = get_weekplan(day)
+    groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
+    sessions = await get_all_sessions(groups, session_date)
+
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')
 
@@ -108,9 +103,8 @@ async def create_single_session(session_date, session_index):
         raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
 
     session_id = create_session(session_date, session_hour)
-    day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
     students = []
-    for plan in get_weekplan(day):
+    for plan in plans:
         students += read_student(plan['promotion_id'])
 
     for student in students:

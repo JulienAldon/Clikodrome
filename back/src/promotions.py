@@ -17,7 +17,7 @@ class PromotionStudentCardMissing(BaseCustomException):
     pass
 
 # TODO: Create student even if there is no card associated
-async def create_single_promotion(name, year, sign_name, sign_id):
+async def create_single_promotion(name, year, sign_id):
     """Create a promotion entry, create related students from intranet
     """
     database_promotion = read_promotion_by_name_date(name, year)
@@ -27,15 +27,17 @@ async def create_single_promotion(name, year, sign_name, sign_id):
 
     edusign = Edusign(options.edusign_secret)
     try:
-        students = edusign.get_group(sign_id)['STUDENTS']
+        group = await edusign.get_group(sign_id)
+        students = group['students']
     except KeyError:
-        raise SignGroupDoesNotExist(f'The sign group {sign_name} with {sign_id} does not exist.')
+        raise SignGroupDoesNotExist(f'The sign group {name} with {sign_id} does not exist.')
 
-    promotion_id = create_promotion(name, year, sign_name, sign_id)
+    promotion_id = create_promotion(name, year, sign_id)
 
     students_card_fail = []
     for student in students:
-        student_login = edusign.get_student(student)['EMAIL']
+        student_info = await edusign.get_student(student)
+        student_login = student_info['email']
         try:
             card = await get_user_information(student_login, bocal_token)
         except KeyError:

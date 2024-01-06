@@ -60,7 +60,6 @@ class WeekplanCreation(BaseModel):
 class PromotionCreation(BaseModel):
     year: str
     name: str
-    sign_name: str
     sign_id: str
 
 class RefreshSession(BaseModel):
@@ -206,7 +205,7 @@ async def get_edusign_groups(token: dict[str, Any] = Depends(token)):
 @app.post('/api/promotion', dependencies=[Depends(manager)])
 async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
     try:
-        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_name, promotion.sign_id)
+        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_id)
     except PromotionStudentCardMissing as e:
         return {'result': e}
     return {'result': 'ok'}

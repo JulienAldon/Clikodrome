@@ -3,12 +3,13 @@ import useAuthGuard from "../../context/useUser";
 import { useToast } from "../../context/toast";
 import ComboBox from "../../components/combobox";
 import { useTranslation } from "react-i18next";
-import DateInput from "../../components/dateInput";
+import YearInput from "../../components/yearInput";
 import Button from "../../components/button";
 import { createPromotion, createWeekplan, removePromotion, removeWeekplan } from "../../api";
 import usePromotion from "../../hooks/usePromotion";
 import useWeekplan from "../../hooks/useWeekplan";
 import styles from './style.module.css';
+import useGroup from "../../hooks/useGroup";
 
 export default function Manager() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -16,12 +17,11 @@ export default function Manager() {
 	const { t, i18n } = useTranslation();
     const [ promotion, setPromotion ] = useState("");
     const [ year, setYear ] = useState("");
-    const allowed_promotions = ['wac1', 'wac2', 'premsc', 'msc1', 'msc2']
+    const { groups, fetchEdusignGroup } = useGroup();
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     const { promotions, fetchPromotion } = usePromotion();
     const { weekplans, fetchWeekplan } = useWeekplan();
-    const [ weekplanPromotion, setWeekplanPromotion ] = useState("");
-
+    const [ weekplanPromotion, setWeekplanPromotion ] = useState([]);
 
     const handlePromotionChange = (event) => {
         setPromotion(event.target.value);
@@ -42,7 +42,8 @@ export default function Manager() {
             }]});
             return;
         }
-        createPromotion(token, promotion, year).then((e) => {
+        let sign_obj = groups.filter((e) => {return e.name === promotion})[0]
+        createPromotion(token, promotion, year, sign_obj.id).then((e) => {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Information"),
@@ -66,7 +67,8 @@ export default function Manager() {
     }
 
     const handleDeleteWeekplan = (event) => {
-        removeWeekplan(token, event).then((e) => {
+        console.log(event.target.value);
+        removeWeekplan(token, event.target.value).then((e) => {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Information"),
@@ -78,8 +80,7 @@ export default function Manager() {
     }
 
     const handleAddWeekplan = (day) => {
-        let promotion_id = promotions.filter(el => el.name === weekplanPromotion);
-        if (promotion_id.length < 1) {
+        if (weekplanPromotion.length < 1) {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Error"),
@@ -88,19 +89,34 @@ export default function Manager() {
             }]});
             return;
         }
-        createWeekplan(token, day, promotion_id[0].id).then((res) => {
-            setToastList((toastList) => {return [...toastList, {
-                id: 1,
-                title: t("Information"),
-                description: `${t('Weekplan created')}.`,
-                backgroundColor: "rgba(15, 150, 150)",
-            }]});
-            fetchWeekplan();
-        })
+        weekplanPromotion.map((e) => {
+            if (e.selected) {
+                createWeekplan(token, day, e.id).then((res) => {
+                    setToastList((toastList) => {return [...toastList, {
+                        id: 1,
+                        title: t("Information"),
+                        description: `${t('Weekplan created')}.`,
+                        backgroundColor: "rgba(15, 150, 150)",
+                    }]});
+                    fetchWeekplan();
+                })
+            }
+        });
     }
 
-    const handleWeekplanPromotionText = (event) => {
-        setWeekplanPromotion(event.target.value)
+    const handleWeekplanSelectPromotion = (event) => {
+        let current = weekplanPromotion.filter((e) => e.id === event.target.value)[0];
+        if (current) {
+            let newList = weekplanPromotion.map((e) => {
+                if (e.id === event.target.value) {
+                    e.selected = !e.selected;
+                };
+                return e;
+            });
+            setWeekplanPromotion(newList);
+        } else {
+            setWeekplanPromotion(oldArr => [...oldArr, {'id': event.target.value, 'selected': true}]);
+        }
     }
 
     return (
@@ -108,22 +124,24 @@ export default function Manager() {
             <h1>{t('Manage promotions')}</h1>
             <div className={styles.managerPanel}>
                 <div>
+                    <h2>{t('Add Promotion')}</h2>
                     <ComboBox 
                         class={styles.managerInputCombo}
                         title={t("Select promotion name")} 
                         onChange={handlePromotionChange}
                         datalist_id={"promotion_list"}>
                         {
-                            allowed_promotions.map((el) => {
-                                return <option value={el}></option>
+                            groups.map((el) => {
+                                return <option id={el.id} value={el.name}>{el.name}</option>
                             })
                         }
                         
                     </ComboBox>
-                    <DateInput
+                    <YearInput
                         class={styles.managerInputDate}
                         description={t("Year of the promotion.")}
                         title={t("Year")}
+                        placeholder={t("Enter year")}
                         onChange={handleYearChange}
                     />
                 </div>
@@ -135,14 +153,15 @@ export default function Manager() {
                     description={t("Add a new promotion.")}
                 />
 
-                <div>
+                <div className={styles.promotionBox}>
                     <h2>{t('Promotions')}</h2>
                     {
                         promotions ? 
                         <ul>
                             {promotions.map((el) => {
                                 return <li id={el.id}>
-                                        <label>{el.name}_{el.year}</label>
+                                        <input value={el.id} onClick={handleWeekplanSelectPromotion} type="checkbox" id="select"/>
+                                        <label for="select">{el.name}_{el.year}</label>
                                         <Button
                                             class={`${styles.manageButton}`}
                                             id={el.id}
@@ -161,92 +180,30 @@ export default function Manager() {
             <div id="weekplan">
                 <table className={styles.table}>
                     <caption>
-                       {
-                        promotions ?
-                        <ComboBox 
-                            title={t("Select promotion name")} 
-                            onChange={handleWeekplanPromotionText}
-                            datalist_id={"weekplan_list"}>
-                            {
-                                promotions.map((el) => {
-                                    return <option id={el.id} value={el.name}></option>
-                                })
-                            }
-                        </ComboBox>: null    
-                    }
+                        {t('Select promotions above and assign to week days.')}
                     </caption>
                     <thead>
                         <tr className={styles.tr}>
-                            <th className={styles.th}>
-                                <label>
-                                    {t('Monday')}
-                                </label>
-                                <Button
-                                    class={`${styles.manageButton}`}
-                                    deactivated={false}
-                                    action={() => {
-                                        handleAddWeekplan("Monday")
-                                    }} 
-                                    title={"+"}
-                                    description={t("Add")}
-                                />
-                            </th>
-                            <th className={styles.th}>
-                                <label>
-                                    {t('Tuesday')}
-                                </label>
-                                <Button
-                                    class={`${styles.manageButton}`}
-                                    deactivated={false}
-                                    action={() => {
-                                        handleAddWeekplan("Tuesday")
-                                    }} 
-                                    title={"+"}
-                                    description={t("Add")}
-                                />
-                            </th>
-                            <th className={styles.th}>
-                                <label>
-                                    {t('Wednesday')}
-                                </label>
-                                <Button
-                                    class={`${styles.manageButton}`}
-                                    deactivated={false}
-                                    action={() => {
-                                        handleAddWeekplan("Wednesday")
-                                    }} 
-                                    title={"+"}
-                                    description={t("Add")}
-                                />
-                            </th>
-                            <th className={styles.th}>
-                                <label>
-                                    {t('Thursday')}
-                                </label>
-                                <Button
-                                    class={`${styles.manageButton}`}
-                                    deactivated={false}
-                                    action={() => {
-                                        handleAddWeekplan("Thursday")
-                                    }} 
-                                    title={"+"}
-                                    description={t("Add")}
-                                />
-                            </th>
-                            <th className={styles.th}>
-                                <label>
-                                    {t('Friday')}
-                                </label>
-                                <Button
-                                    class={`${styles.manageButton}`}
-                                    deactivated={false}
-                                    action={() => {
-                                        handleAddWeekplan("Friday")
-                                    }} 
-                                    title={"+"}
-                                    description={t("Add")}
-                                />
-                            </th>
+                            {
+                                days.map((elem) => {
+                                    return (
+                                        <th className={styles.th}>
+                                            <label>
+                                                {t(elem)}
+                                            </label>
+                                            <Button
+                                                class={`${styles.manageButton}`}
+                                                deactivated={false}
+                                                action={() => {
+                                                    handleAddWeekplan(elem)
+                                                }} 
+                                                title={"+"}
+                                                description={t("Add")}
+                                            />
+                                        </th>
+                                    );
+                                })
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -267,15 +224,17 @@ export default function Manager() {
                                                 }
                                                 return (
                                                     <td className={styles.td}>
-                                                        <label>{elem[0].name}</label>
+                                                        <label for={current_plan[0].id}>{elem[0].name}</label>
                                                         <Button
+                                                            id={current_plan[0].id}
                                                             class={`${styles.manageButton}`}
                                                             deactivated={false}
                                                             action={handleDeleteWeekplan} 
                                                             title={"X"}
                                                             description={t("Remove")}
                                                         />
-                                                    </td>);
+                                                    </td>
+                                                );
                                             })
                                         }
                                     </tr>

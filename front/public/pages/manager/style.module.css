@@ -5,6 +5,10 @@
     margin-left: 0.5rem
 }
 
+.promotionBox {
+    align-self: flex-start;
+}
+
 .th, .td {
     width: 15rem;
     text-align: center;
@@ -60,6 +64,7 @@ li {
     flex-direction: column;
     margin: 0px 10vw;
     align-items: center;
+    margin-top: 2rem;
 }
 
 h1, h2 {

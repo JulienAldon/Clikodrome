@@ -1,6 +1,7 @@
 from src.configuration import options
 from abc import ABC, abstractmethod
 import aiohttp
+import datetime
 
 class SignInterface:
     def __init__(self, token, baseurl):
@@ -97,7 +98,7 @@ class Edusign(SignInterface):
 
     async def get_sessions(self, date, group_id):
         result = await super().get_sessions('/course', date, group_id)
-        return [{'edusign_id': res['ID'], 'begin': res['START'], 'end': res['END']} for res in result['result']]
+        return [{'edusign_id': res['ID'], 'begin': res['START'], 'end': res['END'], 'name': res['NAME']} for res in result['result']]
     
     async def get_session(self, session_id):
         result = await super().get_session('/course', session_id)
@@ -105,15 +106,16 @@ class Edusign(SignInterface):
 
     async def get_groups(self):
         result = await super().get_groups('/group')
-        return [{'ID': a['ID'], 'NAME': a['NAME'], 'STUDENTS': a['STUDENTS']} for a in result['result']]
+        year = datetime.datetime.now().year - 3
+        return [{'id': a['ID'], 'name': a['NAME'], 'students': a['STUDENTS']} for a in result['result'] if int(a['DATE_CREATED'][:4]) > year]
 
     async def get_group(self, group_id):
         result = await super().get_group('/group', group_id)
-        return {'STUDENTS': result['result']['STUDENTS'], 'ID': result['result']['ID'], 'NAME': result['result']['NAME']}
+        return {'students': result['result']['STUDENTS'], 'id': result['result']['ID'], 'name': result['result']['NAME']}
 
     async def get_student(self, student_id):
         result = await super().get_student('/student', student_id)
-        return {'EMAIL': result['result']['EMAIL'], 'ID': result['result']['ID']}
+        return {'email': result['result']['EMAIL'], 'id': result['result']['ID']}
 
     async def get_session_professor_signature_status(self, session_id):
         result = await super().get_session('/course', session_id)

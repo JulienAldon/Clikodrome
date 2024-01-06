@@ -1,14 +1,14 @@
 from src.database import connection
 
-def create_promotion(name, year, sign_name, sign_id):
+def create_promotion(name, year, sign_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO promotion (name, year, sign_name, sign_id)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO promotion (name, year, sign_id)
+        VALUES (%s, %s, %s)
     """
     try:
-        cursor.execute(t, (name, year, sign_name, sign_id))
+        cursor.execute(t, (name, year, sign_id))
     except Exception as e:
         print('Error with sql : ', e)
         return False
@@ -52,7 +52,7 @@ def read_promotion(promotion_id):
     except Exception as e:
         print('Error with sql :', e)
         return False
-    return result
+    return result[0]
 
 def delete_promotion(promotion_id):
     connection.ping(reconnect=True)

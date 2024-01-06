@@ -168,8 +168,8 @@ function refreshSession(token, session_id, event_session) {
     });
 }
 
-function createPromotion(token, name, year) {
-    let promo = {name: name, year: year};
+function createPromotion(token, name, year, sign_id) {
+    let promo = {name: name, year: year, sign_id: sign_id};
 
     return fetch(`${settings.SERVICE_URL}/promotion`, {
         method: 'POST',
@@ -219,7 +219,6 @@ function getWeekplans(token) {
     });
 }
 
-
 function removeWeekplan(token, id) {
     return fetch(`${settings.SERVICE_URL}/weekplan/${id}`, {
         method: 'DELETE',
@@ -247,6 +246,18 @@ function createWeekplan(token, day, promotion_id) {
     });
 }
 
+function getEdusignGroups(token) {
+    return fetch(`${settings.SERVICE_URL}/edusign/promotions`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        }
+    }).then((res) => {
+        return res.json();
+    });
+}
+
 export {
     getSessions,
     getSession,
@@ -266,5 +277,6 @@ export {
     removePromotion,
     getWeekplans,
     removeWeekplan,
-    createWeekplan
+    createWeekplan,
+    getEdusignGroups
 }
