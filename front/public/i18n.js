@@ -85,7 +85,8 @@ const resources = {
         'Filter by city': 'Filter by city',
         'Enter city': 'Enter city',
         'Enter city linked to promotion': 'Enter city linked to promotion',
-        'Select a promotion first': 'Select a promotion first'
+        'Select a promotion first': 'Select a promotion first',
+        'Please use a correct edusign promotion.': 'Please use a correct edusign promotion.',
     }
   },
   fr: {
@@ -168,7 +169,8 @@ const resources = {
         'Filter by city': 'Filter par ville',
         'Enter city': 'Entrer la ville',
         'Enter city linked to promotion': 'Entrez la ville de la promotion',
-        'Select a promotion first': 'Selectionnez une promotion'
+        'Select a promotion first': 'Selectionnez une promotion',
+        'Please use a correct edusign promotion.': 'Utilisez une promotion edusign valide.',
       }
   }
 };

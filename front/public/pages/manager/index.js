@@ -10,35 +10,35 @@ import usePromotion from "../../hooks/usePromotion";
 import useWeekplan from "../../hooks/useWeekplan";
 import styles from './style.module.css';
 import useGroup from "../../hooks/useGroup";
-import useCityPromotion from "../../hooks/useCityPromotion";
+import useCityFilter from "../../hooks/useCityFilter";
+import useFormInput from "../../hooks/useFormInput";
 
 export default function Manager() {
     const { token, intraRole } = useAuthGuard("pedago");
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
-    const [ promotion, setPromotion ] = useState("");
-    const [ year, setYear ] = useState("");
-    const [ city, setCity ] = useState("");
-    const [ cityFilter, setCityFilter ] = useState("");
-    const { groups, fetchEdusignGroup } = useGroup();
+    
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    
+    const yearProps = useFormInput();
+    const cityProps = useFormInput();
+    const promotionProps = useFormInput();
+    const { groups, fetchEdusignGroup } = useGroup();
     const { promotions, fetchPromotion } = usePromotion();
-    const [ promotionShow, setPromotionShow ] = useState([]);
+    
     const { weekplans, fetchWeekplan } = useWeekplan();
     const [ weekplansShow, setWeekPlansShow ] = useState([]);
-    const { cities, fetchCitiesWeekplan } = useCityPromotion();
     const [ weekplanPromotion, setWeekplanPromotion ] = useState([]);
     const [ loadingAddPromotion, setLoadingAddPromotion ] = useState(false);
     const [ loadingPromotionList, setLoadingPromotionList ] = useState([]);
 
-    const handlePromotionChange = (event) => {
-        setPromotion(event.target.value);
-    }
-
-    const handleYearChange = (event) => {
-        let el = parseInt(event.target.value).toString()
-        setYear(el);
-    }
+    const {
+        filteredList: promotionShow,
+        cityFilter: cityFilter,
+        setCityFilter: setCityFilter, 
+        handleCityFilterChange: handleCityFilterChange,
+        cities: cities
+    } = useCityFilter({sourceList:promotions});
 
     const setElementInLoadingList = (index, value, setter, custom_list) => {
         const loadingTmp = [
@@ -50,7 +50,8 @@ export default function Manager() {
     }
 
     const handleCreatePromotion = (event) => {
-        if (year === "" || promotion === "" || city === "") {
+        console.log(yearProps, promotionProps, cityProps);
+        if (yearProps.value === "" || promotionProps.value === "" || cityProps.value === "") {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Error"),
@@ -59,9 +60,18 @@ export default function Manager() {
             }]});
             return;
         }
-        let sign_obj = groups.filter((e) => {return e.name === promotion})[0]
+        let sign_obj = groups.filter((e) => {return e.name === promotionProps.value})[0]
+        if (sign_obj === undefined) {
+            setToastList((toastList) => {return [...toastList, {
+                id: 1,
+                title: t("Error"),
+                description: t('Please use a correct edusign promotion.'),
+                backgroundColor: "rgba(150, 15, 15)",
+            }]});
+            return
+        }
         setLoadingAddPromotion(true);
-        createPromotion(token, promotion, year, sign_obj.id, city).then((e) => {
+        createPromotion(token, promotionProps.value, yearProps.value, sign_obj.id, cityProps.value).then((e) => {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Information"),
@@ -74,7 +84,6 @@ export default function Manager() {
     }
 
     const handleDeletePromotion = (index) => (event) => {
-        console.log(index, event.target.value);
         if (!event.target.value) {
             return;
         }
@@ -146,26 +155,6 @@ export default function Manager() {
         }
     }
 
-    const handleCityFilterChange = (event) => {
-        setCityFilter(event.target.value);
-    }
-
-    const handleCityChange = (event) => {
-        setCity(event.target.value);
-    }
-
-    useEffect(() => {
-        if (cityFilter === "" || cityFilter === null) {
-            setPromotionShow(promotions);
-            return
-        }
-        let newWp = promotions.filter((e) => {
-            return e.city === cityFilter
-        });
-        setPromotionShow([...newWp]);
-    }, [ cityFilter, promotions ]);
-
-
     useEffect(() => {
         if (cityFilter === "" || cityFilter === null) {
             setWeekPlansShow(weekplans);
@@ -202,10 +191,12 @@ export default function Manager() {
                 <div>
                     <h2>{t('Add Promotion')}</h2>
                     <ComboBox 
+                        {...promotionProps}
                         class={styles.managerInputCombo}
                         title={t("Select promotion name")} 
-                        onChange={handlePromotionChange}
-                        datalist_id={"promotion_list"}>
+                        datalist_id={"promotion_list"}
+                        handleClear={() => {}}
+                    >
                         {
                             groups.map((el) => {
                                 return <option id={el.id} value={el.name}>{el.name}</option>
@@ -214,18 +205,18 @@ export default function Manager() {
                         
                     </ComboBox>
                     <TextInput
+                        {...yearProps}
                         id="year"
                         class={styles.managerInputDate}
                         description={t("Year of the promotion.")}
                         title={t("Year")}
                         placeholder={t("Enter year")}
-                        onChange={handleYearChange}
                     />
                     <TextInput
+                        {...cityProps}
                         id="city"
                         class={styles.managerInputDate}
                         title={t('Enter city linked to promotion')}
-                        onChange={handleCityChange}
                         placeholder={t('Enter city')}
                     />
                 </div>

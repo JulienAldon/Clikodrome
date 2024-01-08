@@ -9,6 +9,8 @@ import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';
 import SessionsTable from '../../components/sessionsTable';
+import useCityFilter from '../../hooks/useCityFilter';
+import ComboBox from '../../components/combobox';
 
 export default function Home() {
     const { token, intraRole } = useAuthGuard(undefined);
@@ -20,9 +22,34 @@ export default function Home() {
 	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
 	const { t, i18n } = useTranslation();
 
+	const {
+        filteredList: sessionShow,
+        cityFilter: cityFilter,
+        setCityFilter: setCityFilter, 
+        handleCityFilterChange: handleCityFilterChange,
+        cities: cities
+    } = useCityFilter({sourceList:sessions});
+
 	return (
 		<>
 			<section class={`page-body ${styles.home}`}>
+			{
+                cities ?
+                <ComboBox 
+                    class={styles.managerInputCombo}
+                    title={t("Filter by city")}
+                    onChange={handleCityFilterChange}
+                    handleClear={() => {
+                        setCityFilter("");
+                    }}
+                    datalist_id={"city_list"}>
+                    {
+                        cities.map((el) => {
+                            return <option id={el} value={el}>{el}</option>
+                        })
+                    }
+                </ComboBox> : null
+            }
 			{
 				sessionStatus ? <main class={styles.main}>
 						<h2>{t('Create session')}</h2>
@@ -135,12 +162,12 @@ export default function Home() {
 						);
 					}) : null
 				} */}
-				{	sessions ? 
+				{	sessionShow ? 
 					<SessionsTable
 						onClickRow={(id)=>{
 							route("/session/"+id);
 						}}
-						sessionList={sessions}
+						sessionList={sessionShow}
 						sessionHead={[
 							{name: "Action", id: "action", stateIcon: ""},
 							{name: "Id", id: "id", stateIcon: ">"},
