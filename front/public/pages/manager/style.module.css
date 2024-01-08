@@ -6,6 +6,8 @@
 
 .promotionBox {
     align-self: flex-start;
+    height: 14rem;
+    overflow: scroll;
 }
 
 .th, .td {
@@ -27,6 +29,7 @@
 
 .managerInputCombo {
     max-width: 15rem;
+    align-self: center;
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
 }

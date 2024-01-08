@@ -65,6 +65,7 @@ export default function Remote() {
             <div class={`${styles.remoteBox}`}>
                 <h2 class={styles.center}>{t('Remote Students')}</h2>
                 <ComboBox 
+                    handleClear={() => {}}
                     title={t("Select student")} 
                     onChange={handleStudentChange}
                     datalist_id={"remote_list"}>

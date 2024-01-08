@@ -10,7 +10,7 @@ import usePromotion from "../../hooks/usePromotion";
 import useWeekplan from "../../hooks/useWeekplan";
 import styles from './style.module.css';
 import useGroup from "../../hooks/useGroup";
-import useCityWeekplan from "../../hooks/useCityWeekplan";
+import useCityPromotion from "../../hooks/useCityPromotion";
 
 export default function Manager() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -23,10 +23,13 @@ export default function Manager() {
     const { groups, fetchEdusignGroup } = useGroup();
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     const { promotions, fetchPromotion } = usePromotion();
+    const [ promotionShow, setPromotionShow ] = useState([]);
     const { weekplans, fetchWeekplan } = useWeekplan();
     const [ weekplansShow, setWeekPlansShow ] = useState([]);
-    const { cities, fetchCitiesWeekplan } = useCityWeekplan();
+    const { cities, fetchCitiesWeekplan } = useCityPromotion();
     const [ weekplanPromotion, setWeekplanPromotion ] = useState([]);
+    const [ loadingAddPromotion, setLoadingAddPromotion ] = useState(false);
+    const [ loadingPromotionList, setLoadingPromotionList ] = useState([]);
 
     const handlePromotionChange = (event) => {
         setPromotion(event.target.value);
@@ -35,6 +38,15 @@ export default function Manager() {
     const handleYearChange = (event) => {
         let el = parseInt(event.target.value).toString()
         setYear(el);
+    }
+
+    const setElementInLoadingList = (index, value, setter, custom_list) => {
+        const loadingTmp = [
+            ...custom_list.slice(0, index),
+            value, 
+            ...custom_list.slice(index + 1)
+        ];
+        setter(loadingTmp);
     }
 
     const handleCreatePromotion = (event) => {
@@ -48,6 +60,7 @@ export default function Manager() {
             return;
         }
         let sign_obj = groups.filter((e) => {return e.name === promotion})[0]
+        setLoadingAddPromotion(true);
         createPromotion(token, promotion, year, sign_obj.id, city).then((e) => {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
@@ -56,13 +69,16 @@ export default function Manager() {
                 backgroundColor: "rgba(15, 150, 150)",
             }]});
             fetchPromotion();
+            setLoadingAddPromotion(false);
         });
     }
 
-    const handleDeletePromotion = (event) => {
+    const handleDeletePromotion = (index) => (event) => {
+        console.log(index, event.target.value);
         if (!event.target.value) {
             return;
         }
+        setElementInLoadingList(index, true, setLoadingPromotionList, loadingPromotionList);
         removePromotion(token, event.target.value).then((e) => {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
@@ -71,6 +87,7 @@ export default function Manager() {
                 backgroundColor: "rgba(15, 150, 150)",
             }]});
             fetchPromotion();
+            setElementInLoadingList(index, false, setLoadingPromotionList, loadingPromotionList);
         })
     }
 
@@ -137,9 +154,20 @@ export default function Manager() {
         setCity(event.target.value);
     }
 
+    useEffect(() => {
+        if (cityFilter === "" || cityFilter === null) {
+            setPromotionShow(promotions);
+            return
+        }
+        let newWp = promotions.filter((e) => {
+            return e.city === cityFilter
+        });
+        setPromotionShow([...newWp]);
+    }, [ cityFilter, promotions ]);
+
 
     useEffect(() => {
-        if (cityFilter === "") {
+        if (cityFilter === "" || cityFilter === null) {
             setWeekPlansShow(weekplans);
             return
         }
@@ -152,7 +180,25 @@ export default function Manager() {
     return (
         <section class="page-body">
             <h1>{t('Manage promotions')}</h1>
+            {
+                cities ?
+                <ComboBox 
+                    class={styles.managerInputCombo}
+                    title={t("Filter by city")}
+                    onChange={handleCityFilterChange}
+                    handleClear={() => {
+                        setCityFilter("");
+                    }}
+                    datalist_id={"city_list"}>
+                    {
+                        cities.map((el) => {
+                            return <option id={el} value={el}>{el}</option>
+                        })
+                    }
+                </ComboBox> : null
+            }
             <div className={styles.managerPanel}>
+                
                 <div>
                     <h2>{t('Add Promotion')}</h2>
                     <ComboBox 
@@ -187,6 +233,7 @@ export default function Manager() {
                     <Button
                         class={styles.manageButton}
                         deactivated={false}
+                        loading={loadingAddPromotion}
                         action={handleCreatePromotion} 
                         title={"+"}
                         description={t("Add a new promotion.")}
@@ -195,17 +242,19 @@ export default function Manager() {
                 <div className={styles.promotionBox}>
                     <h2>{t('Promotions')}</h2>
                     {
-                        promotions ? 
+                        promotionShow ? 
                         <ul className={styles.ul}>
-                            {promotions.map((el) => {
+                            {promotionShow.map((el, index) => {
                                 return <li id={el.id}>
                                         <input value={el.id} onClick={handleWeekplanSelectPromotion} type="checkbox" id="select"/>
                                         <label for="select">{el.name}_{el.year}</label>
                                         <Button
                                             class={`${styles.manageButton}`}
                                             id={el.id}
+                                            value={el.id}
                                             deactivated={false}
-                                            action={handleDeletePromotion} 
+                                            loading={loadingPromotionList[index]}
+                                            action={handleDeletePromotion(index)}
                                             title={"X"}
                                             description={t("Remove promotion.")}
                                         />
@@ -220,20 +269,6 @@ export default function Manager() {
                 <h2>{t('Manage Weekplans')}</h2>
                 <table className={styles.table}>
                     <caption>
-                        {
-                            cities ?
-                                <ComboBox 
-                                    class={styles.managerInputCombo}
-                                    title={t("Filter by city")}
-                                    onChange={handleCityFilterChange}
-                                    datalist_id={"city_list"}>
-                                        {
-                                            cities.map((el) => {
-                                                return <option id={el} value={el}>{el}</option>
-                                            })
-                                        }
-                                </ComboBox> : null
-                        }
                         <span>{t('Select promotions above and assign to week days.')}</span>
                     </caption>
                     <thead>

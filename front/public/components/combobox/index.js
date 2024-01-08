@@ -7,6 +7,7 @@ export default function ComboBox(props) {
     function handleClear() {
         if (inputRef.current)
             inputRef.current.value = null
+        props.handleClear();
     }
 
     return (
