@@ -36,15 +36,15 @@ def read_session(_id):
         return False
     return result
 
-def create_session(date, hour, is_approved=False):
+def create_session(date, hour, city, is_approved=False):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO session (date, hour, is_approved)
-        VALUES (%s, %s, %s)
+        INSERT INTO session (date, hour, is_approved, city)
+        VALUES (%s, %s, %s, %s)
     """
     try:
-        cursor.execute(t, (date, hour, is_approved))
+        cursor.execute(t, (date, hour, is_approved, city))
     except Exception as e:
         print('Error with sql : ', e)
         return False

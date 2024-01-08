@@ -1,10 +1,10 @@
 import styles from './style.module.css';
 
-export default function DateInput(props) {
+export default function TextInput(props) {
     return (
         <div class={`${props.class} ${styles.center}`}>
             <input 
-                id="date"
+                id={props.id}
                 className={`${props.class} ${styles.search}`}
                 title={props.description}
                 onChange={props.onChange}

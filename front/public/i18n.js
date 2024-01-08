@@ -80,6 +80,12 @@ const resources = {
         'Promotions': 'Promotions',
         'Enter activity url': 'Enter activity url',
         'Add Promotion': 'Add promotion',
+        'No sessions available': 'No sessions available',
+        'Manage Weekplans': 'Manage Weekplans',
+        'Filter by city': 'Filter by city',
+        'Enter city': 'Enter city',
+        'Enter city linked to promotion': 'Enter city linked to promotion',
+        'Select a promotion first': 'Select a promotion first'
     }
   },
   fr: {
@@ -157,6 +163,12 @@ const resources = {
         'Promotions': 'Promotions',
         'Enter activity url': 'Entrer l\'url de l\'activité',
         'Add Promotion': 'Ajouter une promotion',
+        'No sessions available': 'Pas de sessions disponibles',
+        'Manage Weekplans': 'Gérer les planifications de semaine',
+        'Filter by city': 'Filter par ville',
+        'Enter city': 'Entrer la ville',
+        'Enter city linked to promotion': 'Entrez la ville de la promotion',
+        'Select a promotion first': 'Selectionnez une promotion'
       }
   }
 };

@@ -4,9 +4,11 @@ import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
 import useSessionStatus from '../../hooks/useSessionStatus';
 import Button from '../../components/button';
+import { route } from 'preact-router';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';
+import SessionsTable from '../../components/sessionsTable';
 
 export default function Home() {
     const { token, intraRole } = useAuthGuard(undefined);
@@ -87,9 +89,8 @@ export default function Home() {
 								}
 							})
 						}}></Button>
-
 					<h2>{t('All sessions')}</h2> 
-				{
+				{/* {
 					sessions ? 
 					sessions.map((elem, index) => {
 						return (
@@ -133,7 +134,23 @@ export default function Home() {
 						</div>
 						);
 					}) : null
-				}
+				} */}
+				{	sessions ? 
+					<SessionsTable
+						onClickRow={(id)=>{
+							route("/session/"+id);
+						}}
+						sessionList={sessions}
+						sessionHead={[
+							{name: "Action", id: "action", stateIcon: ""},
+							{name: "Id", id: "id", stateIcon: ">"},
+							{name: "City", id: "city", stateIcon: ">"},
+							{name: "Date", id: "date", stateIcon: ">"},
+							{name: "Hour", id: "hour", stateIcon: ">"},
+						]}
+						defaultSort="id"
+					/> : <p>{t('No sessions available')}</p>
+            	}
 				</main> : null
 			}
 			</section>

@@ -3,6 +3,7 @@ from src.crud.student import  read_student
 from src.crud.session import get_session_by_date, read_session, create_session
 from src.crud.remote import get_remote_by_date
 from src.crud.week_plan import get_weekplan
+from src.crud.promotion import read_promotion
 from src.database import connection
 from src.configuration import options
 from src.edusign import Edusign
@@ -23,6 +24,9 @@ class SessionNotAvailableException(BaseCustomException):
     pass
 
 class SessionAlreadyCreated(BaseCustomException):
+    pass
+
+class NoWeekPlanAvailable(BaseCustomException):
     pass
 
 def get_students_ids(edusign_students, intra_students):
@@ -90,8 +94,9 @@ async def create_single_session(session_date, session_index):
     day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
     plans = get_weekplan(day)
     groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
+    if not plans:
+        raise NoWeekPlanAvailable(f'No Weekplan for this date {session_date} go to the manager panel to add one.')
     sessions = await get_all_sessions(groups, session_date)
-
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')
 
@@ -102,7 +107,7 @@ async def create_single_session(session_date, session_index):
     if database_session:
         raise SessionAlreadyCreated(f'Session already created for the date {session_date} and hour {session_hour}')
 
-    session_id = create_session(session_date, session_hour)
+    session_id = create_session(session_date, session_hour, city)
     students = []
     for plan in plans:
         students += read_student(plan['promotion_id'])

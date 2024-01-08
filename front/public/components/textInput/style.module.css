@@ -1,7 +1,7 @@
 .center {
     display: flex;
     align-items: center;
-    padding-bottom: 1rem;
+    margin-bottom: 0rem;
 }
 
 .search {

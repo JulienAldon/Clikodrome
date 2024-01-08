@@ -17,7 +17,7 @@ class PromotionStudentCardMissing(BaseCustomException):
     pass
 
 # TODO: Create student even if there is no card associated
-async def create_single_promotion(name, year, sign_id):
+async def create_single_promotion(name, year, sign_id, city):
     """Create a promotion entry, create related students from intranet
     """
     database_promotion = read_promotion_by_name_date(name, year)
@@ -32,7 +32,7 @@ async def create_single_promotion(name, year, sign_id):
     except KeyError:
         raise SignGroupDoesNotExist(f'The sign group {name} with {sign_id} does not exist.')
 
-    promotion_id = create_promotion(name, year, sign_id)
+    promotion_id = create_promotion(name, year, sign_id, city)
 
     students_card_fail = []
     for student in students:

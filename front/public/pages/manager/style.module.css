@@ -2,7 +2,6 @@
     padding: 1px 0.5rem;
     box-shadow: 1px 3px #0c7878;
     margin: 0px;
-    margin-left: 0.5rem
 }
 
 .promotionBox {
@@ -13,10 +12,6 @@
     width: 15rem;
     text-align: center;
     height: 3rem;
-}
-
-.th, .td > label {
-    margin-right: 2rem
 }
 
 .tr:nth-child(2n+1) {
@@ -36,17 +31,31 @@
     margin-bottom: 1rem !important;
 }
 
+.managerAddButton {
+    display: flex;
+    flex-flow: column;
+    width: 3rem;
+    height: 10rem;
+    margin-top: 3.2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
 .managerInputDate {
+    margin: 0rem 0rem 0.5rem;
     max-width: 15rem;
     padding-bottom: 0px !important;
 }
 
-ul {
+.ul {
     display: flex;
     flex-flow: column;
     justify-content: center;
     align-items: center;
     list-style: none;
+    padding: 0rem;
 }
 
 li:nth-child(2n+1) {

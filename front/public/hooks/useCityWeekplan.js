@@ -2,21 +2,20 @@ import { useEffect, useState } from "preact/hooks"
 import { getWeekplans } from "../api";
 import { useAuth } from "../context/auth";
 
-export default function useWeekplan() {
-    const [ weekplans, setWeekplan ] = useState([]);
+export default function useCityWeekplan() {
     const [ cities, setCities ] = useState([]);
 
     const { token, intraRole} = useAuth()
 
-    async function fetchWeekplan() {
+    async function fetchCitiesWeekplan() {
         getWeekplans(token).then((res) => {
-            setWeekplan(prevWeekplan => {
+            setCities(prevWeekplan => {
                 let result = [];
-                let ids = [...new Set(res.result.map(el => el.promotion_id))];
+                let ids = [...new Set(res.result.map(el => el.city))];
                 ids.forEach((id) => {
                     result.push(res.result.filter((e) => {
-                        return e.promotion_id === id;
-                    }));
+                        return e.city === id;
+                    })[0].city);
                 });
                 return result;
             });
@@ -24,11 +23,11 @@ export default function useWeekplan() {
     }
 
     useEffect(() => {
-        fetchWeekplan()
+        fetchCitiesWeekplan()
     }, [token])
-      
+    
     return {
-        weekplans,
-        fetchWeekplan,
+        cities,
+        fetchCitiesWeekplan,
     }
 }

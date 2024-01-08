@@ -11,11 +11,10 @@ from src.configuration import options
 from src.crud.student_session import read_student_session, read_student_sessions, change_student_session
 from src.crud.session import read_sessions, read_session, delete_session, change_session
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
-from src.crud.promotion import read_promotions, delete_promotion
+from src.crud.promotion import read_promotions, delete_promotion, read_promotion
 from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
 from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
 from src.promotions import create_single_promotion, PromotionStudentCardMissing
-from src.weekplans import create_weekplan
 from src.bocal import card_login, get_card_information
 
 from src.edusign import Edusign
@@ -61,6 +60,7 @@ class PromotionCreation(BaseModel):
     year: str
     name: str
     sign_id: str
+    city: str
 
 class RefreshSession(BaseModel):
     intra_activity_url: str
@@ -205,13 +205,13 @@ async def get_edusign_groups(token: dict[str, Any] = Depends(token)):
 @app.post('/api/promotion', dependencies=[Depends(manager)])
 async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
     try:
-        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_id)
+        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_id, promotion.city)
     except PromotionStudentCardMissing as e:
         return {'result': e}
     return {'result': 'ok'}
 
 @app.get('/api/promotion', dependencies=[Depends(manager)])
-async def read_promotion(token: dict[str, Any] = Depends(token)):
+async def get_promotion(token: dict[str, Any] = Depends(token)):
     return {'result': read_promotions()}
 
 @app.delete('/api/promotion/{promotion_id}', dependencies=[Depends(manager)])
@@ -224,7 +224,8 @@ async def read_weekplan(token: dict[str, Any] = Depends(token)):
 
 @app.post('/api/weekplan', dependencies=[Depends(manager)])
 async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
-    result = create_weekplan_entry(plan.day, plan.promotion_id)
+    promo = read_promotion(plan.promotion_id)
+    result = create_weekplan_entry(plan.day, plan.promotion_id, promo['city'])
     return {'result': result}
 
 @app.delete('/api/weekplan/{plan_id}', dependencies=[Depends(manager)])

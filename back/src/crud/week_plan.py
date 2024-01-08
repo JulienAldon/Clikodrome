@@ -1,14 +1,14 @@
 from src.database import connection
 
-def create_weekplan_entry(day, promotion_id):
+def create_weekplan_entry(day, promotion_id, city):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO week_plan (day, promotion_id)
-        VALUES (%s, %s)
+        INSERT INTO week_plan (day, promotion_id, city)
+        VALUES (%s, %s, %s)
     """
     try:
-        cursor.execute(t, (day, promotion_id))
+        cursor.execute(t, (day, promotion_id, city))
     except Exception as e:
         print('Error with sql : ', e)
         return False
