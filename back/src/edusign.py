@@ -13,7 +13,7 @@ class SignInterface:
         """
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'{self.baseurl}{uri}?start={start_date}&end={end_date}&groupid={group_id}',
+                f'{self.baseurl}{uri}?start={start_date}&end={end_date}&groupId={group_id}',
                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
             ) as resp:
                 result = await resp.json()
@@ -49,7 +49,7 @@ class SignInterface:
     async def get_group(self, uri, group_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'{self.baseurl}/{uri}/{group_id}',
+                f'{self.baseurl}{uri}/{group_id}',
                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
             ) as resp:
                 result = await resp.json()
@@ -61,7 +61,7 @@ class SignInterface:
     async def get_student(self, uri, student_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'{self.baseurl}/{uri}/{student_id}',
+                f'{self.baseurl}{uri}/{student_id}',
                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
             ) as resp:
                 result = await resp.json()
@@ -85,8 +85,8 @@ class SignInterface:
     async def send_presence_status(self, uri, student_ids, session_id):
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f'{options.edusign_url}/{uri}/',
-                json={'studentsId': student_ids},
+                f'{self.baseurl}{uri}',
+                json={'course': session_id, 'students': student_ids},
                 headers={'Authorization': f'Bearer {self.token}'}
             ) as resp:
                 return await resp.json()

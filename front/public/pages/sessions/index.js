@@ -4,7 +4,6 @@ import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
 import useSessionStatus from '../../hooks/useSessionStatus';
 import Button from '../../components/button';
-import { route } from 'preact-router';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';

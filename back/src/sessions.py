@@ -29,53 +29,51 @@ class SessionAlreadyCreated(BaseCustomException):
 class NoWeekPlanAvailable(BaseCustomException):
     pass
 
-def get_students_ids(edusign_students, intra_students):
+async def get_students_ids(edusign_students, intra_students):
+    edusign = Edusign(options.edusign_secret)
+    
     present_students = [a['login'] for a in intra_students 
         if a['status'] == 'present']
-    ids = [a['ID'] for a in edusign_students if a['EMAIL'] in present_students]
+    ids = []
+
+    for stud in edusign_students:
+        stud_login = await edusign.get_student(stud)
+        if stud_login['email'] in present_students:
+            ids.append(stud)
     return ids
 
-async def sign_single_session(edusign, date, session_index):
-    sessions = await get_all_sessions(groups, date)
+async def sign_single_session(session_id):
+    edusign = Edusign(options.edusign_secret)
+    database_session = read_session(session_id)[0]
+    if not database_session:
+        raise SessionNotCreatedException("Database session not created")
+    print(database_session)
+    day = datetime.datetime.strptime(database_session['date'], "%Y-%m-%d").strftime('%A')
+    plans = get_weekplan(day, database_session['city'])
+    
+    groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
+    
+    sessions = await get_all_sessions(groups, database_session['date'])
     if not sessions:
         return None
 
-    # Get Hour of the choosen session
-    choices = [min(sessions, key=lambda x: x['end']), max(sessions, key=lambda x: x['begin'])]
-    hour = choices[session_index]['begin' if session_index == 0 else 'end'][11:-1]
-
-    # Get session from database
-    database_session = get_session_by_date(date, hour)
-    if not database_session:
-        raise SessionNotCreatedException("Database session not created")
-
-    # Check Approval session state
-    if database_session[0]['is_approved'] == 0:
+    if database_session['is_approved'] == 0:
         raise SessionNotValidatedException("Session need validation")
 
-    # Get student attendence list (student_session)
-    intra_students = read_student_session(str(database_session[0]['id']))
-    # Get Remote students
-    remote_students = get_remote_by_date(date)
+    database_students = read_student_session(session_id)
+    remote_students = get_remote_by_date(database_session['date'])
+    to_sign_edusign_sessions = [e for e in sessions if e['begin'][11:-1] == database_session['hour'] or e['end'][11:-1] == database_session['hour']]
 
-    # Get Edusign sessions to sign
-    to_sign_sessions = [e for e in edusign_sessions if e['begin'][11:-1] == hour or e['end'][11:-1] == hour]
-
-    for to_sign_session in to_sign_sessions:
+    for to_sign_session in to_sign_edusign_sessions:
         try:
             edusign_students = await edusign.get_session_students_to_sign(to_sign_session['edusign_id'])
         except KeyError:
             continue
-        ids = get_students_ids(edusign_students, intra_students+remote_students)
+        ids = await get_students_ids(edusign_students, database_students+remote_students)
         # TODO: return signatures link for professors
+        print(ids)
         mail = await edusign.send_presence_status(ids, to_sign_session['edusign_id'])
-        print(sign, mail)
-
-async def sign_all_sessions(date, session_index):
-    """Sign all schools sessions
-    """
-    edusign = Edusign(options.edusign_secret)
-    await sign_single_session(edusign, date, session_index)
+        print(mail)
 
 def convert_time_utc_local_intra(iso_date):
     date = datetime.datetime.fromisoformat(iso_date)
@@ -94,7 +92,6 @@ async def create_single_session(session_date, session_index, city):
     day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
     plans = get_weekplan(day, city)
     groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
-    print(day, session_date, city)
     if not plans:
         raise NoWeekPlanAvailable(f'No Weekplan for this day {day} and city {city} go to the manager panel to add one.')
     sessions = await get_all_sessions(groups, session_date)

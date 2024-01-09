@@ -13,7 +13,7 @@ from src.crud.session import read_sessions, read_session, delete_session, change
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
 from src.crud.promotion import read_promotions, delete_promotion, read_promotion
 from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
-from src.sessions import create_single_session, sign_all_sessions, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
+from src.sessions import create_single_session, sign_single_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
 from src.promotions import create_single_promotion, PromotionStudentCardMissing
 from src.bocal import card_login, get_card_information
 
@@ -100,12 +100,8 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
 
 @app.post('/api/session/{session_id}/sign', dependencies=[Depends(manager)])
 async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
-    session = read_session(session_id)[0]
     try:
-        if session['hour'] < "12:00:00.000":
-            await sign_all_sessions(session['date'], 0)
-        elif session['hour'] > "12:00:00.000":
-            await sign_all_sessions(session['date'], -1)
+        await sign_single_session(session_id)
     except SessionNotValidatedException:
         raise HTTPException(status_code=400)
     return {'result': 'ok'}
