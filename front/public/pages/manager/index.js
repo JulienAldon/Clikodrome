@@ -50,7 +50,6 @@ export default function Manager() {
     }
 
     const handleCreatePromotion = (event) => {
-        console.log(yearProps, promotionProps, cityProps);
         if (yearProps.value === "" || promotionProps.value === "" || cityProps.value === "") {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
@@ -167,7 +166,7 @@ export default function Manager() {
     }, [ cityFilter, weekplans ]);
 
     return (
-        <section class="page-body">
+        <section className={styles.pageBody}>
             <h1>{t('Manage promotions')}</h1>
             {
                 cities ?
@@ -236,7 +235,7 @@ export default function Manager() {
                         promotionShow ? 
                         <ul className={styles.ul}>
                             {promotionShow.map((el, index) => {
-                                return <li id={el.id}>
+                                return <li className={styles.li} id={el.id}>
                                         <input value={el.id} onClick={handleWeekplanSelectPromotion} type="checkbox" id="select"/>
                                         <label for="select">{el.name}_{el.year}</label>
                                         <Button

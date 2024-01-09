@@ -11,16 +11,23 @@ import { useTranslation } from 'react-i18next';
 import SessionsTable from '../../components/sessionsTable';
 import useCityFilter from '../../hooks/useCityFilter';
 import ComboBox from '../../components/combobox';
+import DateInput from '../../components/dateInput';
+import useFormInput from '../../hooks/useFormInput';
 
 export default function Home() {
     const { token, intraRole } = useAuthGuard(undefined);
 	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();
 	const { sessionStatus, fetchSessionStatus } = useSessionStatus();
-	const [ loadingMorning, setLoadingMorning ] = useState(false);
-	const [ loadingEvening, setLoadingEvening ] = useState(false);
+	const [ loadingSession, setLoadingSession ] = useState(false);
 	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
 	const { t, i18n } = useTranslation();
+
+	const halfDay = ['Morning', 'Evening']
+
+	const periodProps = useFormInput();
+	const cityProps = useFormInput();
+    const dateProps = useFormInput();
 
 	const {
         filteredList: sessionShow,
@@ -30,152 +37,151 @@ export default function Home() {
         cities: cities
     } = useCityFilter({sourceList:sessions});
 
+	const handleCreateSession = () => {
+		if (periodProps.value === "" || periodProps.value === null || 
+			dateProps.value === "" || dateProps.value === null || 
+			cityProps.value === "" || cityProps.value === null) {
+			setToastList((toastList) => {return [...toastList, {
+				id: 'createSession',
+				title: t("Error"),
+				description: t("Cannot create promotion, missing field, please provide, date, period and city"),
+				backgroundColor: "rgba(150, 15, 15)",
+			}]});
+			return;
+		}
+		setLoadingSession(true);
+		let period = periodProps.value === 'Morning' ? '0' : '-1';
+		createSession(token, period, dateProps.value, cityProps.value).then((res) => {
+			setLoadingSession(false);
+			if (res.detail && res.detail==="No edusign session available") {
+				setToastList((toastList) => {return [...toastList, {
+					id: 'createSession',
+					title: t("Error"),
+					description: t("No clicodrome session can be created today : no edusign session available."),
+					backgroundColor: "rgba(150, 15, 15)",
+				}]});
+			} else {
+				fetchSessions();
+				fetchSessionStatus();
+				setToastList((toastList) => {return [...toastList, {
+					id: 'createSession',
+					title: t("Information"),
+					description: t("Clicodrome session created."),
+					backgroundColor: "rgba(15, 150, 150)",
+				}]});
+			}
+		})
+	}
+
+	const setElementInLoadingList = (index, value, setter, custom_list) => {
+        const loadingTmp = [
+            ...custom_list.slice(0, index),
+            value, 
+            ...custom_list.slice(index + 1)
+        ];
+        setter(loadingTmp);
+    }
+
+	const handleDeleteSession = (index, event) => {
+        if (!event.target.value) {
+            return;
+        }
+        setElementInLoadingList(index, true, setLoadingSessionList, loadingSessionList);
+        removeSession(token, event.target.value).then((e) => {
+            setToastList((toastList) => {return [...toastList, {
+                id: 1,
+                title: t("Information"),
+                description: `${t('t("Session deleted successfully.")')}`,
+                backgroundColor: "rgba(15, 150, 150)",
+            }]});
+            fetchSessions();
+			setElementInLoadingList(index, false, setLoadingSessionList, loadingSessionList);
+        })
+    }
+
 	return (
 		<>
-			<section class={`page-body ${styles.home}`}>
-			{
-                cities ?
-                <ComboBox 
-                    class={styles.managerInputCombo}
-                    title={t("Filter by city")}
-                    onChange={handleCityFilterChange}
-                    handleClear={() => {
-                        setCityFilter("");
-                    }}
-                    datalist_id={"city_list"}>
-                    {
-                        cities.map((el) => {
-                            return <option id={el} value={el}>{el}</option>
-                        })
-                    }
-                </ComboBox> : null
-            }
+			<section class={`${styles.pageBody} ${styles.home}`}>
 			{
 				sessionStatus ? <main class={styles.main}>
-						<h2>{t('Create session')}</h2>
-						<Button 
-							deactivated={sessionStatus.morning ? true : false}
-							description={t('Create morning session')}
-							title={t("Morning")}
-							loading={loadingMorning}
-							action={() => {
-							setLoadingMorning(true);
-							createSession(token, '0').then((res) => {
-								setLoadingMorning(false);
-								if (res.detail && res.detail==="No edusign session available") {
-									setToastList((toastList) => {return [...toastList, {
-										id: 'createSession',
-										title: t("Error"),
-										description: t("No clicodrome session can be created today : no edusign session available."),
-										backgroundColor: "rgba(150, 15, 15)",
-									}]});
-								} else {
-									fetchSessions();
-									fetchSessionStatus();
-									setToastList((toastList) => {return [...toastList, {
-										id: 'createSession',
-										title: t("Information"),
-										description: t("Morning clicodrome session created."),
-										backgroundColor: "rgba(15, 150, 150)",
-									}]});
-								}
+				<h2>{t('Create session')}</h2>
+				<div className={styles.controlBox}>
+					<div className={styles.formBox}>
+						{
+						cities ?
+						<ComboBox 
+							class={styles.sessionInputCombo}
+							title={t("Enter city")}
+							{...cityProps}
+							handleClear={cityProps.resetFormValue}
+							datalist_id={"citySelect_list"}>
+							{
+								cities.map((el) => {
+									return <option id={el} value={el}>{el}</option>
+								})
+							}
+						</ComboBox> : null
+						}
+						<DateInput
+							class={styles.sessionDateSelect}
+							description={t("Date of the session")}
+							title={t("Date")}
+							{...dateProps}
+						>
+						</DateInput>
+						<ComboBox
+							class={styles.sessionInputCombo}
+							title={t('Select half day')}
+							{...periodProps}
+							handleClear={periodProps.resetFormValue}
+							datalist_id={"day_time"}
+						>
+						{
+							halfDay.map((el) => {
+								return (<option value={el}></option>);
 							})
-						}}></Button>
-						<Button 
-							deactivated={sessionStatus.evening ? true : false}
-							description={t("Create evening session")}
-							title={t('Evening')} 
-							loading={loadingEvening}
-							action={() => {
-							setLoadingEvening(true);
-							createSession(token, '-1').then((res) => {
-								setLoadingEvening(false);
-								if (res.detail && res.detail==="No edusign session available") {
-									setToastList((toastList) => {return [...toastList, {
-										id: 'createSession',
-										title: t("Error"),
-										description: t("No clicodrome session can be created today (no edusign session available)."),
-										backgroundColor: "rgba(150, 15, 15)",
-									}]});
-								} else if (res.detail && res.detail==="Session already created") {
-									setToastList((toastList) => {return [...toastList, {
-										id: 'createSession',
-										title: t("Error"),
-										description: t("Session already created for this date and hour"),
-										backgroundColor: "rgba(150, 15, 15)",
-									}]});
-								} else {
-									fetchSessions();
-									fetchSessionStatus();
-									setToastList((toastList) => {return [...toastList, {
-										id: 'createSession',
-										title: t("Information"),
-										description: t("Evening clicodrome session created."),
-										backgroundColor: "rgba(15, 150, 150)",
-									}]});
-								}
+						}
+						</ComboBox>
+					</div>
+					<Button 
+						class={styles.createButton}
+						deactivated={(periodProps.value === "" || periodProps.value === null || dateProps.value === "" || dateProps.value === null || cityProps.value === "" || cityProps.value === null) ? true : false}
+						description={t('Create session')}
+						title={"+"}
+						loading={loadingSession}
+						action={handleCreateSession}>
+					</Button>
+				</div>
+				<h2>{t('All sessions')}</h2>
+				{
+					cities ?
+					<ComboBox 
+						class={styles.sessionInputCombo}
+						title={t("Enter city")}
+						onChange={handleCityFilterChange}
+						handleClear={() => {
+							setCityFilter("");
+						}}
+						datalist_id={"city_list"}>
+						{
+							cities.map((el) => {
+								return <option id={el} value={el}>{el}</option>
 							})
-						}}></Button>
-					<h2>{t('All sessions')}</h2> 
-				{/* {
-					sessions ? 
-					sessions.map((elem, index) => {
-						return (
-						<div class={styles.session}>
-							<a href={`/session/${elem.id}`}>
-								<span>Session #{elem.id}</span>
-								<span>{elem.date}</span>
-								<span>{elem.hour.slice(0, 8)}</span>
-							</a>
-							<Button
-								title=""
-								deactivated={false}
-								description={t("Delete the session")}
-								loading={loadingSessionList[index]}
-								action={() => {
-									const loadingTmp = [
-										...loadingSessionList.slice(0, index),
-										true,
-										...loadingSessionList.slice(index + 1)
-									];
-									setLoadingSessionList(loadingTmp);
-									loadingSessionList[index] = true;
-									removeSession(token, elem.id).then((res) => {
-										setToastList((toastList) => {return [...toastList, {
-											id: 'deleteSession',
-											title: t('Information'),
-											description: t("Session deleted successfully."),
-											backgroundColor: "rgba(15, 150, 150)",
-										}]});
-										const loadingTmp = [
-											...loadingSessionList.slice(0, index),
-											false, 
-											...loadingSessionList.slice(index + 1)
-										];
-										setLoadingSessionList(loadingTmp);
-										fetchSessions();
-										fetchSessionStatus();
-									})
-								}}
-							></Button>
-						</div>
-						);
-					}) : null
-				} */}
+						}
+					</ComboBox> : null
+				}
 				{	sessionShow ? 
 					<SessionsTable
-						onClickRow={(id)=>{
-							route("/session/"+id);
-						}}
 						sessionList={sessionShow}
 						sessionHead={[
-							{name: "Action", id: "action", stateIcon: ""},
 							{name: "Id", id: "id", stateIcon: ">"},
 							{name: "City", id: "city", stateIcon: ">"},
 							{name: "Date", id: "date", stateIcon: ">"},
 							{name: "Hour", id: "hour", stateIcon: ">"},
 						]}
 						defaultSort="id"
+						loadingList={loadingSessionList}
+						handleDeleteElement={handleDeleteSession}
 					/> : <p>{t('No sessions available')}</p>
             	}
 				</main> : null

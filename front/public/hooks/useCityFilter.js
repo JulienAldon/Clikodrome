@@ -15,7 +15,6 @@ export default function useCityFilter({ sourceList }) {
             return e.city === cityFilter
         });
         setFilteredList([...newWp]);
-        console.log(filteredList, cityFilter);
     }, [ cityFilter, sourceList ]);
 
     const handleCityFilterChange = (event) => {

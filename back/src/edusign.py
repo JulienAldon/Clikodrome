@@ -8,12 +8,12 @@ class SignInterface:
         self.token = token
         self.baseurl = baseurl
     
-    async def get_sessions(self, uri, date, group_id):
+    async def get_sessions(self, uri, start_date, end_date, group_id):
         """Get last edusign sessions given a date
         """
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'{self.baseurl}{uri}?start={date}&end={date}&groupid={group_id}',
+                f'{self.baseurl}{uri}?start={start_date}&end={end_date}&groupid={group_id}',
                 headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'}
             ) as resp:
                 result = await resp.json()
@@ -97,7 +97,7 @@ class Edusign(SignInterface):
         super().__init__(token, "https://ext.edusign.fr/v1")
 
     async def get_sessions(self, date, group_id):
-        result = await super().get_sessions('/course', date, group_id)
+        result = await super().get_sessions('/course', date, date, group_id)
         return [{'edusign_id': res['ID'], 'begin': res['START'], 'end': res['END'], 'name': res['NAME']} for res in result['result']]
     
     async def get_session(self, session_id):

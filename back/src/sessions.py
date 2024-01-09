@@ -88,14 +88,15 @@ async def get_all_sessions(groups, session_date):
         sessions.append(await edusign.get_sessions(session_date, group))
     return [x for xs in sessions for x in xs]
 
-async def create_single_session(session_date, session_index):
+async def create_single_session(session_date, session_index, city):
     """Create a session : fetch students, create db session and create students attendance entries
     """
     day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
-    plans = get_weekplan(day)
+    plans = get_weekplan(day, city)
     groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
+    print(day, session_date, city)
     if not plans:
-        raise NoWeekPlanAvailable(f'No Weekplan for this date {session_date} go to the manager panel to add one.')
+        raise NoWeekPlanAvailable(f'No Weekplan for this day {day} and city {city} go to the manager panel to add one.')
     sessions = await get_all_sessions(groups, session_date)
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')

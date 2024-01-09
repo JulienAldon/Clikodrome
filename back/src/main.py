@@ -51,6 +51,8 @@ class StudentList(BaseModel):
 
 class SessionCreation(BaseModel):
     sessionIndex: str
+    date: str
+    city: str
 
 class WeekplanCreation(BaseModel):
     day: str
@@ -77,11 +79,14 @@ async def refresh_single_session(session_id: str, data: RefreshSession,  token: 
 
 @app.post('/api/session/create', dependencies=[Depends(staff)])
 async def create_session(sessionCreation: SessionCreation, token: dict[str, Any] = Depends(token)):
-    session_date = datetime.datetime.today()
-    format_date = session_date.strftime('%Y-%m-%d')
+    session_date = sessionCreation.date
+    try:
+        format_date = datetime.datetime.strptime(session_date, '%Y-%m-%d').strftime('%Y-%m-%d')
+    except:
+        raise HTTPException(status_code=422, detail="Wrong date format")
     if sessionCreation.sessionIndex == '-1' or sessionCreation.sessionIndex == '0':
         try:
-            await create_single_session(format_date, int(sessionCreation.sessionIndex))
+            await create_single_session(format_date, int(sessionCreation.sessionIndex), sessionCreation.city)
         except SessionNotAvailableException:
             raise HTTPException(status_code=400, detail="No edusign session available")
         except SessionAlreadyCreated:

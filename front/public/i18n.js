@@ -87,17 +87,20 @@ const resources = {
         'Enter city linked to promotion': 'Enter city linked to promotion',
         'Select a promotion first': 'Select a promotion first',
         'Please use a correct edusign promotion.': 'Please use a correct edusign promotion.',
+        'Date of the session': 'Date of the session',
+        'Select half day': 'Select half day',
+        'Cannot create promotion, missing field, please provide, date, period and city': 'Cannot create promotion, missing field, please provide, date, period and city',
     }
   },
   fr: {
     translation: {
-        'Create session' : 'Créer la session',
+        'Create session' : 'Créer une session',
         'Create morning session' : 'Créer la session du matin',
         'Morning': 'Matin',
         'Error': 'Erreur',
         'No clikodrome session can be created today : no edusign session available.': 'Les session clikodromes ne peuvent pas être créées aujourd\'hui : pas de session edusign existante.',
         'Information' : 'Information',
-        'Morning clicodrome session created.' : 'La session clicodrome du matin à été créée.',
+        'Clicodrome session created.' : 'La session clicodrome à été créée.',
         'Create evening session': 'Créer la session du soir',
         'Evening': 'Soir',
         'Session already created for this date and hour': 'La session à déja été créée pour cette date et heure.',
@@ -171,6 +174,9 @@ const resources = {
         'Enter city linked to promotion': 'Entrez la ville de la promotion',
         'Select a promotion first': 'Selectionnez une promotion',
         'Please use a correct edusign promotion.': 'Utilisez une promotion edusign valide.',
+        'Date of the session': 'Date de la session',
+        'Select half day': 'Selectionnez la demi journée',
+        'Cannot create promotion, missing field, please provide, date, period and city': 'La promotion ne peut pas être créée, il faut remplir les champs suivants : date, period and city',
       }
   }
 };

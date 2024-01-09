@@ -89,8 +89,8 @@ function removeSession(token, session_id) {
     });
 }
 
-function createSession(token, sessionIndex) {
-    let b = {sessionIndex: sessionIndex}
+function createSession(token, sessionIndex, date, city) {
+    let b = {sessionIndex: sessionIndex, date: date, city: city}
     return fetch(`${settings.SERVICE_URL}/session/create`, {
         method: 'POST',
         headers: {

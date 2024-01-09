@@ -4,6 +4,12 @@
     margin: 0px;
 }
 
+.pageBody {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .promotionBox {
     align-self: flex-start;
     height: 14rem;
@@ -61,11 +67,11 @@
     padding: 0rem;
 }
 
-li:nth-child(2n+1) {
+.li:nth-child(2n+1) {
     background-color: rgba(22, 22, 22, 0.1);
 }
 
-li {
+.li {
     justify-content: space-between;
     display: flex;
     width: 15rem;

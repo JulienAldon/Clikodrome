@@ -28,13 +28,13 @@ def get_weekplans():
         return False
     return result
 
-def get_weekplan(day):
+def get_weekplan(day, city):
     cursor = connection.cursor()
     t = f"""
-        SELECT * from week_plan WHERE day=%s
+        SELECT * from week_plan WHERE day=%s AND city=%s
     """
     try:
-        cursor.execute(t, (day))
+        cursor.execute(t, (day, city))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)

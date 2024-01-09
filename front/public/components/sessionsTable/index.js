@@ -1,8 +1,8 @@
-import Td from '../linkTableRow';
 import { useState, useEffect } from "react";
 import styles from './style.module.css';
+import Button from "../button";
 
-const SessionsTable = ({onClickRow, sessionList, sessionHead, defaultSort="id"}) => {
+const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList, handleDeleteElement}) => {
     const [ sortedList, setSortedList ] = useState([...sessionList]);
     const [ tableHeadData, setTableHeadData ] = useState([...sessionHead]);
 
@@ -45,52 +45,67 @@ const SessionsTable = ({onClickRow, sessionList, sessionHead, defaultSort="id"})
     }
 
     useEffect(() => {
-    }, []);
-
-    useEffect(() => {
         setSortedList(sessionList);
         setTableHeadData(sessionHead);
     }, [sessionList, sessionHead]);
 
     return (
-        <table className={styles.table}>
-            <thead>
-                <tr className={styles.tr}>
-                    {tableHeadData.map((elem) => {
+        <>
+            <ul className={styles.list}>
+                <li
+                    className={styles.tableHead}
+                >
+                    {tableHeadData.map((t) => {
                         return (
-                            <th className={styles.th}
-                                key={elem.id}>
-                                <label>
-                                    {elem.name}
-                                </label>
-                                <button 
-                                    className={styles.filterButton}
-                                    onClick={() => {
-                                        sortElements(elem.id)
-                                    }}
-                                >
-                                    {elem.stateIcon}
-                                </button>
-                            </th>
+                            <button
+                                className={styles.filterButton}
+                                onClick={() => {
+                                    sortElements(t.id)
+                                }}
+                            >
+                                <label className={styles.item} key={t.id}>{t.name}</label>
+                                {t.stateIcon}    
+                            </button>
                         );
                     })}
-                </tr>
-            </thead>
-            <tbody>
-                {sortedList ? sortedList.map((elem) => {
+                    <div className={styles.filterButton}>
+                        <label>Action</label>
+                    </div>
+                </li>
+            </ul>
+            <ul className={styles.list}>
+                {sortedList ? sortedList.map((elem, index) => {
                     return (
-                        <tr 
-                            onClick={onClickRow}
+                        <li 
                             className={styles.tableRow}
                             key={elem.id}>
+                            <a
+                                href={"/session/"+elem.id}
+                                className={styles.a}
+                            >
                                 {tableHeadData.map((t) => {
-                                    return (<Td key={t.id} to={`/session/${elem.id}`}>{elem[t.id]}</Td>)
+                                    return (
+                                        <label className={styles.item} key={t.id}>{elem[t.id]}</label>
+                                    );
                                 })}
-                        </tr>
+                                 <Button
+                                    class={styles.deleteButton}
+                                    id={elem.id}
+                                    value={elem.id}
+                                    title={"X"}
+                                    deactivated={false}
+                                    loading={loadingList[index]}
+                                    action={(event) => {
+                                        handleDeleteElement(index, event)
+                                        event.stopPropagation();
+                                    }}
+                                ></Button>
+                            </a>
+                        </li>
                     );
                 }) : <></>}
-            </tbody>
-        </table>
+            </ul>
+        </>
     );
 }
 

@@ -11,7 +11,6 @@ export default function useCityPromotion() {
         getPromotion(token).then((res) => {
             setCities(prevPromotion => {
                 let result = [...new Set(res.result.map(el => el.city))];
-                console.log(result);
                 return result;
             });
          })
