@@ -42,12 +42,18 @@ async def get_students_ids(edusign_students, intra_students):
             ids.append(stud)
     return ids
 
+
+
 async def sign_single_session(session_id):
     edusign = Edusign(options.edusign_secret)
+
     database_session = read_session(session_id)[0]
     if not database_session:
         raise SessionNotCreatedException("Database session not created")
-    print(database_session)
+
+    if database_session['is_approved'] == 0:
+        raise SessionNotValidatedException("Session need validation")
+
     day = datetime.datetime.strptime(database_session['date'], "%Y-%m-%d").strftime('%A')
     plans = get_weekplan(day, database_session['city'])
     
@@ -55,10 +61,7 @@ async def sign_single_session(session_id):
     
     sessions = await get_all_sessions(groups, database_session['date'])
     if not sessions:
-        return None
-
-    if database_session['is_approved'] == 0:
-        raise SessionNotValidatedException("Session need validation")
+        raise SessionNotAvailableException("No edusign session linked to this clikodrome session")
 
     database_students = read_student_session(session_id)
     remote_students = get_remote_by_date(database_session['date'])
@@ -71,7 +74,6 @@ async def sign_single_session(session_id):
             continue
         ids = await get_students_ids(edusign_students, database_students+remote_students)
         # TODO: return signatures link for professors
-        print(ids)
         mail = await edusign.send_presence_status(ids, to_sign_session['edusign_id'])
         print(mail)
 
@@ -83,7 +85,11 @@ async def get_all_sessions(groups, session_date):
     edusign = Edusign(options.edusign_secret)
     sessions = []
     for group in groups:
-        sessions.append(await edusign.get_sessions(session_date, group))
+        try:
+            res = await edusign.get_sessions(session_date, group)
+            sessions.append(res)
+        except KeyError:
+            continue
     return [x for xs in sessions for x in xs]
 
 async def create_single_session(session_date, session_index, city):
