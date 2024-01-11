@@ -1,0 +1,35 @@
+.sessionInputCombo {
+	max-width: rem;
+    align-self: center;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.sessionDateSelect {
+	padding: 0px !important;
+}
+
+.formBox {
+	display: flex;
+	flex-direction: column;
+}
+
+.createButton {
+	align-self: center;
+	height: 1rem;
+	padding: 1rem 1.3rem;
+}
+
+.controlBox {
+	display: flex;
+	flex-direction: row;
+    height: 10rem;
+    transition: all ease-in 0.2s;
+    opacity: 1;
+}
+
+.show {
+    height: 0rem;
+    opacity: 0;
+    overflow: hidden;
+}

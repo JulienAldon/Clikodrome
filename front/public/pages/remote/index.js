@@ -1,14 +1,14 @@
 import { useState } from "preact/hooks";
 import { addRemote, removeRemote } from "../../api";
+import { useToast } from "../../context/toast";
+import { useTranslation } from 'react-i18next';
 import Button from "../../components/button";
 import ComboBox from "../../components/combobox";
 import DateInput from "../../components/dateInput";
-import { useToast } from "../../context/toast";
 import useAuthGuard from "../../context/useUser";
 import useRemotes from "../../hooks/useRemote";
 import useStudents from "../../hooks/useStudents";
 import styles from './style.module.css';
-import { useTranslation } from 'react-i18next';
 
 export default function Remote() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -18,9 +18,10 @@ export default function Remote() {
     const {students, fetchStudents} = useStudents()
     const {remoteStudents, fetchRemotes} = useRemotes()
 
-    const [begin, setBegin] = useState(undefined)
-    const [end, setEnd] = useState(undefined)
-    const [student, setStudent] = useState(undefined)
+    const [ begin, setBegin ] = useState(undefined)
+    const [ end, setEnd ] = useState(undefined)
+    const [ student, setStudent ] = useState(undefined)
+    const [ showControl, setShowControl ] = useState(false)
 
 	const { t, i18n } = useTranslation();
 
@@ -62,8 +63,11 @@ export default function Remote() {
 
     return (
         <section class="page-body">
-            <div class={`${styles.remoteBox}`}>
-                <h2 class={styles.center}>{t('Remote Students')}</h2>
+            <h2 class={styles.center}
+                onClick={() => setShowControl(!showControl)}
+            >{t('Remote Students')}</h2>
+            <div class={`${styles.remoteBox} ${!showControl ? styles.show : null}`}
+            >
                 <ComboBox 
                     handleClear={() => {}}
                     title={t("Select student")} 
@@ -93,12 +97,12 @@ export default function Remote() {
                     description={t("Add a new remote student.")}
                 />
             </div>
+            <h2 class={styles.center}>{t('Remote Students')}</h2>
             <table class={styles.centerCol}>
                 <tr class={styles.box}>
                     <th title={t("Login")} class={styles.label}>{t('Login')}</th>
                     <th title={t("Start date")} class={styles.padding}>{t('Begin')}</th>
                     <th title={t("End date")}>{t('End')}</th>
-{/* TODO: Add a button to remove all remote entries */}
                     <th title={t("Remove")}></th>
                 </tr>
                     {

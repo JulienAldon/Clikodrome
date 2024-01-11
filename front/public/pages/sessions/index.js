@@ -3,15 +3,14 @@ import { useState } from 'preact/hooks';
 import useAuthGuard from '../../context/useUser';
 import useSessions from '../../hooks/useSessions';
 import useSessionStatus from '../../hooks/useSessionStatus';
-import Button from '../../components/button';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';
 import SessionsTable from '../../components/sessionsTable';
 import useCityFilter from '../../hooks/useCityFilter';
 import ComboBox from '../../components/combobox';
-import DateInput from '../../components/dateInput';
 import useFormInput from '../../hooks/useFormInput';
+import SessionCreationPanel from '../../components/sessionCreationPanel';
 
 export default function Home() {
     const { token, intraRole } = useAuthGuard(undefined);
@@ -21,8 +20,7 @@ export default function Home() {
 	const [ loadingSession, setLoadingSession ] = useState(false);
 	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
 	const { t, i18n } = useTranslation();
-
-	const halfDay = ['Morning', 'Evening']
+	const [ showCreationPanel, setshowCreationPanel ] = useState(false);
 
 	const periodProps = useFormInput();
 	const cityProps = useFormInput();
@@ -103,54 +101,21 @@ export default function Home() {
 			<section class={`${styles.pageBody} ${styles.home}`}>
 			{
 				sessionStatus ? <main class={styles.main}>
-				<h2>{t('Create session')}</h2>
-				<div className={styles.controlBox}>
-					<div className={styles.formBox}>
-						{
-						cities ?
-						<ComboBox 
-							class={styles.sessionInputCombo}
-							title={t("Enter city")}
-							{...cityProps}
-							handleClear={cityProps.resetFormValue}
-							datalist_id={"citySelect_list"}>
-							{
-								cities.map((el) => {
-									return <option id={el} value={el}>{el}</option>
-								})
-							}
-						</ComboBox> : null
-						}
-						<DateInput
-							class={styles.sessionDateSelect}
-							description={t("Date of the session")}
-							title={t("Date")}
-							{...dateProps}
-						>
-						</DateInput>
-						<ComboBox
-							class={styles.sessionInputCombo}
-							title={t('Select half day')}
-							{...periodProps}
-							handleClear={periodProps.resetFormValue}
-							datalist_id={"day_time"}
-						>
-						{
-							halfDay.map((el) => {
-								return (<option value={el}></option>);
-							})
-						}
-						</ComboBox>
-					</div>
-					<Button 
-						class={styles.createButton}
-						deactivated={(periodProps.value === "" || periodProps.value === null || dateProps.value === "" || dateProps.value === null || cityProps.value === "" || cityProps.value === null) ? true : false}
-						description={t('Create session')}
-						title={"+"}
-						loading={loadingSession}
-						action={handleCreateSession}>
-					</Button>
-				</div>
+				<h2
+					className={styles.showTitle}
+					onClick={() => setshowCreationPanel(!showCreationPanel)}
+				>{t('Create session')}</h2>				
+				{
+					<SessionCreationPanel
+						cities={cities}
+						cityProps={cityProps}
+						periodProps={periodProps}
+						dateProps={dateProps}
+						loadingSession={loadingSession}
+						handleCreateSession={handleCreateSession}
+						show={showCreationPanel}
+					/>
+				}
 				<h2>{t('All sessions')}</h2>
 				{
 					cities ?

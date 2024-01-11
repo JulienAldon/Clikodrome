@@ -14,6 +14,8 @@ section {
     justify-content: center;
     margin: 0px auto 0px auto;
     width: 30rem;
+    transition: all ease-out 0.2s;
+    height: 18rem;
 }
 
 .box {
@@ -63,6 +65,12 @@ section {
 td {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.show {
+    height: 0rem;
+    opacity: 0;
+    overflow: hidden;
 }
 
 @media (max-width: 65rem) {
