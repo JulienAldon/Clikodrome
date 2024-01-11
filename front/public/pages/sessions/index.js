@@ -117,23 +117,25 @@ export default function Home() {
 					/>
 				}
 				<h2>{t('All sessions')}</h2>
-				{
-					cities ?
-					<ComboBox 
-						class={styles.sessionInputCombo}
-						title={t("Enter city")}
-						onChange={handleCityFilterChange}
-						handleClear={() => {
-							setCityFilter("");
-						}}
-						datalist_id={"city_list"}>
-						{
-							cities.map((el) => {
-								return <option id={el} value={el}>{el}</option>
-							})
-						}
-					</ComboBox> : null
-				}
+				<div className={styles.filterSection}>
+					{
+						cities ?
+						<ComboBox 
+							class={styles.sessionInputCombo}
+							title={t("Enter city")}
+							onChange={handleCityFilterChange}
+							handleClear={() => {
+								setCityFilter("");
+							}}
+							datalist_id={"city_list"}>
+							{
+								cities.map((el) => {
+									return <option id={el} value={el}>{el}</option>
+								})
+							}
+						</ComboBox> : null
+					}
+				</div>
 				{	sessionShow ? 
 					<SessionsTable
 						sessionList={sessionShow}

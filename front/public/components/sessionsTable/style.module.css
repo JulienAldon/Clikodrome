@@ -103,11 +103,12 @@
 
 .tableRow:hover .a {
     color: rgba(220, 220, 220, 1);
-
+    cursor: pointer;
 }
 
 .tableRow:hover .deleteButton {
     color: rgba(220, 220, 220, 1);
+    cursor: pointer;
 }
 
 .tableRow:hover .deleteButton:hover {

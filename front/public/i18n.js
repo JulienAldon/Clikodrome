@@ -7,7 +7,7 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   en: {
     translation: {
-        'Create session' : 'Create session',
+        'Create session' : 'Add session',
         'Create morning session' : 'Create morning session',
         'Morning': 'Morning',
         'Error': 'Error',

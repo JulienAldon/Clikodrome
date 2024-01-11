@@ -65,7 +65,7 @@ export default function Remote() {
         <section class="page-body">
             <h2 class={styles.center}
                 onClick={() => setShowControl(!showControl)}
-            >{t('Remote Students')}</h2>
+            >{t('Add remote')}</h2>
             <div class={`${styles.remoteBox} ${!showControl ? styles.show : null}`}
             >
                 <ComboBox 
