@@ -6,6 +6,12 @@ section {
 .center {
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.remotePanel {
+    height: 15rem;
 }
 
 .remoteBox {

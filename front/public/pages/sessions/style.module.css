@@ -23,6 +23,12 @@
 	transition: all 0.5s
 }
 
+.showTitle {
+	justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
 .pageBody {
     flex-grow: 1;
     display: flex;
@@ -32,10 +38,6 @@
 .session a:hover {
     background-color: rgba(22, 22, 22, 0.1);
 	color: rgb(15, 150, 150)
-}
-
-.showTitle:hover {
-	cursor: pointer;
 }
 
 .main {

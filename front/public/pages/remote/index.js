@@ -9,6 +9,7 @@ import useAuthGuard from "../../context/useUser";
 import useRemotes from "../../hooks/useRemote";
 import useStudents from "../../hooks/useStudents";
 import styles from './style.module.css';
+import Volet from "../../components/volet";
 
 export default function Remote() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -21,7 +22,6 @@ export default function Remote() {
     const [ begin, setBegin ] = useState(undefined)
     const [ end, setEnd ] = useState(undefined)
     const [ student, setStudent ] = useState(undefined)
-    const [ showControl, setShowControl ] = useState(false)
 
 	const { t, i18n } = useTranslation();
 
@@ -63,40 +63,41 @@ export default function Remote() {
 
     return (
         <section class="page-body">
-            <h2 class={styles.center}
-                onClick={() => setShowControl(!showControl)}
-            >{t('Add remote')}</h2>
-            <div class={`${styles.remoteBox} ${!showControl ? styles.show : null}`}
+            <Volet
+                className={styles.center}
+                title={t('Add remote')}
             >
-                <ComboBox 
-                    handleClear={() => {}}
-                    title={t("Select student")} 
-                    onChange={handleStudentChange}
-                    datalist_id={"remote_list"}>
-                    {
-                    students ?
-                    students.map((el) => {
-                        return (<option value={el}></option>);
-                    }) : null
-                    }
-                </ComboBox>
-                <DateInput
-                    description={t("Date of the start of remote.")}
-                    title={t("Begin")}
-                    onChange={handleBeginChange}
-                />
-                <DateInput
-                    description={t("Date of the end of remote.")}
-                    title={t("End")}
-                    onChange={handleEndChange}
-                />
-                <Button 
-                    deactivated={false}
-                    action={handleAddRemote} 
-                    title={t("Add")}
-                    description={t("Add a new remote student.")}
-                />
-            </div>
+                <div class={`${styles.remotePanel} ${styles.center}`}>
+                    <ComboBox 
+                        handleClear={() => {}}
+                        title={t("Select student")} 
+                        onChange={handleStudentChange}
+                        datalist_id={"remote_list"}>
+                        {
+                        students ?
+                        students.map((el) => {
+                            return (<option value={el}></option>);
+                        }) : null
+                        }
+                    </ComboBox>
+                    <DateInput
+                        description={t("Date of the start of remote.")}
+                        title={t("Begin")}
+                        onChange={handleBeginChange}
+                    />
+                    <DateInput
+                        description={t("Date of the end of remote.")}
+                        title={t("End")}
+                        onChange={handleEndChange}
+                    />
+                    <Button 
+                        deactivated={false}
+                        action={handleAddRemote} 
+                        title={t("Add")}
+                        description={t("Add a new remote student.")}
+                    />
+                </div>
+            </Volet>
             <h2 class={styles.center}>{t('Remote Students')}</h2>
             <table class={styles.centerCol}>
                 <tr class={styles.box}>

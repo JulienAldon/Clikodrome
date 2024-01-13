@@ -1,8 +1,8 @@
 import styles from './style.module.css';
 
-export default function({signLinks, show, refetchSignList, isRefetching}) {
+export default function({signLinks, refetchSignList, isRefetching}) {
     return (
-        <div className={`${styles.signBox} ${!show ? styles.show : null}`}>
+        <div className={`${styles.signBox}`}>
             {
                 signLinks ? 
                 <ul>

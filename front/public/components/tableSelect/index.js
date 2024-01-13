@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'preact/hooks';
+import Button from '../button';
 import styles from './style.module.css';
-import Button from "../button";
 
-const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList, handleDeleteElement}) => {
-    const [ sortedList, setSortedList ] = useState([...sessionList]);
-    const [ tableHeadData, setTableHeadData ] = useState([...sessionHead]);
+export default function tableSelect({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, handleSelectElement}) {
+    const [ sortedList, setSortedList ] = useState([...tableList]);
+    const [ tableHeadData, setTableHeadData ] = useState([...tableHead]);
 
     function setHeadStateIcon(table, icon, elem) {
         let newTable = table.map((el => {
-            return {...el, stateIcon: ">"}
+            return {...el, stateIcon: ""}
         }));
         newTable.find((el) => el.id == elem).stateIcon = icon;
         return newTable;
@@ -36,18 +36,18 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
         let arr = [...sortedList];
         let tmp = [...arr];
         arr.sort(sortTable(sortElement, 1));
-        setTableHeadData(setHeadStateIcon(tableHeadData, "v", sortElement));
+        setTableHeadData(setHeadStateIcon(tableHeadData, "", sortElement));
         if (JSON.stringify(arr) === JSON.stringify(tmp)) {
             arr.sort(sortTable(sortElement, -1));
-            setTableHeadData(setHeadStateIcon(tableHeadData, "^", sortElement));
+            setTableHeadData(setHeadStateIcon(tableHeadData, "", sortElement));
         }
         setSortedList(arr);
     }
 
     useEffect(() => {
-        setSortedList(sessionList);
-        setTableHeadData(sessionHead);
-    }, [sessionList, sessionHead]);
+        setSortedList(tableList);
+        setTableHeadData(tableHead);
+    }, [tableList, tableHead]);
 
     return (
         <>
@@ -55,10 +55,13 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
                 <li
                     className={styles.tableHead}
                 >
+                     <div className={styles.headCell}>
+                        <label>Select</label>
+                    </div>
                     {tableHeadData.map((t) => {
                         return (
                             <button
-                                className={styles.filterButton}
+                                className={styles.headCell}
                                 onClick={() => {
                                     sortElements(t.id)
                                 }}
@@ -68,7 +71,7 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
                             </button>
                         );
                     })}
-                    <div className={styles.filterButton}>
+                    <div className={styles.headCell}>
                         <label>Action</label>
                     </div>
                 </li>
@@ -77,25 +80,21 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
                 {sortedList ? sortedList.map((elem, index) => {
                     return (
                         <li 
-                            className={styles.tableRow}
-                            key={elem.id}>
-                            <a
-                                href={"/session/"+elem.id}
-                                className={styles.a}
-                            >
-                                {tableHeadData.map((t) => {
-                                    return (
-                                        <label className={styles.item} key={t.id}>{elem[t.id]}</label>
-                                    );
-                                })}
-                                 
-                            </a>
-                            <div className={styles.deleteButtonCell}>
+                            className={`${styles.tableRow}`}
+                            key={elem.id}
+                        >
+                            <input className={styles.licell} value={elem.id} onClick={handleSelectElement} type="checkbox" id={elem.id}/>
+                            {tableHeadData.map((t) => {
+                                return (
+                                    <label className={`${styles.licell} ${styles.item}`} key={t.id}>{elem[t.id]}</label>
+                                );
+                            })}
+                            <div className={`${styles.licell} ${styles.deleteButtonCell}`}>
                                 <Button
                                         class={styles.deleteButton}
                                         id={elem.id}
                                         value={elem.id}
-                                        title={"X"}
+                                        title={""}
                                         deactivated={false}
                                         loading={loadingList[index]}
                                         action={(event) => {
@@ -111,5 +110,3 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
         </>
     );
 }
-
-export default SessionsTable;

@@ -1,7 +1,13 @@
 .manageButton {
-    padding: 1px 0.5rem;
     box-shadow: 1px 3px #0c7878;
+    margin: 4.5rem 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.deleteButton {
     margin: 0px;
+    padding: 0.2rem 0.5rem;
+    box-shadow: 1px 3px #0c7878;
 }
 
 .pageBody {
@@ -11,8 +17,6 @@
 }
 
 .promotionBox {
-    align-self: flex-start;
-    height: 14rem;
     overflow: scroll;
 }
 
@@ -22,13 +26,23 @@
     height: 3rem;
 }
 
-.tr:nth-child(2n+1) {
+.addPromo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.thead {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+.tr:nth-child(2n) {
     background-color: rgba(22, 22, 22, 0.1);
 }
 
 .managerPanel {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -40,41 +54,10 @@
     margin-bottom: 1rem !important;
 }
 
-.managerAddButton {
-    display: flex;
-    flex-flow: column;
-    width: 3rem;
-    height: 10rem;
-    margin-top: 3.2rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    justify-content: center;
-    align-items: center;
-}
-
 .managerInputDate {
     margin: 0rem 0rem 0.5rem;
     max-width: 15rem;
     padding-bottom: 0px !important;
-}
-
-.ul {
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    padding: 0rem;
-}
-
-.li:nth-child(2n+1) {
-    background-color: rgba(22, 22, 22, 0.1);
-}
-
-.li {
-    justify-content: space-between;
-    display: flex;
-    width: 15rem;
 }
 
 .table {

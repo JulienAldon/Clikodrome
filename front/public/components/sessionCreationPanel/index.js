@@ -4,12 +4,12 @@ import ComboBox from "../combobox";
 import DateInput from "../dateInput";
 import styles from "./style.module.css";
 
-const sessionCreationPanel = ({cities, cityProps, periodProps, dateProps, loadingSession, handleCreateSession, show}) => {
+const sessionCreationPanel = ({cities, cityProps, periodProps, dateProps, loadingSession, handleCreateSession}) => {
 	const halfDay = ['Morning', 'Evening']
 	const { t, i18n } = useTranslation();
 
     return (
-    <div className={`${styles.controlBox} ${!show ? styles.show : null}`}>
+    <div className={`${styles.controlBox}`}>
         <div className={styles.formBox}>
             {
             cities ?

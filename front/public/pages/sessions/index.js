@@ -6,11 +6,12 @@ import useSessionStatus from '../../hooks/useSessionStatus';
 import { createSession, removeSession } from '../../api';
 import { useToast } from '../../context/toast';
 import { useTranslation } from 'react-i18next';
-import SessionsTable from '../../components/sessionsTable';
+import TableDisplay from '../../components/tableDisplay';
 import useCityFilter from '../../hooks/useCityFilter';
 import ComboBox from '../../components/combobox';
 import useFormInput from '../../hooks/useFormInput';
 import SessionCreationPanel from '../../components/sessionCreationPanel';
+import Volet from '../../components/volet';
 
 export default function Home() {
     const { token, intraRole } = useAuthGuard(undefined);
@@ -20,7 +21,6 @@ export default function Home() {
 	const [ loadingSession, setLoadingSession ] = useState(false);
 	const [ loadingSessionList, setLoadingSessionList ] = useState([]);
 	const { t, i18n } = useTranslation();
-	const [ showCreationPanel, setshowCreationPanel ] = useState(false);
 
 	const periodProps = useFormInput();
 	const cityProps = useFormInput();
@@ -101,19 +101,19 @@ export default function Home() {
 			<section class={`${styles.pageBody} ${styles.home}`}>
 			{
 				sessionStatus ? <main class={styles.main}>
-				<h2
+				<Volet 
 					className={styles.showTitle}
-					onClick={() => setshowCreationPanel(!showCreationPanel)}
-				>{t('Create session')}</h2>				
-				<SessionCreationPanel
-					cities={cities}
-					cityProps={cityProps}
-					periodProps={periodProps}
-					dateProps={dateProps}
-					loadingSession={loadingSession}
-					handleCreateSession={handleCreateSession}
-					show={showCreationPanel}
-				/>
+					title={t('Create session')}
+				>
+  					<SessionCreationPanel
+						cities={cities}
+						cityProps={cityProps}
+						periodProps={periodProps}
+						dateProps={dateProps}
+						loadingSession={loadingSession}
+						handleCreateSession={handleCreateSession}
+					/>
+				</Volet>
 				<h2>{t('All sessions')}</h2>
 				<div className={styles.filterSection}>
 					{
@@ -135,13 +135,13 @@ export default function Home() {
 					}
 				</div>
 				{	sessionShow ? 
-					<SessionsTable
-						sessionList={sessionShow}
-						sessionHead={[
-							{name: "Id", id: "id", stateIcon: ">"},
-							{name: "City", id: "city", stateIcon: ">"},
-							{name: "Date", id: "date", stateIcon: ">"},
-							{name: "Hour", id: "hour", stateIcon: ">"},
+					<TableDisplay
+						tableList={sessionShow}
+						tableHead={[
+							{name: "Id", id: "id", stateIcon: ""},
+							{name: "City", id: "city", stateIcon: ""},
+							{name: "Date", id: "date", stateIcon: ""},
+							{name: "Hour", id: "hour", stateIcon: ""},
 						]}
 						defaultSort="id"
 						loadingList={loadingSessionList}

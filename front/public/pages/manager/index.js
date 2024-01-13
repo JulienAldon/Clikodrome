@@ -12,6 +12,8 @@ import styles from './style.module.css';
 import useGroup from "../../hooks/useGroup";
 import useCityFilter from "../../hooks/useCityFilter";
 import useFormInput from "../../hooks/useFormInput";
+import Volet from "../../components/volet";
+import TableSelect from "../../components/tableSelect";
 
 export default function Manager() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -168,58 +170,41 @@ export default function Manager() {
     return (
         <section className={styles.pageBody}>
             <h1>{t('Manage promotions')}</h1>
-            {
-                cities ?
-                <ComboBox 
-                    class={styles.managerInputCombo}
-                    title={t("Filter by city")}
-                    onChange={handleCityFilterChange}
-                    handleClear={() => {
-                        setCityFilter("");
-                    }}
-                    datalist_id={"city_list"}>
-                    {
-                        cities.map((el) => {
-                            return <option id={el} value={el}>{el}</option>
-                        })
-                    }
-                </ComboBox> : null
-            }
             <div className={styles.managerPanel}>
-                
-                <div>
-                    <h2>{t('Add Promotion')}</h2>
-                    <ComboBox 
-                        {...promotionProps}
-                        class={styles.managerInputCombo}
-                        title={t("Select promotion name")} 
-                        datalist_id={"promotion_list"}
-                        handleClear={() => {}}
-                    >
-                        {
-                            groups.map((el) => {
-                                return <option id={el.id} value={el.name}>{el.name}</option>
-                            })
-                        }
-                        
-                    </ComboBox>
-                    <TextInput
-                        {...yearProps}
-                        id="year"
-                        class={styles.managerInputDate}
-                        description={t("Year of the promotion.")}
-                        title={t("Year")}
-                        placeholder={t("Enter year")}
-                    />
-                    <TextInput
-                        {...cityProps}
-                        id="city"
-                        class={styles.managerInputDate}
-                        title={t('Enter city linked to promotion')}
-                        placeholder={t('Enter city')}
-                    />
-                </div>
-                <div className={styles.managerAddButton}>
+                <Volet className={styles.addPromo}
+                    title={t('Add Promotion')}
+                >
+                    <div className={styles.addPromoVolet}>
+                        <ComboBox 
+                            {...promotionProps}
+                            class={styles.managerInputCombo}
+                            title={t("Select promotion name")} 
+                            datalist_id={"promotion_list"}
+                            handleClear={() => {}}
+                        >
+                            {
+                                groups.map((el) => {
+                                    return <option id={el.id} value={el.name}>{el.name}</option>
+                                })
+                            }
+                            
+                        </ComboBox>
+                        <TextInput
+                            {...yearProps}
+                            id="year"
+                            class={styles.managerInputDate}
+                            description={t("Year of the promotion.")}
+                            title={t("Year")}
+                            placeholder={t("Enter year")}
+                        />
+                        <TextInput
+                            {...cityProps}
+                            id="city"
+                            class={styles.managerInputDate}
+                            title={t('Enter city linked to promotion')}
+                            placeholder={t('Enter city')}
+                        />
+                    </div>
                     <Button
                         class={styles.manageButton}
                         deactivated={false}
@@ -228,29 +213,40 @@ export default function Manager() {
                         title={"+"}
                         description={t("Add a new promotion.")}
                     />
-                </div>
+                </Volet>
                 <div className={styles.promotionBox}>
                     <h2>{t('Promotions')}</h2>
                     {
-                        promotionShow ? 
-                        <ul className={styles.ul}>
-                            {promotionShow.map((el, index) => {
-                                return <li className={styles.li} id={el.id}>
-                                        <input value={el.id} onClick={handleWeekplanSelectPromotion} type="checkbox" id="select"/>
-                                        <label for="select">{el.name}_{el.year}</label>
-                                        <Button
-                                            class={`${styles.manageButton}`}
-                                            id={el.id}
-                                            value={el.id}
-                                            deactivated={false}
-                                            loading={loadingPromotionList[index]}
-                                            action={handleDeletePromotion(index)}
-                                            title={"X"}
-                                            description={t("Remove promotion.")}
-                                        />
-                                    </li>
-                            }) }
-                        </ul> : null
+                        cities ?
+                        <ComboBox 
+                            class={styles.managerInputCombo}
+                            title={t("Filter by city")}
+                            onChange={handleCityFilterChange}
+                            handleClear={() => {
+                                setCityFilter("");
+                            }}
+                            datalist_id={"city_list"}>
+                            {
+                                cities.map((el) => {
+                                    return <option id={el} value={el}>{el}</option>
+                                })
+                            }
+                        </ComboBox> : null
+                    }
+                    {
+                        promotionShow ?
+                        <TableSelect 
+                            tableList={promotionShow}
+                            tableHead={[
+                                {name: "Name", id: "name", stateIcon: ""},
+                                {name: "City", id: "city", stateIcon: ""},
+                                {name: "Sign_id", id: "sign_id", stateIcon: ""},
+                            ]}
+                            defaultSort="city"
+                            loadingList={loadingPromotionList}
+                            handleDeleteElement={handleDeletePromotion}
+                            handleSelectElement={handleWeekplanSelectPromotion}
+                        /> : null
                     }
                 </div>
             </div>
@@ -261,7 +257,7 @@ export default function Manager() {
                     <caption>
                         <span>{t('Select promotions above and assign to week days.')}</span>
                     </caption>
-                    <thead>
+                    <thead className={styles.thead}>
                         <tr className={styles.tr}>
                             {
                                 days.map((elem) => {
@@ -271,7 +267,7 @@ export default function Manager() {
                                                 {t(elem)}
                                             </label>
                                             <Button
-                                                class={`${styles.manageButton}`}
+                                                class={`${styles.deleteButton}`}
                                                 deactivated={false}
                                                 action={() => {
                                                     handleAddWeekplan(elem)
@@ -306,7 +302,7 @@ export default function Manager() {
                                                         <label for={current_plan[0].id}>{elem[0].name}</label>
                                                         <Button
                                                             id={current_plan[0].id}
-                                                            class={`${styles.manageButton}`}
+                                                            class={`${styles.deleteButton}`}
                                                             deactivated={false}
                                                             action={handleDeleteWeekplan} 
                                                             title={"X"}

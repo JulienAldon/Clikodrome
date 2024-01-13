@@ -1,0 +1,96 @@
+.filterButton {
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+    border: none;
+    box-shadow: none;
+    background-color: unset;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: row;
+}
+
+.filterButton:hover {
+    font-weight: 900;
+}
+
+.tableRow {
+    list-style: none;
+    width: 60vw;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.tableHead {
+    display: flex;
+    justify-content: space-around;
+    width: 60vw;
+    background-color: rgba(22, 22, 22, 0.1);
+    display: flex;
+    align-items: center;
+    height: 3rem;
+    cursor: pointer;
+}
+
+.deleteButtonCell {
+    margin: 0rem 5rem;
+}
+
+.tableRow:nth-child(2n) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+.deleteButton {
+    padding: 0rem 0.5rem;
+    margin: 0rem;
+    box-shadow: none;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    margin:0rem;
+}
+
+.item {
+    width: 5rem;
+    justify-content: center;
+    display: flex;
+}
+
+.item:hover {
+    cursor: pointer;
+}
+
+.a {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: space-around;
+    text-decoration: none;
+    color: rgba(22, 22, 22, 1);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    height: 2rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+.tableRow:hover {
+	background-color: rgba(15, 150, 150);
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .a {
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .deleteButton {
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .deleteButton:hover {
+    background-color: rgba(220, 220, 220, 1);
+    color: rgba(15, 150, 150);
+}

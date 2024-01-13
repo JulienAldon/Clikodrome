@@ -11,6 +11,7 @@ import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
 import FetchButton from '../../components/fetchButton';
 import SignaturePanel from '../../components/signaturePanel';
+import Volet from '../../components/volet';
 
 export default function Session(props) {
     const { students, session, fetchSession, setStudents, signLinks, fetchSignatureLink, signatureLinkLoader } = useSession(props.id);
@@ -137,17 +138,13 @@ export default function Session(props) {
                 <div class={`${styles.sessionTitle}`}>
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
-                <h2
-                    className={styles.signTitle}
-                    onClick={() => {setShowSignaturePanel(!showSignaturePanel)}}
-                >{t('Sign edusign sessions')}</h2>
-                <SignaturePanel
-                    signLinks={signLinks}
-                    show={showSignaturePanel}
-                    refetchSignList={fetchSignatureLink}
-                    isRefetching={signatureLinkLoader}
-
-                />
+                <Volet className={styles.signTitle} title={t('Sign edusign sessions')}>
+                    <SignaturePanel
+                        signLinks={signLinks}
+                        refetchSignList={fetchSignatureLink}
+                        isRefetching={signatureLinkLoader}
+                    />
+                </Volet>
                 {intraRole === "pedago" ? 
                 <div class={`${styles.center} ${styles.buttonBox}`}>
                     <Button 

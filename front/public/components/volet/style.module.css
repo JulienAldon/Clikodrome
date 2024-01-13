@@ -2,19 +2,24 @@
     text-decoration: none;
     text-align: left;
     border:none;
-    background: white;
+    background: none;
     display: flex;
     align-items: center;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
 }
 
 .content {
-    transition: max-height 0.4s ease;
+    transition: max-height 0.3s ease;
     max-height: 10em;
+    opacity: 1;
+    display: flex;
 }
 
 .hide {
     max-height: 0;
+    opacity: 0;
     overflow: hidden;
 }
 
