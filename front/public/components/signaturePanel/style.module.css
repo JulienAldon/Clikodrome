@@ -1,0 +1,72 @@
+.signBox {
+    transition: all ease-in 0.2s;
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.buttonSignList {
+    background-color: none;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.signLoader {
+    width: 5px;
+    height: 5px;
+    border: 5px solid rgba(15, 150, 150);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    cursor: pointer;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
+.show {
+    height: 0rem;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.signElement {
+    list-style: none;
+    padding: none;
+    margin: none;
+}
+
+.linkElement label {
+    cursor: pointer;
+}
+
+
+.linkElement {
+    transition: all ease-in 0.2s;
+    text-decoration: none;
+    color: rgba(15, 15, 15, 0.8);
+    margin-left: 1rem;
+}
+
+.signElement:hover .linkElement {
+    color: rgba(15, 15, 15, 0.4);
+}
+
+.signOk {
+    cursor: pointer;
+    color: rgba(15, 150, 15, 0.8)
+}
+
+.signKo {
+    cursor: pointer;
+    color: rgba(150, 15, 15, 0.8)
+}

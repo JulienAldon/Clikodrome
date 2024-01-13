@@ -49,6 +49,18 @@ function getSession(token, id) {
     });
 }
 
+function getSessionSignatures(token, id) {
+    return fetch(`${settings.SERVICE_URL}/session/${id}/signature`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        }
+    }).then((res) => {
+        return res.json();
+    });
+}
+
 function validateSession(token, id) {
     return fetch(`${settings.SERVICE_URL}/session/${id}`, {
         method: 'POST',
@@ -278,5 +290,6 @@ export {
     getWeekplans,
     removeWeekplan,
     createWeekplan,
-    getEdusignGroups
+    getEdusignGroups,
+    getSessionSignatures
 }

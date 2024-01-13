@@ -4,6 +4,11 @@
     padding-bottom: 2rem;
 }
 
+.signTitle {
+    display: flex;
+    justify-content: center;
+}
+
 .buttonBox {
     flex-flow: row;
 }

@@ -42,10 +42,7 @@
 .tableRow {
     list-style: none;
     width: 60vw;
-    height: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    display: grid;
+    display: flex;
     align-items: center;
 }
 
@@ -56,9 +53,11 @@
     background-color: rgba(22, 22, 22, 0.1);
     display: flex;
     align-items: center;
-    height: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    height: 3rem;
+}
+
+.deleteButtonCell {
+    margin: 0rem 5rem;
 }
 
 .tableRow:nth-child(2n) {
@@ -89,10 +88,15 @@
 }
 
 .a {
+    flex: 1 1 auto;
     display: flex;
     justify-content: space-around;
     text-decoration: none;
     color: rgba(22, 22, 22, 1);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    height: 2rem;
+    align-items: center;
 }
 
 .tableRow:hover {

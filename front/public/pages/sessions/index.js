@@ -88,7 +88,7 @@ export default function Home() {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Information"),
-                description: `${t('t("Session deleted successfully.")')}`,
+                description: `${t("Session deleted successfully.")}`,
                 backgroundColor: "rgba(15, 150, 150)",
             }]});
             fetchSessions();
@@ -105,17 +105,15 @@ export default function Home() {
 					className={styles.showTitle}
 					onClick={() => setshowCreationPanel(!showCreationPanel)}
 				>{t('Create session')}</h2>				
-				{
-					<SessionCreationPanel
-						cities={cities}
-						cityProps={cityProps}
-						periodProps={periodProps}
-						dateProps={dateProps}
-						loadingSession={loadingSession}
-						handleCreateSession={handleCreateSession}
-						show={showCreationPanel}
-					/>
-				}
+				<SessionCreationPanel
+					cities={cities}
+					cityProps={cityProps}
+					periodProps={periodProps}
+					dateProps={dateProps}
+					loadingSession={loadingSession}
+					handleCreateSession={handleCreateSession}
+					show={showCreationPanel}
+				/>
 				<h2>{t('All sessions')}</h2>
 				<div className={styles.filterSection}>
 					{

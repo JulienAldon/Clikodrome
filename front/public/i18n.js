@@ -91,6 +91,8 @@ const resources = {
         'Date of the session': 'Date of the session',
         'Select half day': 'Select half day',
         'Cannot create promotion, missing field, please provide, date, period and city': 'Cannot create promotion, missing field, please provide, date, period and city',
+        'Sign session here': 'Sign session here',
+        'Sign edusign sessions': 'Sign edusign sessions',
     }
   },
   fr: {
@@ -179,6 +181,8 @@ const resources = {
         'Date of the session': 'Date de la session',
         'Select half day': 'Selectionnez la demi journée',
         'Cannot create promotion, missing field, please provide, date, period and city': 'La promotion ne peut pas être créée, il faut remplir les champs suivants : date, period and city',
+        'Sign session here': 'Lien pour signer la session',
+        'Sign edusign sessions': 'Signer les sessions'
       }
   }
 };

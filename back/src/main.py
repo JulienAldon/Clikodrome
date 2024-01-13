@@ -13,7 +13,7 @@ from src.crud.session import read_sessions, read_session, delete_session, change
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
 from src.crud.promotion import read_promotions, delete_promotion, read_promotion
 from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
-from src.sessions import create_single_session, sign_single_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
+from src.sessions import get_edusign_sessions_from_database_session, create_database_session, sign_database_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
 from src.promotions import create_single_promotion, PromotionStudentCardMissing
 from src.bocal import card_login, get_card_information
 
@@ -86,7 +86,7 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
         raise HTTPException(status_code=422, detail="Wrong date format")
     if sessionCreation.sessionIndex == '-1' or sessionCreation.sessionIndex == '0':
         try:
-            await create_single_session(format_date, int(sessionCreation.sessionIndex), sessionCreation.city)
+            await create_database_session(format_date, int(sessionCreation.sessionIndex), sessionCreation.city)
         except SessionNotAvailableException:
             raise HTTPException(status_code=400, detail="No edusign session available")
         except SessionAlreadyCreated:
@@ -101,10 +101,10 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
 @app.post('/api/session/{session_id}/sign', dependencies=[Depends(manager)])
 async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
     try:
-        await sign_single_session(session_id)
+        res = await sign_database_session(session_id)
     except SessionNotValidatedException:
         raise HTTPException(status_code=400)
-    return {'result': 'ok'}
+    return {'result': res}
 
 @app.get('/api/sessions/status', dependencies=[Depends(staff)])
 async def session_status(token: dict[str, Any] = Depends(token)):
@@ -184,15 +184,19 @@ async def get_students(token: dict[str, Any] = Depends(token)):
     students = [a['login'] for a in database_students]
     result = sorted(list(set(students)))
     return {'result': result}
- 
-# @app.get('/api/scan/card/{card_id}', dependencies=[Depends(staff)])
-# async def read_card(card_id: str, token: dict[str, Any] = Depends(token)):
-#     bocal_token = await card_login()
-#     try:
-#         result = await get_card_information(card_id, bocal_token)
-#     except KeyError:
-#         raise HTTPException(404)
-#     return result
+
+@app.get('/api/session/{session_id}/signature', dependencies=[Depends(manager)])
+async def get_session_professor_signatures(session_id: str, token: dict[str, Any] = Depends(token)):
+    edusign = Edusign(options.edusign_secret)
+    sessions = await get_edusign_sessions_from_database_session(session_id)
+    result = []
+    for session in sessions:
+        try:
+            res = await edusign.get_session_professor_signlink(session['edusign_id'])
+            result.append({'login': res['login'], 'link': res['link'], 'state': res['state'], 'session_name': session['name']})
+        except Exception:
+            continue
+    return result
 
 @app.get('/api/edusign/promotions', dependencies=[Depends(manager)])
 async def get_edusign_groups(token: dict[str, Any] = Depends(token)):

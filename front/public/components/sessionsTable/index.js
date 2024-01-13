@@ -88,19 +88,22 @@ const SessionsTable = ({sessionList, sessionHead, defaultSort="id", loadingList,
                                         <label className={styles.item} key={t.id}>{elem[t.id]}</label>
                                     );
                                 })}
-                                 <Button
-                                    class={styles.deleteButton}
-                                    id={elem.id}
-                                    value={elem.id}
-                                    title={"X"}
-                                    deactivated={false}
-                                    loading={loadingList[index]}
-                                    action={(event) => {
-                                        handleDeleteElement(index, event)
-                                        event.stopPropagation();
-                                    }}
-                                ></Button>
+                                 
                             </a>
+                            <div className={styles.deleteButtonCell}>
+                                <Button
+                                        class={styles.deleteButton}
+                                        id={elem.id}
+                                        value={elem.id}
+                                        title={"X"}
+                                        deactivated={false}
+                                        loading={loadingList[index]}
+                                        action={(event) => {
+                                            handleDeleteElement(index, event)
+                                            event.stopPropagation();
+                                        }}
+                                ></Button>
+                            </div>
                         </li>
                     );
                 }) : <></>}

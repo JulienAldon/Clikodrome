@@ -1,4 +1,4 @@
-from src.sessions import create_single_session
+from src.sessions import create_database_session
 import datetime
 import argparse
 import asyncio
@@ -13,4 +13,4 @@ if __name__ == '__main__':
     else:
         session_date = datetime.datetime.today()
         format_date = session_date.strftime('%Y-%m-%d')
-    asyncio.run(create_single_session(format_date, int(args.session_index)))
+    asyncio.run(create_database_session(format_date, int(args.session_index)))

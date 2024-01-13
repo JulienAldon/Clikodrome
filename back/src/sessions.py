@@ -42,46 +42,49 @@ async def get_students_ids(edusign_students, intra_students):
             ids.append(stud)
     return ids
 
-
-
-async def sign_single_session(session_id):
-    edusign = Edusign(options.edusign_secret)
-
+async def get_edusign_sessions_from_database_session(session_id):
     database_session = read_session(session_id)[0]
     if not database_session:
         raise SessionNotCreatedException("Database session not created")
-
-    if database_session['is_approved'] == 0:
-        raise SessionNotValidatedException("Session need validation")
 
     day = datetime.datetime.strptime(database_session['date'], "%Y-%m-%d").strftime('%A')
     plans = get_weekplan(day, database_session['city'])
     
     groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
     
-    sessions = await get_all_sessions(groups, database_session['date'])
+    sessions = await get_all_edusign_sessions(groups, database_session['date'])
     if not sessions:
         raise SessionNotAvailableException("No edusign session linked to this clikodrome session")
-
-    database_students = read_student_session(session_id)
-    remote_students = get_remote_by_date(database_session['date'])
     to_sign_edusign_sessions = [e for e in sessions if e['begin'][11:-1] == database_session['hour'] or e['end'][11:-1] == database_session['hour']]
 
+    return to_sign_edusign_sessions
+
+async def sign_database_session(session_id):
+    database_session = read_session(session_id)[0]
+    if database_session['is_approved'] == 0:
+        raise SessionNotValidatedException("Session need validation")
+
+    sessions = await get_edusign_sessions_from_database_session(session_id)
+
+    remote_students = get_remote_by_date(database_session['date'])
+    database_students = read_student_session(session_id)
+
+    return await sign_edusign_sessions(sessions, database_students+remote_students)
+
+async def sign_edusign_sessions(to_sign_edusign_sessions, students):
+    edusign = Edusign(options.edusign_secret)
+    result = []
     for to_sign_session in to_sign_edusign_sessions:
         try:
             edusign_students = await edusign.get_session_students_to_sign(to_sign_session['edusign_id'])
         except KeyError:
             continue
-        ids = await get_students_ids(edusign_students, database_students+remote_students)
-        # TODO: return signatures link for professors
+        ids = await get_students_ids(edusign_students, students)
         mail = await edusign.send_presence_status(ids, to_sign_session['edusign_id'])
-        print(mail)
+        result.append(mail)
+    return result
 
-def convert_time_utc_local_intra(iso_date):
-    date = datetime.datetime.fromisoformat(iso_date)
-    return (date + options.timezone.utcoffset(date)).strftime('%H:00')
-
-async def get_all_sessions(groups, session_date):
+async def get_all_edusign_sessions(groups, session_date):
     edusign = Edusign(options.edusign_secret)
     sessions = []
     for group in groups:
@@ -92,7 +95,7 @@ async def get_all_sessions(groups, session_date):
             continue
     return [x for xs in sessions for x in xs]
 
-async def create_single_session(session_date, session_index, city):
+async def create_database_session(session_date, session_index, city):
     """Create a session : fetch students, create db session and create students attendance entries
     """
     day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
@@ -100,7 +103,7 @@ async def create_single_session(session_date, session_index, city):
     groups = [read_promotion(plan['promotion_id'])['sign_id'] for plan in plans]
     if not plans:
         raise NoWeekPlanAvailable(f'No Weekplan for this day {day} and city {city} go to the manager panel to add one.')
-    sessions = await get_all_sessions(groups, session_date)
+    sessions = await get_all_edusign_sessions(groups, session_date)
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')
 

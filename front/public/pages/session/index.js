@@ -10,9 +10,10 @@ import useSession from '../../hooks/useSession';
 import { TableHead } from '../../components/tableHead';
 import { useTranslation } from 'react-i18next';
 import FetchButton from '../../components/fetchButton';
+import SignaturePanel from '../../components/signaturePanel';
 
 export default function Session(props) {
-    const { students, session, fetchSession, setStudents } = useSession(props.id);
+    const { students, session, fetchSession, setStudents, signLinks, fetchSignatureLink, signatureLinkLoader } = useSession(props.id);
     const [ displayStudents, setDisplayStudents ] = useState([]);
     const [ currentSearch, setCurrentSearch ] = useState("");
 
@@ -27,6 +28,7 @@ export default function Session(props) {
     
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
+	const [ showSignaturePanel, setShowSignaturePanel ] = useState(false);
 
     const handleSearchChange = (event) => {
         setDisplayStudents(students.filter((el) => el.login.includes(event.target.value)));
@@ -135,6 +137,17 @@ export default function Session(props) {
                 <div class={`${styles.sessionTitle}`}>
                     <h2>Session n°{session[0].id} {session[0].date} {session[0].hour.slice(0, 8)}</h2>
                 </div>
+                <h2
+                    className={styles.signTitle}
+                    onClick={() => {setShowSignaturePanel(!showSignaturePanel)}}
+                >{t('Sign edusign sessions')}</h2>
+                <SignaturePanel
+                    signLinks={signLinks}
+                    show={showSignaturePanel}
+                    refetchSignList={fetchSignatureLink}
+                    isRefetching={signatureLinkLoader}
+
+                />
                 {intraRole === "pedago" ? 
                 <div class={`${styles.center} ${styles.buttonBox}`}>
                     <Button 

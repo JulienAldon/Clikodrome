@@ -136,7 +136,7 @@ class Edusign(SignInterface):
 
     async def get_session_professor_signlink(self, session_id):
         result = await super().get_session_professor_signlink('/course/get-professors-signature-links', session_id)
-        return result['result']
+        return {'login': result['result'][0]['EMAIL'], 'link': result['result'][0]['SIGNATURE_LINK'], 'state': result['result'][0]['state']}
 
     async def send_presence_status(self, student_ids, session_id):
         remain = await self.get_session_students_to_sign(session_id)
