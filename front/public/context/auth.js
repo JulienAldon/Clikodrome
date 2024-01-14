@@ -31,7 +31,7 @@ function useAuth() {
         }
         let decodedToken = jwtDecode(token);
         let currentDate = new Date();
-        if (decodedToken.exp * 1000 < currentDate.getTime()) {
+        if (decodedToken.exp * 1000 < currentDate.getTime() ||!decodedToken.roles.includes(Cookies.get('role')) || decodedToken.email !== Cookies.get('user')) {
             console.log('logout because token was expired')
             logout();
         }
