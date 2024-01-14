@@ -25,7 +25,7 @@ export function App() {
 								<Route path="/" component={Home} />
 								<Route path="/sessions/:city?" component={Sessions} />
 								<Route path="/session/:id" component={Session} />
-								<Route path="/remote" component={Remote} />
+								<Route path="/remote/:city?" component={Remote} />
 								<Route path="/manager/:city?" component={Manager} />
 								<Route default component={NotFound} />
 							</Router>

@@ -162,7 +162,6 @@ async def validate_session(session_id, token: dict[str, Any] = Depends(token)):
 @app.post('/api/remote', dependencies=[Depends(manager)])
 async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(token)):
     database_student = read_student(student.login)[0]
-    print(database_student)
     already = read_remote(database_student['id'])
     res = create_remote(database_student['id'], student.begin, student.end)    
     if not res:
@@ -176,12 +175,7 @@ async def remove_remote(remote_id: str, token: dict[str, Any] = Depends(token)):
 
 @app.get('/api/remotes', dependencies=[Depends(manager)])
 async def get_remotes(token: dict[str, Any] = Depends(token)):
-    remotes = read_remotes()
-    students = read_students()
-    result = []
-    for rem in remotes:
-        login = list(filter(lambda x: x['id'] == rem['student_id'], students))[0]
-        result.append({'id': rem['id'], 'begin': rem['begin'], 'end': rem['end'], 'login': login['login']})
+    result = read_remotes()
     return {'result': result}
 
 @app.get('/api/remote/{student_id}', dependencies=[Depends(manager)])

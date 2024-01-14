@@ -2,19 +2,27 @@ import settings from './settings';
 import {useAuth, logout} from './context/auth'
 import { login } from './context/useUser'
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 export default function Header() {
 	const {token, intraRole} = useAuth()
+	const [argument, setArgument] = useState(undefined);
 	const { t, i18n } = useTranslation();
+
+	useEffect(() => {
+		let uri = window.location.href.split('/').pop() 
+		if (uri !== "remote" && uri !== "manager" && uri !== "sessions" && uri !== "session" && uri !== "") {
+			setArgument(uri)
+		}
+	}, []);
 
 	return (
 		<header class="page-header">
 			<nav>
 				<a class="home" href="/"></a>
-				{ token ? <a href="/sessions">{t('Sessions')}</a> : null }
-				{ intraRole === "pedago" ? <a href="/remote">{t('Remote')}</a> : null}
-				{ intraRole === "pedago" ? <a href="/manager">{t('Manager')}</a> : null}	
+				{ token ? <a href={`/sessions${argument ? `/${argument}` : ''}`}>{t('Sessions')}</a> : null }
+				{ intraRole === "pedago" ? <a href={`/remote${argument ? `/${argument}` : ''}`}>{t('Remote')}</a> : null}
+				{ intraRole === "pedago" ? <a href={`/manager${argument ? `/${argument}` : ''}`}>{t('Manager')}</a> : null}	
 			</nav>
 			<label>
 			{

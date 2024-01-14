@@ -11,8 +11,9 @@ import useStudents from "../../hooks/useStudents";
 import styles from './style.module.css';
 import Volet from "../../components/volet";
 import TableDisplay from "../../components/tableDisplay";
+import useCityFilter from "../../hooks/useCityFilter";
 
-export default function Remote() {
+export default function Remote(props) {
     const { token, intraRole } = useAuthGuard("pedago");
     
     const {toasList, setToastList} = useToast()
@@ -26,6 +27,14 @@ export default function Remote() {
     const [ student, setStudent ] = useState(undefined)
 
 	const { t, i18n } = useTranslation();
+
+    const {
+        filteredList: remoteShow,
+        cityFilter: cityFilter,
+        setCityFilter: setCityFilter, 
+        handleCityFilterChange: handleCityFilterChange,
+        cities: cities
+    } = useCityFilter({sourceList:remoteStudents ? remoteStudents : [], defaultValue:props.params.city !== undefined ? props.params.city : ""});
 
     function handleStudentChange(event) {
         if (event.target.value)
@@ -129,13 +138,33 @@ export default function Remote() {
             </Volet>
             <h2 class={styles.center}>{t('Remote Students')}</h2>
             {
-                remoteStudents ? <TableDisplay
-                    tableList={remoteStudents}
+                cities ?
+                <div className={styles.remoteFilterBox}>
+                    <ComboBox 
+                        class={styles.remoteInputCombo}
+                        title={t("Filter by city")}
+                        value={cityFilter}
+                        onChange={handleCityFilterChange}
+                        handleClear={() => {
+                            setCityFilter("");
+                        }}
+                        datalist_id={"city_list"}>
+                        {
+                            cities.map((el) => {
+                                return <option id={el} value={el}>{el}</option>
+                            })
+                        }
+                    </ComboBox> 
+                </div> : null
+            }
+            {
+                remoteShow ? <TableDisplay
+                    tableList={remoteShow}
                     tableHead={[
                         {name: "Login", id: "login", stateIcon: ""},
                         {name: "Begin", id: "begin", stateIcon: ""},
                         {name: "End", id: "end", stateIcon: ""},
-                        // {name: "City", id: "city", stateIcon: ""},
+                        {name: "City", id: "city", stateIcon: ""},
                     ]}
                     link={undefined}
                     loadingList={loadingRemoteList}
