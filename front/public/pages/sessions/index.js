@@ -50,11 +50,11 @@ export default function Sessions() {
 		let period = periodProps.value === 'Morning' ? '0' : '-1';
 		createSession(token, period, dateProps.value, cityProps.value).then((res) => {
 			setLoadingSession(false);
-			if (res.detail && res.detail==="No edusign session available") {
+			if (res.detail) {
 				setToastList((toastList) => {return [...toastList, {
 					id: 'createSession',
 					title: t("Error"),
-					description: t("No clicodrome session can be created today : no edusign session available."),
+					description: t(res.detail),
 					backgroundColor: "rgba(150, 15, 15)",
 				}]});
 			} else {
@@ -143,6 +143,7 @@ export default function Sessions() {
 							{name: "Date", id: "date", stateIcon: ""},
 							{name: "Hour", id: "hour", stateIcon: ""},
 						]}
+						link={"/session/"}
 						defaultSort="id"
 						loadingList={loadingSessionList}
 						handleDeleteElement={handleDeleteSession}

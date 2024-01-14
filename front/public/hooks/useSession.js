@@ -11,8 +11,14 @@ export default function useSession(id) {
 
     async function fetchSession() {
         getSession(token, id).then((res) => {
-            setStudents(res.students);
-            setSession(res.session);
+            if (res.session.length === 0) {
+                setSession(undefined);
+                setStudents(undefined);
+            } else {
+                setStudents(res.students);
+                setSession(res.session);
+                fetchSignatureLink()
+            }
         })
     }
 
@@ -26,7 +32,6 @@ export default function useSession(id) {
 
     useEffect(() => {
         fetchSession()
-        fetchSignatureLink()
     }, [token])
 
     return {

@@ -10,6 +10,7 @@ import useRemotes from "../../hooks/useRemote";
 import useStudents from "../../hooks/useStudents";
 import styles from './style.module.css';
 import Volet from "../../components/volet";
+import TableDisplay from "../../components/tableDisplay";
 
 export default function Remote() {
     const { token, intraRole } = useAuthGuard("pedago");
@@ -18,6 +19,7 @@ export default function Remote() {
 
     const {students, fetchStudents} = useStudents()
     const {remoteStudents, fetchRemotes} = useRemotes()
+	const [ loadingRemoteList, setLoadingRemoteList ] = useState([]);
 
     const [ begin, setBegin ] = useState(undefined)
     const [ end, setEnd ] = useState(undefined)
@@ -60,14 +62,41 @@ export default function Remote() {
         if (event.target.value)
             setEnd(event.target.value)
     }
+	
+    const setElementInLoadingList = (index, value, setter, custom_list) => {
+        const loadingTmp = [
+            ...custom_list.slice(0, index),
+            value, 
+            ...custom_list.slice(index + 1)
+        ];
+        setter(loadingTmp);
+    }
+
+	const handleDeleteRemote = (index, event) => {
+        if (!event.target.value) {
+            return;
+        }
+        setElementInLoadingList(index, true, setLoadingRemoteList, loadingRemoteList);
+        removeRemote(token, event.target.id).then((res) => {
+            fetchRemotes();
+            setToastList((toastList) => {return [...toastList, {
+                id: 'a' + event.target.id,
+                title: t("Information"),
+                description: `${t('Remote period removed for')} ${event.target.id}.`,
+                backgroundColor: "rgba(15, 150, 150)",
+            }]});
+            setElementInLoadingList(index, false, setLoadingRemoteList, loadingRemoteList);
+        })
+    }
 
     return (
-        <section class="page-body">
+        <section class={styles.pageBody}>
+            <h1>{t('Manage Remote')}</h1>
             <Volet
-                className={styles.center}
+                className={styles.center }
                 title={t('Add remote')}
             >
-                <div class={`${styles.remotePanel} ${styles.center}`}>
+                <div class={`${styles.remotePanel}`}>
                     <ComboBox 
                         handleClear={() => {}}
                         title={t("Select student")} 
@@ -99,41 +128,20 @@ export default function Remote() {
                 </div>
             </Volet>
             <h2 class={styles.center}>{t('Remote Students')}</h2>
-            <table class={styles.centerCol}>
-                <tr class={styles.box}>
-                    <th title={t("Login")} class={styles.label}>{t('Login')}</th>
-                    <th title={t("Start date")} class={styles.padding}>{t('Begin')}</th>
-                    <th title={t("End date")}>{t('End')}</th>
-                    <th title={t("Remove")}></th>
-                </tr>
-                    {
-                        remoteStudents ? 
-                        remoteStudents.map((el) => {
-                        return (
-                            <tr class={styles.box}>
-                                <td title={el.login} class={styles.label}>{el.login}</td>
-                                <td title={el.begin} class={styles.padding}>{el.begin}</td>
-                                <td title={el.end}>{el.end}</td>
-                                <td>
-                                    <button onClick={() => {
-                                        removeRemote(token, el.id).then((res) => {
-                                            fetchRemotes();
-                                            setToastList((toastList) => {return [...toastList, {
-                                                id: 'a' + el.id,
-                                                title: t("Information"),
-                                                description: `${t('Remote period removed for')} ${el.login}.`,
-                                                backgroundColor: "rgba(15, 150, 150)",
-                                            }]});
-                                        })
-                                    }}
-                                        class={styles.remove}
-                                    ></button>
-                                </td>
-                            </tr>
-                        );
-                        }) : null
-                    }
-            </table>
+            {
+                remoteStudents ? <TableDisplay
+                    tableList={remoteStudents}
+                    tableHead={[
+                        {name: "Login", id: "login", stateIcon: ""},
+                        {name: "Begin", id: "begin", stateIcon: ""},
+                        {name: "End", id: "end", stateIcon: ""},
+                        // {name: "City", id: "city", stateIcon: ""},
+                    ]}
+                    link={undefined}
+                    loadingList={loadingRemoteList}
+                    handleDeleteElement={handleDeleteRemote}
+                /> : null
+            }
         </section>
     );
 }

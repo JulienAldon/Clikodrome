@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import FetchButton from '../../components/fetchButton';
 import SignaturePanel from '../../components/signaturePanel';
 import Volet from '../../components/volet';
+import { Link } from 'preact-router';
 
 export default function Session(props) {
     const { students, session, fetchSession, setStudents, signLinks, fetchSignatureLink, signatureLinkLoader } = useSession(props.id);
@@ -29,7 +30,6 @@ export default function Session(props) {
     
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
-	const [ showSignaturePanel, setShowSignaturePanel ] = useState(false);
 
     const handleSearchChange = (event) => {
         setDisplayStudents(students.filter((el) => el.login.includes(event.target.value)));
@@ -232,7 +232,11 @@ export default function Session(props) {
                        ></StudentEntry> : null
                 }
                 </table>
-            </section> : null
+            </section> : 
+            <section class="page-body">
+                <h2>{t('This session does not exist')}</h2>
+                <Link href={"/sessions"}>{t('Go back to sessions list')}</Link>
+            </section>
         }
         </>
     )

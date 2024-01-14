@@ -11,8 +11,8 @@
 }
 
 .content {
-    transition: max-height 0.3s ease;
-    max-height: 10em;
+    transition: all 0.3s ease;
+    max-height: 20em;
     opacity: 1;
     display: flex;
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from './style.module.css';
 import Button from "../button";
 
-const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement}) => {
+const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, link}) => {
     const [ sortedList, setSortedList ] = useState([...tableList]);
     const [ tableHeadData, setTableHeadData ] = useState([...tableHead]);
 
@@ -80,7 +80,7 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                             className={styles.tableRow}
                             key={elem.id}>
                             <a
-                                href={"/session/"+elem.id}
+                                href={link ? link+elem.id : null}
                                 className={styles.a}
                             >
                                 {tableHeadData.map((t) => {

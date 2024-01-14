@@ -13,7 +13,7 @@ from src.crud.session import read_sessions, read_session, delete_session, change
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
 from src.crud.promotion import read_promotions, delete_promotion, read_promotion
 from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
-from src.sessions import get_edusign_sessions_from_database_session, create_database_session, sign_database_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
+from src.sessions import NoWeekPlanAvailable, get_edusign_sessions_from_database_session, create_database_session, sign_database_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
 from src.promotions import create_single_promotion, PromotionStudentCardMissing
 from src.bocal import card_login, get_card_information
 
@@ -91,6 +91,8 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
             raise HTTPException(status_code=400, detail="No edusign session available")
         except SessionAlreadyCreated:
             raise HTTPException(status_code=400, detail="Session already created")
+        except NoWeekPlanAvailable:
+            raise HTTPException(status_code=400, detail="No Weekplan for this day")
         except Exception as e:
             print(e)
             raise HTTPException(status_code=400)
@@ -130,8 +132,11 @@ async def get_sessions(token: dict[str, Any] = Depends(token)):
 
 @app.get('/api/session/{session_id}', dependencies=[Depends(staff)])
 async def get_session(session_id: str, token: dict[str, Any] = Depends(token)):
-    session = read_session(session_id)
-    students = read_student_session(session_id)
+    try:
+        session = read_session(session_id)
+        students = read_student_session(session_id)
+    except:
+        raise HTTPException(status_code=404, detail='Session not found.')
     return {'session': session, 'students': students}
 
 @app.put('/api/session/{session_id}', dependencies=[Depends(staff)])
@@ -188,7 +193,10 @@ async def get_students(token: dict[str, Any] = Depends(token)):
 @app.get('/api/session/{session_id}/signature', dependencies=[Depends(manager)])
 async def get_session_professor_signatures(session_id: str, token: dict[str, Any] = Depends(token)):
     edusign = Edusign(options.edusign_secret)
-    sessions = await get_edusign_sessions_from_database_session(session_id)
+    try:
+        sessions = await get_edusign_sessions_from_database_session(session_id)
+    except:
+        raise HTTPException(status_code=404, detail='Session not found.')
     result = []
     for session in sessions:
         try:

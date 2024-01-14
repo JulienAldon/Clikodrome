@@ -94,6 +94,12 @@ const resources = {
         'Sign session here': 'Sign session here',
         'Sign edusign sessions': 'Sign edusign sessions',
         'No promotions available': 'No promotions available',
+        'This session does not exist': 'This session does not exist',
+        'Go back to sessions list': 'Go back to sessions list',
+        'Manage Remote': 'Manage Remote',
+        'No edusign session available': 'No edusign session available',
+        'Session already created': 'Session already created',
+        'No Weekplan for this day': 'No Weekplan for this day',
     }
   },
   fr: {
@@ -185,6 +191,12 @@ const resources = {
         'Sign session here': 'Lien pour signer la session',
         'Sign edusign sessions': 'Signer les sessions',
         'No promotions available': 'Pas de promotions disponibles',
+        'This session does not exist': 'Cette session n\'existe pas.',
+        'Go back to sessions list': 'Retourner aux choix des sessions.',
+        'Manage Remote': 'Gerer les Remote',
+        'No edusign session available': 'Pas de session disponible pour cette date.',
+        'Session already created': 'Session déjà créée pour cette date et demi hournée.',
+        'No Weekplan for this day': 'Pas de weekplan créé pour ce jour.',
       }
   }
 };

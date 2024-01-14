@@ -3,6 +3,13 @@ section {
     flex-flow: column;
 }
 
+.pageBody {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .center {
     display: flex;
     justify-content: center;
@@ -11,7 +18,9 @@ section {
 }
 
 .remotePanel {
-    height: 15rem;
+    /* height: 15rem; */
+    display: flex;
+    flex-direction: column;
 }
 
 .remoteBox {
