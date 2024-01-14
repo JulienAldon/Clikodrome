@@ -8,7 +8,7 @@ const AuthContext = createContext(null);
 
 function logout() {
     Cookies.remove('token');
-    Cookies.remove('intra-role');
+    Cookies.remove('role');
     Cookies.remove('user');
     window.location.replace(`${settings.ORIGIN}/`)
 }
@@ -26,17 +26,17 @@ function useAuth() {
     const {token, intraRole} = useContext(AuthContext);
 
     useEffect(() => {
+        if (token === undefined) {
+            return
+        }
         let decodedToken = jwtDecode(token);
         let currentDate = new Date();
         if (decodedToken.exp * 1000 < currentDate.getTime()) {
-            logout();
             console.log('logout because token was expired')
+            logout();
         }
     }, [token])
 
-    if (AuthContext === undefined) {
-        throw new Error ('Context Provider is missing')
-    }
     return {token, intraRole};
 }
 

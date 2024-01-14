@@ -11,15 +11,14 @@ export default function useAuthGuard(role) {
     const {token, intraRole} = useAuth();
 
     useEffect(() => {
+        if (role && intraRole !== role || token === undefined) {
+            logout();
+        }
         getSessions(token).then((res) => {
             if (res.hasOwnProperty('detail')) {
                 logout();
             }            
         });
-
-        if (role && intraRole !== role) {
-            logout();
-        }
     }, [token]);
     return {token, intraRole};
 }
