@@ -13,7 +13,7 @@ import useFormInput from '../../hooks/useFormInput';
 import SessionCreationPanel from '../../components/sessionCreationPanel';
 import Volet from '../../components/volet';
 
-export default function Home() {
+export default function Sessions() {
     const { token, intraRole } = useAuthGuard(undefined);
 	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();

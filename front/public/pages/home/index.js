@@ -3,6 +3,7 @@ import { login } from '../../context/useUser';
 import { useAuth } from '../../context/auth';
 import Volet from '../../components/volet';
 import { useTranslation } from 'react-i18next';
+import Button from '../../components/button';
 
 export default function About() {
     const { token, intraRole} = useAuth()
@@ -34,7 +35,11 @@ export default function About() {
 					</Volet>
 				</div>
 				:
-				<button class="button" onClick={login}>Login with office 365</button>
+				<Button
+					action={login}
+					title={t("Login with office 365")}
+					description={t("Login with office 365")}
+				/>
 			}
 		</section>
 	);
