@@ -1,5 +1,5 @@
 from src.crud.student_session import add_student_session, read_student_session, update_student_session_from_intra
-from src.crud.student import  read_student
+from src.crud.student import  read_student_from_promotion
 from src.crud.session import get_session_by_date, read_session, create_session
 from src.crud.remote import get_remote_by_date
 from src.crud.week_plan import get_weekplan
@@ -117,7 +117,7 @@ async def create_database_session(session_date, session_index, city):
     session_id = create_session(session_date, session_hour, city)
     students = []
     for plan in plans:
-        students += read_student(plan['promotion_id'])
+        students += read_student_from_promotion(plan['promotion_id'])
 
     for student in students:
         add_student_session(student['login'], student['card'], "NULL", session_id)

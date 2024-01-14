@@ -23,10 +23,10 @@ export function App() {
 						<ErrorBoundary>
 							<Router>
 								<Route path="/" component={Home} />
-								<Route path="/sessions" component={Sessions} />
+								<Route path="/sessions/:city?" component={Sessions} />
 								<Route path="/session/:id" component={Session} />
 								<Route path="/remote" component={Remote} />
-								<Route path="/manager" component={Manager} />
+								<Route path="/manager/:city?" component={Manager} />
 								<Route default component={NotFound} />
 							</Router>
 						</ErrorBoundary>

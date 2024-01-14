@@ -2,12 +2,14 @@
     box-shadow: 1px 3px #0c7878;
     margin: 4.5rem 1rem;
     padding: 0.5rem 1rem;
+    cursor: pointer;
 }
 
 .deleteButton {
     margin: 0px;
     padding: 0.2rem 0.5rem;
     box-shadow: 1px 3px #0c7878;
+    cursor: pointer;
 }
 
 .pageBody {
@@ -20,10 +22,24 @@
     overflow: scroll;
 }
 
+.tr {
+    display: flex;
+    flex-direction: row;
+}
+
+.tbody {
+    display: flex;
+    flex-direction: column;
+}
+
 .th, .td {
     width: 15rem;
     text-align: center;
     height: 3rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .addPromo {

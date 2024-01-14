@@ -7,11 +7,24 @@
     text-decoration: none;
     transition: all 0.2s ease-in;
     display: flex;
+    cursor: pointer;
     flex-direction: row;
+}
+
+input.licell {
+    cursor: pointer;
 }
 
 .headCell:hover {
     font-weight: 900;
+}
+
+.emptyTable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(15, 15, 15, 0.4);
+    height: 3rem;
 }
 
 .tableRow {
@@ -22,6 +35,7 @@
     align-items: center;
     height: 3rem;
     justify-content: space-around;
+    transition: all ease-in 0.2s;
 }
 
 .tableHead {
@@ -30,7 +44,6 @@
     width: 65vw;
     background-color: rgba(22, 22, 22, 0.1);
     height: 3rem;
-    cursor: pointer;
     text-decoration: none;
     color: rgba(22, 22, 22, 1);
     align-items: center;
@@ -63,7 +76,6 @@
     width: 5rem;
     justify-content: center;
     display: flex;
-    cursor: pointer;
 }
 
 .tableRow:hover {

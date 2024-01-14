@@ -1,13 +1,13 @@
 from src.database import connection
 
-def create_remote(login, begin, end):
+def create_remote(student_id, begin, end):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO remote (login, begin, end) VALUES (%s, %s, %s)
+        INSERT INTO remote (student_id, begin, end) VALUES (%s, %s, %s)
     """
     try:
-        cursor.execute(t, (login, begin, end))
+        cursor.execute(t, (student_id, begin, end))
     except Exception as e:
         print('Error with sql :', e)
         return False
@@ -43,11 +43,11 @@ def get_remote_by_date(date):
     result = [{**a, 'status': 'present'} for a in res if a['begin'] < date and a['end'] > date]
     return result
 
-def read_remote(login):
+def read_remote(student_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from remote WHERE login=%s
+        SELECT * from remote WHERE student_id=%s
     """
     try:
         cursor.execute(t, (login))

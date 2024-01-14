@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import Button from '../button';
 import styles from './style.module.css';
 
-export default function tableSelect({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, handleSelectElement}) {
+export default function TableSelect({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, handleSelectElement}) {
     const [ sortedList, setSortedList ] = useState([...tableList]);
     const [ tableHeadData, setTableHeadData ] = useState([...tableHead]);
 
@@ -21,7 +21,7 @@ export default function tableSelect({tableList, tableHead, defaultSort="id", loa
 
             if (toSort === "id") {
                 x = parseInt(a[toSort]);
-                y = parseInt(b[toSort]); 
+                y = parseInt(b[toSort]);
             } else {
                 x = a[toSort].toLowerCase();
                 y = b[toSort].toLowerCase();
@@ -66,8 +66,7 @@ export default function tableSelect({tableList, tableHead, defaultSort="id", loa
                                     sortElements(t.id)
                                 }}
                             >
-                                <label className={styles.item} key={t.id}>{t.name}</label>
-                                {t.stateIcon}    
+                                <label className={styles.item} key={t.id}>{t.name} {t.stateIcon}</label>
                             </button>
                         );
                     })}
@@ -83,7 +82,7 @@ export default function tableSelect({tableList, tableHead, defaultSort="id", loa
                             className={`${styles.tableRow}`}
                             key={elem.id}
                         >
-                            <input className={styles.licell} value={elem.id} onClick={handleSelectElement} type="checkbox" id={elem.id}/>
+                            <input className={styles.licell} value={elem.id} onClick={handleSelectElement} type="checkbox"/>
                             {tableHeadData.map((t) => {
                                 return (
                                     <label className={`${styles.licell} ${styles.item}`} key={t.id}>{elem[t.id]}</label>
@@ -91,21 +90,24 @@ export default function tableSelect({tableList, tableHead, defaultSort="id", loa
                             })}
                             <div className={`${styles.licell} ${styles.deleteButtonCell}`}>
                                 <Button
-                                        class={styles.deleteButton}
-                                        id={elem.id}
-                                        value={elem.id}
-                                        title={""}
-                                        deactivated={false}
-                                        loading={loadingList[index]}
-                                        action={(event) => {
-                                            handleDeleteElement(index, event)
-                                            event.stopPropagation();
-                                        }}
+                                    class={styles.deleteButton}
+                                    id={elem.id}
+                                    value={elem.id}
+                                    title={""}
+                                    deactivated={false}
+                                    loading={loadingList[index]}
+                                    action={(event) => {
+                                        handleDeleteElement(index, event)
+                                    }}
                                 ></Button>
                             </div>
                         </li>
                     );
-                }) : <></>}
+                }) : <li
+                        className={styles.emptyTable}
+                    >
+                        No elements to display
+                    </li>}
             </ul>
         </>
     );

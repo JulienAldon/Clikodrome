@@ -63,8 +63,7 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                                     sortElements(t.id)
                                 }}
                             >
-                                <label className={styles.item} key={t.id}>{t.name}</label>
-                                {t.stateIcon}    
+                                <label className={styles.item} key={t.id}>{t.name} {t.stateIcon}</label>
                             </button>
                         );
                     })}
@@ -74,7 +73,7 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                 </li>
             </ul>
             <ul className={styles.list}>
-                {sortedList ? sortedList.map((elem, index) => {
+                {sortedList && sortedList.length > 0 ? sortedList.map((elem, index) => {
                     return (
                         <li 
                             className={styles.tableRow}
@@ -88,7 +87,6 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                                         <label className={styles.item} key={t.id}>{elem[t.id]}</label>
                                     );
                                 })}
-                                 
                             </a>
                             <div className={styles.deleteButtonCell}>
                                 <Button
@@ -106,7 +104,11 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                             </div>
                         </li>
                     );
-                }) : <></>}
+                }) : <li
+                        className={styles.emptyTable}
+                    >
+                        No elements to display
+                    </li>}
             </ul>
         </>
     );

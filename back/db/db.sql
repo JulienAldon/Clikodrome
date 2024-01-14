@@ -28,13 +28,6 @@ CREATE TABLE student_session (
         REFERENCES session(id)
 ) ENGINE=INNODB;
 
-CREATE TABLE remote (
-    id INT NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (id),
-    login VARCHAR(200),
-    begin VARCHAR(200),
-    end VARCHAR(200)
-) ENGINE=INNODB;
 
 CREATE TABLE student (
     id INT NOT NULL AUTO_INCREMENT,
@@ -45,6 +38,16 @@ CREATE TABLE student (
     INDEX prom_ind(promotion_id),
     FOREIGN KEY (promotion_id) 
         REFERENCES promotion(id)
+) ENGINE=INNODB;
+
+CREATE TABLE remote (
+    id INT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+    begin VARCHAR(200),
+    end VARCHAR(200),
+    student_id INT,
+    FOREIGN KEY stud_ind(student_id)
+        REFERENCES student(id)
 ) ENGINE=INNODB;
 
 CREATE TABLE week_plan (

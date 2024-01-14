@@ -13,7 +13,7 @@ import useFormInput from '../../hooks/useFormInput';
 import SessionCreationPanel from '../../components/sessionCreationPanel';
 import Volet from '../../components/volet';
 
-export default function Sessions() {
+export default function Sessions(props) {
     const { token, intraRole } = useAuthGuard(undefined);
 	const { sessions, fetchSessions } = useSessions();
     const { toastList, setToastList } = useToast();
@@ -32,7 +32,7 @@ export default function Sessions() {
         setCityFilter: setCityFilter, 
         handleCityFilterChange: handleCityFilterChange,
         cities: cities
-    } = useCityFilter({sourceList:sessions});
+    } = useCityFilter({sourceList:sessions ? sessions : [], defaultValue:props.params.city !== undefined ? props.params.city : ""});
 
 	const handleCreateSession = () => {
 		if (periodProps.value === "" || periodProps.value === null || 
@@ -121,6 +121,7 @@ export default function Sessions() {
 						<ComboBox 
 							class={styles.sessionInputCombo}
 							title={t("Enter city")}
+							value={cityFilter}
 							onChange={handleCityFilterChange}
 							handleClear={() => {
 								setCityFilter("");

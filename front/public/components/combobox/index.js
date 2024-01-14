@@ -21,6 +21,7 @@ export default function ComboBox(props) {
                 list={props.datalist_id}
                 placeholder={props.title}
                 title={props.title}
+                value={props.value}
             />
             <datalist id={props.datalist_id}>
                 {props.children}

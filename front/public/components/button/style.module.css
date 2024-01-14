@@ -21,6 +21,10 @@
     background-color: rgba(15, 150, 150);
 }
 
+.button label {
+    cursor: pointer;
+}
+
 .button:active {
     box-shadow: 0 4px rgb(12, 120, 120);
     top: 5px;

@@ -8,6 +8,7 @@ from src.auth import router
 from src.identity import token, staff, manager
 from src.configuration import options
 
+from src.crud.student import read_student, read_students
 from src.crud.student_session import read_student_session, read_student_sessions, change_student_session
 from src.crud.session import read_sessions, read_session, delete_session, change_session
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
@@ -160,8 +161,10 @@ async def validate_session(session_id, token: dict[str, Any] = Depends(token)):
 
 @app.post('/api/remote', dependencies=[Depends(manager)])
 async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(token)):
-    already = read_remote(student.login)
-    res = create_remote(student.login, student.begin, student.end)    
+    database_student = read_student(student.login)[0]
+    print(database_student)
+    already = read_remote(database_student['id'])
+    res = create_remote(database_student['id'], student.begin, student.end)    
     if not res:
         raise HTTPException(status_code=422)
     return {'result': res}
@@ -173,7 +176,12 @@ async def remove_remote(remote_id: str, token: dict[str, Any] = Depends(token)):
 
 @app.get('/api/remotes', dependencies=[Depends(manager)])
 async def get_remotes(token: dict[str, Any] = Depends(token)):
-    result = read_remotes()
+    remotes = read_remotes()
+    students = read_students()
+    result = []
+    for rem in remotes:
+        login = list(filter(lambda x: x['id'] == rem['student_id'], students))[0]
+        result.append({'id': rem['id'], 'begin': rem['begin'], 'end': rem['end'], 'login': login['login']})
     return {'result': result}
 
 @app.get('/api/remote/{student_id}', dependencies=[Depends(manager)])
@@ -183,7 +191,7 @@ async def get_remotes(student_id: str, token: dict[str, Any] = Depends(token)):
 
 @app.get('/api/students', dependencies=[Depends(manager)])
 async def get_students(token: dict[str, Any] = Depends(token)):
-    database_students = read_student_sessions()
+    database_students = read_students()
     if not database_students:
         raise HTTPException(status_code=404)
     students = [a['login'] for a in database_students]

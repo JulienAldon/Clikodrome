@@ -102,6 +102,14 @@ header input {
 	color: rgba(15, 150, 150);
 }
 
+button {
+	cursor: pointer;
+}
+
+button label {
+	cursor: pointer;
+}
+
 @media (max-width: 95rem) {
 	header {
 		display: flex;

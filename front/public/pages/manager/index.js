@@ -15,7 +15,7 @@ import useFormInput from "../../hooks/useFormInput";
 import Volet from "../../components/volet";
 import TableSelect from "../../components/tableSelect";
 
-export default function Manager() {
+export default function Manager(props) {
     const { token, intraRole } = useAuthGuard("pedago");
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
@@ -40,7 +40,7 @@ export default function Manager() {
         setCityFilter: setCityFilter, 
         handleCityFilterChange: handleCityFilterChange,
         cities: cities
-    } = useCityFilter({sourceList:promotions});
+    } = useCityFilter({sourceList:promotions ? promotions : [], defaultValue:props.params.city !== undefined ? props.params.city : ""});
 
     const setElementInLoadingList = (index, value, setter, custom_list) => {
         const loadingTmp = [
@@ -84,7 +84,7 @@ export default function Manager() {
         });
     }
 
-    const handleDeletePromotion = (index) => (event) => {
+    const handleDeletePromotion = (index, event) => {
         if (!event.target.value) {
             return;
         }
@@ -221,6 +221,7 @@ export default function Manager() {
                         <ComboBox 
                             class={styles.managerInputCombo}
                             title={t("Filter by city")}
+							value={cityFilter}
                             onChange={handleCityFilterChange}
                             handleClear={() => {
                                 setCityFilter("");
@@ -272,7 +273,7 @@ export default function Manager() {
                                                 action={() => {
                                                     handleAddWeekplan(elem)
                                                 }} 
-                                                title={"+"}
+                                                title={""}
                                                 description={t("Add")}
                                             />
                                         </th>
@@ -281,7 +282,7 @@ export default function Manager() {
                             }
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={styles.tbody}>
                         {
                             weekplansShow && promotions ? 
                             weekplansShow.map((plans) => {
@@ -299,13 +300,13 @@ export default function Manager() {
                                                 }
                                                 return (
                                                     <td className={styles.td}>
-                                                        <label for={current_plan[0].id}>{elem[0].name}</label>
+                                                        <label>{elem[0].name}</label>
                                                         <Button
                                                             id={current_plan[0].id}
                                                             class={`${styles.deleteButton}`}
                                                             deactivated={false}
                                                             action={handleDeleteWeekplan} 
-                                                            title={"X"}
+                                                            title={""}
                                                             description={t("Remove")}
                                                         />
                                                     </td>

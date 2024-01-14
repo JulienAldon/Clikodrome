@@ -20,6 +20,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: all ease-in 0.2s;
 }
 
 .tableHead {
@@ -30,7 +31,14 @@
     display: flex;
     align-items: center;
     height: 3rem;
-    cursor: pointer;
+}
+
+.emptyTable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(15, 15, 15, 0.4);
+    height: 3rem;
 }
 
 .deleteButtonCell {

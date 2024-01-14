@@ -1,9 +1,9 @@
 import { useEffect, useState } from "preact/hooks"
 import useCityPromotion from "./useCityPromotion";
 
-export default function useCityFilter({ sourceList }) {
+export default function useCityFilter({ sourceList, defaultValue }) {
     const [ filteredList, setFilteredList ] = useState([]);
-    const [ cityFilter, setCityFilter ] = useState("");
+    const [ cityFilter, setCityFilter ] = useState(defaultValue);
     const { cities, fetchCitiesWeekplan } = useCityPromotion();
 
     useEffect(() => {
