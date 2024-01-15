@@ -26,5 +26,5 @@ map $http_upgrade $connection_upgrade {
 }
 
 upstream backend {
-    server back:8000;
+    server ${SERVICE_HOST}:8000;
 }

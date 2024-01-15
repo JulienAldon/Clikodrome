@@ -59,5 +59,5 @@ Dont forget to configure SSL with Certbot.
 ### Docker Compose
 Finnaly you can launch the application with :
 ```bash
-docker-compose up --build
+docker-compose -f devops/docker-compose.yml up --build
 ```

@@ -14,4 +14,4 @@ FROM nginx:latest
 COPY --from=build /app/dist /srv/www/clikodrome
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY --from=build /app/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/nginx/default.conf.template /etc/nginx/templates/default.conf.template

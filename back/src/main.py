@@ -109,6 +109,27 @@ async def sign_session(session_id: str, token: dict[str, Any] = Depends(token)):
         raise HTTPException(status_code=400)
     return {'result': res}
 
+@app.post('/api/session/{session_id}', dependencies=[Depends(manager)])
+async def validate_session(session_id, token: dict[str, Any] = Depends(token)):
+    res = change_session(session_id, 1)
+    return {'result': res}    
+
+@app.get('/api/session/{session_id}/signature', dependencies=[Depends(manager)])
+async def get_session_professor_signatures(session_id: str, token: dict[str, Any] = Depends(token)):
+    edusign = Edusign(options.edusign_secret)
+    try:
+        sessions = await get_edusign_sessions_from_database_session(session_id)
+    except:
+        raise HTTPException(status_code=404, detail='Session not found.')
+    result = []
+    for session in sessions:
+        try:
+            res = await edusign.get_session_professor_signlink(session['edusign_id'])
+            result.append({'login': res['login'], 'link': res['link'], 'state': res['state'], 'session_name': session['name']})
+        except Exception:
+            continue
+    return result
+
 @app.get('/api/sessions/status', dependencies=[Depends(staff)])
 async def session_status(token: dict[str, Any] = Depends(token)):
     session_date = datetime.datetime.today()
@@ -129,6 +150,8 @@ async def session_status(token: dict[str, Any] = Depends(token)):
 @app.get('/api/sessions', dependencies=[Depends(staff)])
 async def get_sessions(token: dict[str, Any] = Depends(token)):
     sessions = read_sessions()
+    if not sessions:
+        HTTPException(status_code=500, detail="Error with the server")
     return {'result': sessions}
 
 @app.get('/api/session/{session_id}', dependencies=[Depends(staff)])
@@ -151,13 +174,8 @@ async def modify_session(students: StudentList, session_id: str, token: dict[str
 async def remove_session(session_id, token:dict[str, Any] = Depends(token)):
     res = delete_session(session_id)
     if not res:
-        raise HTTPException(status_code=400)
+        raise HTTPException(status_code=400, detail="Server could not delete session")
     return {'result': res}
-
-@app.post('/api/session/{session_id}', dependencies=[Depends(manager)])
-async def validate_session(session_id, token: dict[str, Any] = Depends(token)):
-    res = change_session(session_id, 1)
-    return {'result': res}    
 
 @app.post('/api/remote', dependencies=[Depends(manager)])
 async def add_remote(student: RemoteStudent, token: dict[str, Any] = Depends(token)):
@@ -192,22 +210,6 @@ async def get_students(token: dict[str, Any] = Depends(token)):
     result = sorted(list(set(students)))
     return {'result': result}
 
-@app.get('/api/session/{session_id}/signature', dependencies=[Depends(manager)])
-async def get_session_professor_signatures(session_id: str, token: dict[str, Any] = Depends(token)):
-    edusign = Edusign(options.edusign_secret)
-    try:
-        sessions = await get_edusign_sessions_from_database_session(session_id)
-    except:
-        raise HTTPException(status_code=404, detail='Session not found.')
-    result = []
-    for session in sessions:
-        try:
-            res = await edusign.get_session_professor_signlink(session['edusign_id'])
-            result.append({'login': res['login'], 'link': res['link'], 'state': res['state'], 'session_name': session['name']})
-        except Exception:
-            continue
-    return result
-
 @app.get('/api/edusign/promotions', dependencies=[Depends(manager)])
 async def get_edusign_groups(token: dict[str, Any] = Depends(token)):
     edusign = Edusign(options.edusign_secret)
@@ -222,7 +224,7 @@ async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = De
     try:
         result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_id, promotion.city)
     except PromotionStudentCardMissing as e:
-        return {'result': e}
+        return {'result': {'missing': e}}
     return {'result': 'ok'}
 
 @app.get('/api/promotion', dependencies=[Depends(manager)])

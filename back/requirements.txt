@@ -40,3 +40,4 @@ watchfiles==0.17.0
 websockets==10.3
 yarl==1.8.1
 Yawaei==0.0.7
+pytest==7.4.4

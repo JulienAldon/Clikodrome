@@ -1,27 +1,27 @@
-version: "2"
+version: "3"
 services:
-  nginx:
+  nginx_test:
     build:
-      context: .
+      context: ..
       dockerfile: front/Dockerfile
+    environment: 
+      SERVICE_HOST: back_test
     ports:
       - 80:80
     depends_on:
-      - back
-    #   - 443:443
-    # volumes:
-    #   - /etc/letsencrypt:/etc/letsencrypt:ro
-  back:
+      - back_test
+  back_test:
     build:
-      context: .
+      context: ..
       dockerfile: back/Dockerfile
+    environment: 
+      DATABASE_HOST: database_test
     restart: always
     ports:
       - 8000:8000
     depends_on:
-      - database
-
-  database:
+      - database_test
+  database_test:
     image: mariadb
     restart: always
     environment:
@@ -30,10 +30,7 @@ services:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: Clikodrome
     volumes:
-      - db:/var/lib/mysql
-      - ./back/db/:/docker-entrypoint-initdb.d/
+      - ../back/db/:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
     
-volumes:
-  db:

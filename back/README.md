@@ -62,3 +62,14 @@ Theses hours can be tweaked during the deployment process. We recommand to send 
 - Create logins (intranet) and IDs (edusign) object {'login': 'test@epitech.eu', 'edusign_id': 'xzaazep13afr'} (logic)
 - Send signature for session (request edusign)
 - Send MassSendSignEmail (for each students in session object) (request edusign)
+
+# Test
+
+## Create test environment
+```sh
+docker-compose -f devops/docker-compose-test.yml up --build --renew-anon-volumes
+```
+## Execute backend integration tests
+```sh
+docker-compose -f devops/docker-compose-test.yml exec back_test pytest
+```
