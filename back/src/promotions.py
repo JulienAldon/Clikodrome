@@ -13,16 +13,13 @@ class PromotionAlreadyCreated(BaseCustomException):
 class SignGroupDoesNotExist(BaseCustomException):
     pass
 
-class PromotionStudentCardMissing(BaseCustomException):
-    pass
-
 # TODO: Create student even if there is no card associated
-async def create_single_promotion(name, year, sign_id, city):
+async def create_single_promotion(name, sign_id, city):
     """Create a promotion entry, create related students from intranet
     """
-    database_promotion = read_promotion_by_name_date(name, year)
-    if database_promotion == []:
-        raise PromotionAlreadyCreated("Promotion already created for {name} and {year}")
+    database_promotion = read_promotion_by_name_date(name)
+    if database_promotion != ():
+        raise PromotionAlreadyCreated("Promotion already created for {name}")
     bocal_token = await card_login()
 
     edusign = Edusign(options.edusign_secret)
@@ -32,18 +29,13 @@ async def create_single_promotion(name, year, sign_id, city):
     except KeyError:
         raise SignGroupDoesNotExist(f'The sign group {name} with {sign_id} does not exist.')
 
-    promotion_id = create_promotion(name, year, sign_id, city)
+    promotion_id = create_promotion(name, sign_id, city)
 
-    students_card_fail = []
     for student in students:
         student_info = await edusign.get_student(student)
         student_login = student_info['email']
         try:
             card = await get_user_information(student_login, bocal_token)
         except KeyError:
-            students_card_fail.append(student_login)
-            continue
+            card = {'card_id': ''}
         add_student(student_login, card['card_id'], promotion_id)
-    
-    if len(students_card_fail) > 0:
-        raise PromotionStudentCardMissing(f"Please register {' '.join(students_card_fail)} to the bocal access control")

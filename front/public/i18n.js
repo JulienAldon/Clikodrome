@@ -100,6 +100,9 @@ const resources = {
         'No edusign session available': 'No edusign session available',
         'Session already created': 'Session already created',
         'No Weekplan for this day': 'No Weekplan for this day',
+        'Promotion already created': 'Promotion already created.',
+        'Weekplan already created': 'Weekplan already created',
+        'Cannot find linked edusign promotion': 'Cannot find linked edusign promotion',
     }
   },
   fr: {
@@ -196,7 +199,10 @@ const resources = {
         'Manage Remote': 'Gerer les Remotes',
         'No edusign session available': 'Pas de session disponible pour cette date.',
         'Session already created': 'Session déjà créée pour cette date et demi hournée.',
+        'Promotion already created': 'Promotion déjà créée.',
         'No Weekplan for this day': 'Pas de weekplan créé pour ce jour.',
+        'Weekplan already created': 'Weekplan déjà créé',
+        'Cannot find linked edusign promotion': 'Aucune promotion edusign correspondante',
       }
   }
 };

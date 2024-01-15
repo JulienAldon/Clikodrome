@@ -1,6 +1,6 @@
 .manageButton {
     box-shadow: 1px 3px #0c7878;
-    margin: 4.5rem 1rem;
+    margin: 2.5rem 1rem;
     padding: 0.5rem 1rem;
     cursor: pointer;
 }
@@ -68,6 +68,14 @@
     align-self: center;
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
+}
+
+.emptyTable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(15, 15, 15, 0.4);
+    height: 3rem;
 }
 
 .managerInputDate {

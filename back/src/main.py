@@ -13,9 +13,9 @@ from src.crud.student_session import read_student_session, read_student_sessions
 from src.crud.session import read_sessions, read_session, delete_session, change_session
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
 from src.crud.promotion import read_promotions, delete_promotion, read_promotion
-from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry
+from src.crud.week_plan import get_weekplans, delete_weekplan, create_weekplan_entry, get_weekplan_by_promotion
 from src.sessions import NoWeekPlanAvailable, get_edusign_sessions_from_database_session, create_database_session, sign_database_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
-from src.promotions import create_single_promotion, PromotionStudentCardMissing
+from src.promotions import create_single_promotion, PromotionAlreadyCreated, SignGroupDoesNotExist
 from src.bocal import card_login, get_card_information
 
 from src.edusign import Edusign
@@ -60,7 +60,6 @@ class WeekplanCreation(BaseModel):
     promotion_id: str
 
 class PromotionCreation(BaseModel):
-    year: str
     name: str
     sign_id: str
     city: str
@@ -89,11 +88,11 @@ async def create_session(sessionCreation: SessionCreation, token: dict[str, Any]
         try:
             await create_database_session(format_date, int(sessionCreation.sessionIndex), sessionCreation.city)
         except SessionNotAvailableException:
-            raise HTTPException(status_code=400, detail="No edusign session available")
+            raise HTTPException(status_code=404, detail="No edusign session available")
         except SessionAlreadyCreated:
-            raise HTTPException(status_code=400, detail="Session already created")
+            raise HTTPException(status_code=409, detail="Session already created")
         except NoWeekPlanAvailable:
-            raise HTTPException(status_code=400, detail="No Weekplan for this day")
+            raise HTTPException(status_code=404, detail="No Weekplan for this day")
         except Exception as e:
             print(e)
             raise HTTPException(status_code=400)
@@ -222,9 +221,11 @@ async def get_edusign_groups(token: dict[str, Any] = Depends(token)):
 @app.post('/api/promotion', dependencies=[Depends(manager)])
 async def add_promotion(promotion: PromotionCreation, token: dict[str, Any] = Depends(token)):
     try:
-        result = await create_single_promotion(promotion.name, promotion.year, promotion.sign_id, promotion.city)
-    except PromotionStudentCardMissing as e:
-        return {'result': {'missing': e}}
+        result = await create_single_promotion(promotion.name, promotion.sign_id, promotion.city)
+    except PromotionAlreadyCreated:
+        raise HTTPException(status_code=409, detail='Promotion already created')
+    except SignGroupDoesNotExist:
+        raise HTTPException(status_code=404, detail='Cannot find linked edusign promotion')
     return {'result': 'ok'}
 
 @app.get('/api/promotion', dependencies=[Depends(manager)])
@@ -242,6 +243,9 @@ async def read_weekplan(token: dict[str, Any] = Depends(token)):
 @app.post('/api/weekplan', dependencies=[Depends(manager)])
 async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
     promo = read_promotion(plan.promotion_id)
+    weekplan = get_weekplan_by_promotion(plan.day, promo['city'], plan.promotion_id)
+    if weekplan != ():
+        raise HTTPException(status_code=409, detail='Weekplan already created')
     result = create_weekplan_entry(plan.day, plan.promotion_id, promo['city'])
     return {'result': result}
 

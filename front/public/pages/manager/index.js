@@ -22,7 +22,6 @@ export default function Manager(props) {
     
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     
-    const yearProps = useFormInput();
     const cityProps = useFormInput();
     const promotionProps = useFormInput();
     const { groups, fetchEdusignGroup } = useGroup();
@@ -52,7 +51,7 @@ export default function Manager(props) {
     }
 
     const handleCreatePromotion = (event) => {
-        if (yearProps.value === "" || promotionProps.value === "" || cityProps.value === "") {
+        if (promotionProps.value === "" || cityProps.value === "") {
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Error"),
@@ -72,7 +71,18 @@ export default function Manager(props) {
             return
         }
         setLoadingAddPromotion(true);
-        createPromotion(token, promotionProps.value, yearProps.value, sign_obj.id, cityProps.value).then((e) => {
+        createPromotion(token, promotionProps.value, sign_obj.id, cityProps.value).then((e) => {
+            if (e.detail) {
+                console.log(e.detail)
+                setToastList((toastList) => {return [...toastList, {
+                    id: 1,
+                    title: t("Error"),
+                    description: t(e.detail),
+                    backgroundColor: "rgba(150, 15, 15)",
+                }]});
+                setLoadingAddPromotion(false);
+                return;
+            }
             setToastList((toastList) => {return [...toastList, {
                 id: 1,
                 title: t("Information"),
@@ -81,7 +91,7 @@ export default function Manager(props) {
             }]});
             fetchPromotion();
             setLoadingAddPromotion(false);
-        });
+        })
     }
 
     const handleDeletePromotion = (index, event) => {
@@ -129,6 +139,15 @@ export default function Manager(props) {
         weekplanPromotion.map((e) => {
             if (e.selected) {
                 createWeekplan(token, day, e.id).then((res) => {
+                    if (res.detail) {
+                        setToastList((toastList) => {return [...toastList, {
+                            id: 1,
+                            title: t("Error"),
+                            description: `${t(res.detail)}.`,
+                            backgroundColor: "rgba(150, 15, 15)",
+                        }]});
+                        return
+                    }
                     setToastList((toastList) => {return [...toastList, {
                         id: 1,
                         title: t("Information"),
@@ -189,14 +208,6 @@ export default function Manager(props) {
                             }
                             
                         </ComboBox>
-                        <TextInput
-                            {...yearProps}
-                            id="year"
-                            class={styles.managerInputDate}
-                            description={t("Year of the promotion.")}
-                            title={t("Year")}
-                            placeholder={t("Enter year")}
-                        />
                         <TextInput
                             {...cityProps}
                             id="city"
@@ -284,7 +295,7 @@ export default function Manager(props) {
                     </thead>
                     <tbody className={styles.tbody}>
                         {
-                            weekplansShow && promotions ? 
+                            weekplansShow && promotions && weekplansShow.length > 0 ? 
                             weekplansShow.map((plans) => {
                                 return (
                                     <tr className={styles.tr}>
@@ -315,7 +326,9 @@ export default function Manager(props) {
                                         }
                                     </tr>
                                 );
-                            }) : null
+                            }) : <tr>
+                                <label className={styles.emptyTable}>No elements to display</label>
+                            </tr>
                         }
                     </tbody>
                 </table>

@@ -14,7 +14,6 @@ CREATE TABLE promotion (
     PRIMARY KEY (id),
     name VARCHAR(200), -- wac1, wac2, tek1, tek2, tek3, msc1, msc2, premsc
     sign_id VARCHAR(200), -- edusign id or sign interface id (2w8jtzqdq84q6e8)
-    year VARCHAR(200),
     city VARCHAR(200)
 ) ENGINE=INNODB;
 

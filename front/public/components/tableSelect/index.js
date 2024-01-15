@@ -76,7 +76,7 @@ export default function TableSelect({tableList, tableHead, defaultSort="id", loa
                 </li>
             </ul>
             <ul className={styles.list}>
-                {sortedList ? sortedList.map((elem, index) => {
+                {sortedList && sortedList.length > 0 ? sortedList.map((elem, index) => {
                     return (
                         <li 
                             className={`${styles.tableRow}`}

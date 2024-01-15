@@ -5,7 +5,7 @@ services:
       context: ..
       dockerfile: front/Dockerfile
     environment: 
-      SERVICE_HOST: back_test
+      SERVICE_HOST: back
     ports:
       - 80:80
     depends_on:
@@ -19,7 +19,7 @@ services:
       dockerfile: back/Dockerfile
     restart: always
     environment: 
-      DATABASE_HOST: database_test
+      DATABASE_HOST: database
     ports:
       - 8000:8000
     depends_on:

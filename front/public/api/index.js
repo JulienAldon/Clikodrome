@@ -180,8 +180,8 @@ function refreshSession(token, session_id, event_session) {
     });
 }
 
-function createPromotion(token, name, year, sign_id, city) {
-    let promo = {name: name, year: year, sign_id: sign_id, city: city};
+function createPromotion(token, name, sign_id, city) {
+    let promo = {name: name, sign_id: sign_id, city: city};
 
     return fetch(`${settings.SERVICE_URL}/promotion`, {
         method: 'POST',

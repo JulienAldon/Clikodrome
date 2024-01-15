@@ -1,27 +1,27 @@
 from src.database import connection
 
-def create_promotion(name, year, sign_id, city):
+def create_promotion(name, sign_id, city):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO promotion (name, year, sign_id, city)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO promotion (name, sign_id, city)
+        VALUES (%s, %s, %s)
     """
     try:
-        cursor.execute(t, (name, year, sign_id, city))
+        cursor.execute(t, (name, sign_id, city))
     except Exception as e:
         print('Error with sql : ', e)
         return False
     connection.commit()
     return cursor.lastrowid
 
-def read_promotion_by_name_date(name, year):
+def read_promotion_by_name_date(name):
     cursor = connection.cursor()
     t = f"""
-        SELECT * from promotion WHERE name=%s and year=%s
+        SELECT * from promotion WHERE name=%s
     """
     try:
-        cursor.execute(t, (name, year))
+        cursor.execute(t, (name))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)
