@@ -103,6 +103,7 @@ const resources = {
         'Promotion already created': 'Promotion already created.',
         'Weekplan already created': 'Weekplan already created',
         'Cannot find linked edusign promotion': 'Cannot find linked edusign promotion',
+        'No elements to display': 'No elements to display',
     }
   },
   fr: {
@@ -203,6 +204,7 @@ const resources = {
         'No Weekplan for this day': 'Pas de weekplan créé pour ce jour.',
         'Weekplan already created': 'Weekplan déjà créé',
         'Cannot find linked edusign promotion': 'Aucune promotion edusign correspondante',
+        'No elements to display': 'Pas d\'éléments à afficher.',
       }
   }
 };

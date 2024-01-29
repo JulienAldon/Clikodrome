@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import styles from './style.module.css';
 import Button from "../button";
+import { useTranslation } from "react-i18next";
 
 const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, link}) => {
     const [ sortedList, setSortedList ] = useState([...tableList]);
     const [ tableHeadData, setTableHeadData ] = useState([...tableHead]);
-
+	const { t, i18n } = useTranslation();
+    
     function setHeadStateIcon(table, icon, elem) {
         let newTable = table.map((el => {
             return {...el, stateIcon: ""}
@@ -107,7 +109,7 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                 }) : <li
                         className={styles.emptyTable}
                     >
-                        No elements to display
+                        {t('No elements to display')}
                     </li>}
             </ul>
         </>

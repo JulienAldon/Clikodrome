@@ -1,5 +1,5 @@
-from src.crud.promotion import read_promotion_by_name_date, create_promotion
-from src.crud.student import add_student
+from src.crud.promotion import create_promotion
+from src.crud.student import create_student
 from src.bocal import card_login, get_user_information
 from src.configuration import options
 from src.edusign import Edusign
@@ -17,7 +17,7 @@ class SignGroupDoesNotExist(BaseCustomException):
 async def create_single_promotion(name, sign_id, city):
     """Create a promotion entry, create related students from intranet
     """
-    database_promotion = read_promotion_by_name_date(name)
+    database_promotion = read_promotion(name=name)
     if database_promotion != ():
         raise PromotionAlreadyCreated("Promotion already created for {name}")
     bocal_token = await card_login()
@@ -38,4 +38,4 @@ async def create_single_promotion(name, sign_id, city):
             card = await get_user_information(student_login, bocal_token)
         except KeyError:
             card = {'card_id': ''}
-        add_student(student_login, card['card_id'], promotion_id)
+        create_student(student_login, card['card_id'], promotion_id)

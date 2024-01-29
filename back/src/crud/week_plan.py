@@ -1,4 +1,5 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
 def create_weekplan_entry(day, promotion_id, city):
     connection.ping(reconnect=True)
@@ -15,42 +16,15 @@ def create_weekplan_entry(day, promotion_id, city):
     connection.commit()
     return cursor.lastrowid
 
-def get_weekplans():
+def read_weekplan(id='', day='', city='', promotion_id=''):
+    filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from week_plan
+        SELECT * from week_plan {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def get_weekplan(day, city):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from week_plan WHERE day=%s AND city=%s
-    """
-    try:
-        cursor.execute(t, (day, city))
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def get_weekplan_by_promotion(day, city, promo_id):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from week_plan WHERE day=%s AND city=%s AND promotion_id=%s
-    """
-    try:
-        cursor.execute(t, (day, city, promo_id))
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)

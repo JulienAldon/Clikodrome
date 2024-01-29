@@ -19,9 +19,8 @@ export default function Manager(props) {
     const { token, intraRole } = useAuthGuard("pedago");
     const { toastList, setToastList } = useToast();
 	const { t, i18n } = useTranslation();
-    
+
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    
     const cityProps = useFormInput();
     const promotionProps = useFormInput();
     const { groups, fetchEdusignGroup } = useGroup();
@@ -206,7 +205,6 @@ export default function Manager(props) {
                                     return <option id={el.id} value={el.name}>{el.name}</option>
                                 })
                             }
-                            
                         </ComboBox>
                         <TextInput
                             {...cityProps}
@@ -254,6 +252,7 @@ export default function Manager(props) {
                                 {name: "City", id: "city", stateIcon: ""},
                                 {name: "Sign_id", id: "sign_id", stateIcon: ""},
                             ]}
+                            link={'/promotion/'}
                             defaultSort="city"
                             loadingList={loadingPromotionList}
                             handleDeleteElement={handleDeletePromotion}
@@ -327,7 +326,7 @@ export default function Manager(props) {
                                     </tr>
                                 );
                             }) : <tr>
-                                <label className={styles.emptyTable}>No elements to display</label>
+                                <label className={styles.emptyTable}>{t('No elements to display')}</label>
                             </tr>
                         }
                     </tbody>

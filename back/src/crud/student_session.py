@@ -1,34 +1,22 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
-def read_student_session(session_id):
+def read_student_session(session_id='', login='', card='', status=''):
+    filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from student_session WHERE session_id=%s
+        SELECT * from student_session {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t, (session_id))
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)
         return False
     return result
 
-def read_student_sessions():
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from student_session;
-    """
-    try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def change_student_session(login, status, session_id):
+def update_student_session(login, status, session_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
@@ -62,7 +50,7 @@ def update_student_session_from_intra(login, status, session_id):
     connection.commit()
     return True
 
-def add_student_session(login, card, status, session_id):
+def create_student_session(login, card, status, session_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""

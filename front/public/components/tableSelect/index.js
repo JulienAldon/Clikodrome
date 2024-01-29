@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'preact/hooks';
 import Button from '../button';
 import styles from './style.module.css';
+import { useTranslation } from 'react-i18next';
 
-export default function TableSelect({tableList, tableHead, defaultSort="id", loadingList, handleDeleteElement, handleSelectElement}) {
+export default function TableSelect({tableList, tableHead, defaultSort="id", link, loadingList, handleDeleteElement, handleSelectElement}) {
     const [ sortedList, setSortedList ] = useState([...tableList]);
     const [ tableHeadData, setTableHeadData ] = useState([...tableHead]);
+	const { t, i18n } = useTranslation();
 
     function setHeadStateIcon(table, icon, elem) {
         let newTable = table.map((el => {
@@ -83,11 +85,16 @@ export default function TableSelect({tableList, tableHead, defaultSort="id", loa
                             key={elem.id}
                         >
                             <input className={styles.licell} value={elem.id} onClick={handleSelectElement} type="checkbox"/>
-                            {tableHeadData.map((t) => {
-                                return (
-                                    <label className={`${styles.licell} ${styles.item}`} key={t.id}>{elem[t.id]}</label>
-                                );
-                            })}
+                            <a
+                                href={link ? link+elem.id : null}
+                                className={styles.a}
+                            >
+                                {tableHeadData.map((t) => {
+                                    return (
+                                        <label className={`${styles.licell} ${styles.item}`} key={t.id}>{elem[t.id]}</label>
+                                    );
+                                })}
+                            </a>
                             <div className={`${styles.licell} ${styles.deleteButtonCell}`}>
                                 <Button
                                     class={styles.deleteButton}
@@ -106,7 +113,7 @@ export default function TableSelect({tableList, tableHead, defaultSort="id", loa
                 }) : <li
                         className={styles.emptyTable}
                     >
-                        No elements to display
+                        {t('No elements to display')}
                     </li>}
             </ul>
         </>

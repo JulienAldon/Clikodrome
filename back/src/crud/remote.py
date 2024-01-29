@@ -1,4 +1,5 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
 def create_remote(student_id, begin, end):
     connection.ping(reconnect=True)
@@ -28,7 +29,7 @@ def read_remotes():
         return False
     return result
 
-def get_remote_by_date(date):
+def read_remote_by_date(date):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
@@ -43,14 +44,15 @@ def get_remote_by_date(date):
     result = [{**a, 'status': 'present'} for a in res if a['begin'] < date and a['end'] > date]
     return result
 
-def read_remote(student_id):
+def read_remote(id='', begin='', end='', student_id=''):
+    filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from remote WHERE student_id=%s
+        SELECT * from remote {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t, (login))
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)

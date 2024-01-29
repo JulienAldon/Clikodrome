@@ -1,0 +1,73 @@
+.tableRow:nth-child(2n) {
+    background-color: rgba(22, 22, 22, 0.1);
+}
+
+.emptyTable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(15, 15, 15, 0.4);
+    height: 3rem;
+}
+
+.tableRow label {
+    width: 15rem;
+    text-align: center;
+}
+
+.tableRow {
+    height: 3rem;
+    justify-content: space-around;
+    list-style: none;
+    width: 60vw;
+    display: flex;
+    align-items: center;
+    transition: all ease-in 0.2s;
+}
+
+.tableHead {
+    display: flex;
+    justify-content: space-around;
+    width: 60vw;
+    background-color: rgba(22, 22, 22, 0.1);
+    display: flex;
+    align-items: center;
+    height: 3rem;
+}
+
+.tableHead label {
+    width: 10rem;
+    text-align: center;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    margin:0rem;
+    align-items: center;
+}
+
+.pageBody {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tableRow:hover {
+	background-color: rgba(15, 150, 150);
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .a {
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .deleteButton {
+    color: rgba(220, 220, 220, 1);
+}
+
+.tableRow:hover .deleteButton:hover {
+    background-color: rgba(220, 220, 220, 1);
+    color: rgba(15, 150, 150);
+}

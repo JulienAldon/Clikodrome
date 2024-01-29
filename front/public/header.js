@@ -10,10 +10,6 @@ export default function Header() {
 	const { t, i18n } = useTranslation();
 
 	useEffect(() => {
-		let uri = window.location.href.split('/').pop() 
-		if (uri !== "remote" && uri !== "manager" && uri !== "sessions" && uri !== "session" && uri !== "") {
-			setArgument(uri)
-		}
 	}, []);
 
 	return (

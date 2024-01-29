@@ -1,6 +1,7 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
-def add_student(login, card, promotion_id):
+def create_student(login, card, promotion_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
@@ -15,42 +16,15 @@ def add_student(login, card, promotion_id):
     connection.commit()
     return True
 
-def read_student_from_promotion(promotion_id):
+def read_student(id='', login='', card='', promotion_id=''): 
+    filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from student WHERE promotion_id=%s
+        SELECT * from student {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t, (promotion_id))
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def read_student(login): 
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from student WHERE login=%s
-    """
-    try:
-        cursor.execute(t, (login))
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def read_students(): 
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from student
-    """
-    try:
-        cursor.execute(t)
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)

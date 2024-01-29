@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks"
-import { getPromotion } from "../api";
+import { getPromotions } from "../api";
 import { useAuth } from "../context/auth";
 
 export default function useCityPromotion() {
@@ -8,7 +8,7 @@ export default function useCityPromotion() {
     const { token, intraRole} = useAuth()
 
     async function fetchCitiesPromotion() {
-        getPromotion(token).then((res) => {
+        getPromotions(token).then((res) => {
             setCities(prevPromotion => {
                 let result = [...new Set(res.result.map(el => el.city))];
                 return result;

@@ -19,6 +19,23 @@ input.licell {
     font-weight: 900;
 }
 
+.a {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: space-around;
+    text-decoration: none;
+    color: rgba(22, 22, 22, 1);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    height: 2rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+.a:hover {
+    color: rgba(220, 220, 220, 1)
+}
+
 .emptyTable {
     display: flex;
     align-items: center;

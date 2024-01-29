@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks"
-import { getPromotion } from "../api";
+import { getPromotions } from "../api";
 import { useAuth } from "../context/auth";
 
 export default function usePromotion() {
@@ -7,7 +7,7 @@ export default function usePromotion() {
     const { token, intraRole} = useAuth()
 
     async function fetchPromotion() {
-        getPromotion(token).then((res) => {
+        getPromotions(token).then((res) => {
             setPromotion(prevPromotion => {
                 return res.result;
             });

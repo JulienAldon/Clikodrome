@@ -1,35 +1,15 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
-def read_sessions(date=None):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    if date:
-        t = f"""
-            SELECT * from session where date=%s
-        """
-    else:
-        t = f"""
-            SELECT * from session
-        """
-    try:
-        if date:
-            cursor.execute(t, (date))
-        else:
-            cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def read_session(_id):
+def read_session(id='', date='', hour='', is_approved='', city=''):
+    filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from session WHERE id=%s
+        SELECT * from session {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t, (_id))
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)
@@ -51,19 +31,6 @@ def create_session(date, hour, city, is_approved=False):
     connection.commit()
     return cursor.lastrowid
 
-def get_session_by_date(date, hour):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from session WHERE date=%s and hour=%s
-    """
-    try:
-        cursor.execute(t, (date, hour))
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
 def delete_session(session_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
@@ -82,7 +49,7 @@ def delete_session(session_id):
     connection.commit()
     return True
 
-def change_session(session_id, is_approved):
+def update_session(session_id, is_approved):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""

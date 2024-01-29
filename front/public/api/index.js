@@ -195,7 +195,7 @@ function createPromotion(token, name, sign_id, city) {
     });
 }
 
-function getPromotion(token) {
+function getPromotions(token) {
     return fetch(`${settings.SERVICE_URL}/promotion`, {
         method: 'GET',
         headers: {
@@ -206,6 +206,19 @@ function getPromotion(token) {
         return res.json();
     });
 }
+
+function getPromotion(id, token) {
+    return fetch(`${settings.SERVICE_URL}/promotion/${id}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        }
+    }).then((res) => {
+        return res.json();
+    });
+}
+
 
 function removePromotion(token, id) {
     return fetch(`${settings.SERVICE_URL}/promotion/${id}`, {
@@ -285,6 +298,7 @@ export {
     checkTodaySession,
     refreshSession,
     createPromotion,
+    getPromotions,
     getPromotion,
     removePromotion,
     getWeekplans,

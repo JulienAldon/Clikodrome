@@ -1,4 +1,5 @@
 from src.database import connection
+from src.crud.utils import generate_filter_condition
 
 def create_promotion(name, sign_id, city):
     connection.ping(reconnect=True)
@@ -15,44 +16,20 @@ def create_promotion(name, sign_id, city):
     connection.commit()
     return cursor.lastrowid
 
-def read_promotion_by_name_date(name):
+def read_promotion(name='', date='', id='', city=''):
+    filter_condition, filters = generate_filter_condition(locals())
+    connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from promotion WHERE name=%s
+        SELECT * from promotion {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
-        cursor.execute(t, (name))
+        cursor.execute(t, tuple(filters))
         result = cursor.fetchall()
     except Exception as e:
         print('Error with sql :', e)
         return False
     return result
-
-def read_promotions():
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from promotion
-    """
-    try:
-        cursor.execute(t)
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result
-
-def read_promotion(promotion_id):
-    cursor = connection.cursor()
-    t = f"""
-        SELECT * from promotion WHERE id=%s
-    """
-    try:
-        cursor.execute(t, (promotion_id))
-        result = cursor.fetchall()
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    return result[0]
 
 def delete_promotion(promotion_id):
     connection.ping(reconnect=True)
