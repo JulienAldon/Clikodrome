@@ -21,6 +21,8 @@ services:
       - 8000:8000
     depends_on:
       - database_test
+    volumes:
+      - ../back/:/code
   database_test:
     image: mariadb
     restart: always
@@ -33,4 +35,3 @@ services:
       - ../back/db/:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
-    
