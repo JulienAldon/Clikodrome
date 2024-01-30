@@ -12,8 +12,8 @@ CREATE TABLE session (
 CREATE TABLE promotion (
     id INT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
-    name VARCHAR(200), -- wac1, wac2, tek1, tek2, tek3, msc1, msc2, premsc
-    sign_id VARCHAR(200), -- edusign id or sign interface id (2w8jtzqdq84q6e8)
+    name VARCHAR(200),
+    sign_id VARCHAR(200),
     city VARCHAR(200)
 ) ENGINE=INNODB;
 
@@ -28,7 +28,6 @@ CREATE TABLE student_session (
     FOREIGN KEY (session_id) 
         REFERENCES session(id)
 ) ENGINE=INNODB;
-
 
 CREATE TABLE student (
     id INT NOT NULL AUTO_INCREMENT,
@@ -51,7 +50,7 @@ CREATE TABLE remote (
         REFERENCES student(id)
 ) ENGINE=INNODB;
 
-CREATE TABLE week_plan (
+CREATE TABLE weekplan (
     id INT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
     day VARCHAR(200),

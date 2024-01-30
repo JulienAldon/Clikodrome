@@ -1,8 +1,8 @@
-from src.crud.student_session import create_student_session, read_student_session, update_student_session_from_intra
+from src.crud.student_session import create_student_session, read_student_session, update_student_session
 from src.crud.student import read_student
 from src.crud.session import read_session, create_session
 from src.crud.remote import read_remote_by_date
-from src.crud.week_plan import read_weekplan
+from src.crud.weekplan import read_weekplan
 from src.crud.promotion import read_promotion
 from src.database import connection
 from src.configuration import options
@@ -138,4 +138,4 @@ async def fetch_session_from_intra(session_id, intra_event):
             print(f'Student {student} is present on intra but not in session_student this might be on purpose, skipping...')
             continue
         if current_student[0]['status'] == None or current_student[0]['status'] == 'NULL':
-            update_student_session_from_intra(student, students[student], session_id)
+            update_student_session(student, students[student], session_id)

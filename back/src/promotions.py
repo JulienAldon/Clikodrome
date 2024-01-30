@@ -1,4 +1,4 @@
-from src.crud.promotion import create_promotion
+from src.crud.promotion import create_promotion, read_promotion
 from src.crud.student import create_student
 from src.bocal import card_login, get_user_information
 from src.configuration import options

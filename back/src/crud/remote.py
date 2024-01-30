@@ -13,7 +13,7 @@ def create_remote(student_id, begin, end):
         print('Error with sql :', e)
         return False
     connection.commit()
-    return True
+    return cursor.lastrowid
 
 def read_remotes():
     connection.ping(reconnect=True)

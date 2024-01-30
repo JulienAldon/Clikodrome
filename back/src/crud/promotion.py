@@ -16,7 +16,7 @@ def create_promotion(name, sign_id, city):
     connection.commit()
     return cursor.lastrowid
 
-def read_promotion(name='', date='', id='', city=''):
+def read_promotion(name='', sign_id='', id='', city=''):
     filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
@@ -35,7 +35,7 @@ def delete_promotion(promotion_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        DELETE FROM week_plan WHERE promotion_id=%s
+        DELETE FROM weekplan WHERE promotion_id=%s
     """
     w = f"""
         DELETE FROM student WHERE promotion_id=%s

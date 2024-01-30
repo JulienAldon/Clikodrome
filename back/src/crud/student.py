@@ -14,7 +14,7 @@ def create_student(login, card, promotion_id):
         print('Error with sql :', e)
         return False
     connection.commit()
-    return True
+    return cursor.lastrowid
 
 def read_student(id='', login='', card='', promotion_id=''): 
     filter_condition, filters = generate_filter_condition(locals())

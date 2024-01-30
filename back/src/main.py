@@ -13,7 +13,7 @@ from src.crud.student_session import read_student_session, update_student_sessio
 from src.crud.session import read_session, delete_session, update_session
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
 from src.crud.promotion import delete_promotion, read_promotion
-from src.crud.week_plan import delete_weekplan, create_weekplan_entry, read_weekplan
+from src.crud.weekplan import delete_weekplan, create_weekplan, read_weekplan
 from src.sessions import NoWeekPlanAvailable, get_edusign_sessions_from_database_session, create_database_session, sign_database_session, SessionNotValidatedException, SessionNotAvailableException, SessionAlreadyCreated, fetch_session_from_intra
 from src.promotions import create_single_promotion, PromotionAlreadyCreated, SignGroupDoesNotExist
 from src.bocal import card_login, get_card_information
@@ -250,7 +250,7 @@ async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(t
     weekplan = read_weekplan(day=plan.day, city=promo['city'], promotion_id=plan.promotion_id)
     if weekplan != ():
         raise HTTPException(status_code=409, detail='Weekplan already created')
-    result = create_weekplan_entry(plan.day, plan.promotion_id, promo['city'])
+    result = create_weekplan(plan.day, plan.promotion_id, promo['city'])
     return {'result': result}
 
 @app.delete('/api/weekplan/{plan_id}', dependencies=[Depends(manager)])

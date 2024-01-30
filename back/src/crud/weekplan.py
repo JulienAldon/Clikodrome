@@ -1,11 +1,11 @@
 from src.database import connection
 from src.crud.utils import generate_filter_condition
 
-def create_weekplan_entry(day, promotion_id, city):
+def create_weekplan(day, promotion_id, city):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        INSERT INTO week_plan (day, promotion_id, city)
+        INSERT INTO weekplan (day, promotion_id, city)
         VALUES (%s, %s, %s)
     """
     try:
@@ -21,7 +21,7 @@ def read_weekplan(id='', day='', city='', promotion_id=''):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from week_plan {filter_condition if filter_condition != 'WHERE' else ''}
+        SELECT * from weekplan {filter_condition if filter_condition != 'WHERE' else ''}
     """
     try:
         cursor.execute(t, tuple(filters))
@@ -35,7 +35,7 @@ def delete_weekplan(id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        DELETE FROM week_plan WHERE id=%s
+        DELETE FROM weekplan WHERE id=%s
     """
     u = f"""
         DELETE FROM session WHERE id=%s

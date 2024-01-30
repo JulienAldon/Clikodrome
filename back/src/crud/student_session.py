@@ -1,7 +1,7 @@
 from src.database import connection
 from src.crud.utils import generate_filter_condition
 
-def read_student_session(session_id='', login='', card='', status=''):
+def read_student_session(id='', session_id='', login='', card='', status=''):
     filter_condition, filters = generate_filter_condition(locals())
     connection.ping(reconnect=True)
     cursor = connection.cursor()
@@ -17,21 +17,6 @@ def read_student_session(session_id='', login='', card='', status=''):
     return result
 
 def update_student_session(login, status, session_id):
-    connection.ping(reconnect=True)
-    cursor = connection.cursor()
-    t = f"""
-        UPDATE student_session SET status=%s WHERE session_id=%s and login=%s
-    """
-    try:
-        cursor.execute(t, (status, session_id, login))
-    except Exception as e:
-        print('Error with sql :', e)
-        return False
-    connection.commit()
-    return True
-    
-# intra fool proof protection
-def update_student_session_from_intra(login, status, session_id):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     if status == 'present':
@@ -63,4 +48,4 @@ def create_student_session(login, card, status, session_id):
         print('Error with sql :', e)
         return False
     connection.commit()
-    return True
+    return cursor.lastrowid
