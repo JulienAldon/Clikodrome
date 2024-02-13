@@ -248,6 +248,7 @@ async def get_weekplan(token: dict[str, Any] = Depends(token)):
 async def add_weekplan(plan: WeekplanCreation, token: dict[str, Any] = Depends(token)):
     promo = read_promotion(id=plan.promotion_id)[0]
     weekplan = read_weekplan(day=plan.day, city=promo['city'], promotion_id=plan.promotion_id)
+    print(weekplan)
     if weekplan != ():
         raise HTTPException(status_code=409, detail='Weekplan already created')
     result = create_weekplan(plan.day, plan.promotion_id, promo['city'])

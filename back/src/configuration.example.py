@@ -27,7 +27,6 @@ class Configuration(pydantic.BaseSettings):
     bocal_url:          str = 'https://console.bocal.org'
     bocal_email:        str = os.getenv('BOCAL_EMAIL')
     bocal_password:     str = os.getenv('BOCAL_PASSWORD')
-    all_edusign_credentials = {'login': os.getenv('EDUSIGN_LOGIN'), 'password': os.getenv('EDUSIGN_PASSWORD')}
     edusign_url:        str = 'https://api.edusign.fr'
     edusign_signature:  str = open('signature.txt').readline()
 
