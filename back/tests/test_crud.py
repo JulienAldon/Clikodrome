@@ -6,14 +6,14 @@ from src.crud.remote import create_remote, read_remotes, read_remote, read_remot
 from src.crud.student import create_student, read_student
 from src.crud.session import create_session, read_session, update_session, delete_session
 from src.crud.student_session import read_student_session, update_student_session, create_student_session
+from src.crud.weekplan import create_weekplan, read_weekplan, delete_weekplan
 
 from typing import List
 import pytest
 
 def clean_db():
     cursor = connection.cursor()
-    t = f"DELETE from remote;DELETE from student_session;DELETE from student;DELETE from session;DELETE from promotion;DELETE from weekplan".split(';')
-    
+    t = f"DELETE from remote;DELETE from student_session;DELETE from student;DELETE from session;DELETE from weekplan;DELETE from promotion".split(';')
     for a in t:
         cursor.execute(a.strip())
 
@@ -66,6 +66,14 @@ def student_session_init(session_init):
     student_session3 = create_student_session('jean.pierre@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
     student_session4 = create_student_session('jean.jean@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
     yield [student_session1, student_session2, student_session3, student_session4, session_init[0]]
+
+@pytest.fixture
+def weekplan_init(promotion_init):
+    weekplan1 = create_weekplan('Monday', promotion_init[0], 'LYN')
+    weekplan2 = create_weekplan('Thuesday', promotion_init[1], 'BDX')
+    weekplan3 = create_weekplan('Wednesday', promotion_init[2], 'NTS')
+    weekplan4 = create_weekplan('Friday', promotion_init[3], 'PRS')
+    yield [weekplan1, weekplan2, weekplan3, weekplan4, promotion_init]
 
 def test_generate_filter_condition():
     condition, data = generate_filter_condition({'day': ['Monday'], 'id': 1, 'name': {'aze': 'aze'},
@@ -320,14 +328,50 @@ def test_update_student_session(cleanup, student_session_init):
     with pytest.raises(Exception) as e_info:
         session = update_session(0)
 
-def test_create_weekplan(cleanup):
-    pass
+def test_create_weekplan(cleanup, promotion_init):
+    weekplan = create_weekplan('Monday', promotion_init[0], 'LYN')
+    weekplans = read_weekplan(id=weekplan)
+    assert weekplan != False
+    assert weekplans[0] == {'id': weekplan, 'day': 'Monday', 'city': 'LYN', 'promotion_id': promotion_init[0]}
+    weekplan = create_weekplan('Thuesday', promotion_init[1], 'BDX')
+    weekplans = read_weekplan(id=weekplan)
+    assert weekplan != False
+    assert weekplans[0] == {'id': weekplan, 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': promotion_init[1]}
 
-def test_read_weekplan(cleanup):
-    pass
+    with pytest.raises(Exception) as e_info:
+        weekplan = create_weekplan()    
+    weekplan = create_weekplan([], {}, 1)
+    assert weekplan == False
 
-def test_delete_weekplan(cleanup):
-    pass
+def test_read_weekplan(cleanup, weekplan_init):
+    weekplans = read_weekplan()
+    assert weekplans == [
+        {'id': weekplan_init[0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
+        {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]}
+    ]
+    weekplans = read_weekplan(id=weekplan_init[0])
+    assert weekplans[0] == {'id': weekplan_init[0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]}
+    weekplans = read_weekplan(id=weekplan_init[1])
+    assert weekplans[0] == {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]}
+    weekplans = read_weekplan(id=weekplan_init[2], day='Wednesday', city='NTS')
+    assert weekplans[0] == {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]}
 
-def test_update_weekplan(cleanup):
-    pass
+def test_delete_weekplan(cleanup, weekplan_init):
+    weekplan = delete_weekplan(weekplan_init[0])
+    weekplans = read_weekplan()
+    assert weekplans == [
+        {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]}
+    ]
+    assert weekplan == True
+    weekplan = delete_weekplan(0)
+    weekplans = read_weekplan()
+    assert weekplan == True
+    assert weekplans == [
+        {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]}
+    ]

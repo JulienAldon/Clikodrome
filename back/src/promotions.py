@@ -20,9 +20,11 @@ async def create_single_promotion(name, sign_id, city):
     database_promotion = read_promotion(name=name)
     if database_promotion != ():
         raise PromotionAlreadyCreated("Promotion already created for {name}")
-    bocal_token = await card_login()
 
+    bocal_token = await card_login()
     edusign = Edusign(options.edusign_secret)
+
+    # Get edusign group from sign_id
     try:
         group = await edusign.get_group(sign_id)
         students = group['students']

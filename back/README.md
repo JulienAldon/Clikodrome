@@ -69,7 +69,8 @@ Theses hours can be tweaked during the deployment process. We recommand to send 
 ```sh
 docker-compose -f devops/docker-compose-test.yml up --build --renew-anon-volumes
 ```
+
 ## Execute backend integration tests
 ```sh
-docker-compose -f devops/docker-compose-test.yml exec back_test pytest
+docker-compose -f devops/docker-compose-test.yml exec back_test python -m pytest
 ```

@@ -97,9 +97,10 @@ async def create_database_session(session_date, session_index, city):
     """
     day = datetime.datetime.strptime(session_date, "%Y-%m-%d").strftime('%A')
     plans = read_weekplan(day=day, city=city)
-    groups = [read_promotion(id=plan['promotion_id'])[0]['sign_id'] for plan in plans]
     if not plans:
         raise NoWeekPlanAvailable(f'No Weekplan for this day {day} and city {city} go to the manager panel to add one.')
+    groups = [read_promotion(id=plan['promotion_id'])[0]['sign_id'] for plan in plans]
+
     sessions = await get_all_edusign_sessions(groups, session_date)
     if not sessions:
         raise SessionNotAvailableException(f'No session available for the date {session_date}')

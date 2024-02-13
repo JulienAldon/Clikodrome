@@ -37,9 +37,6 @@ def delete_weekplan(id):
     t = f"""
         DELETE FROM weekplan WHERE id=%s
     """
-    u = f"""
-        DELETE FROM session WHERE id=%s
-    """
     try:
         cursor.execute(t, (id))
     except Exception as e:
