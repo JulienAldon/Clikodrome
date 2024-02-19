@@ -7,11 +7,11 @@
 .close {
     border: none;
     background-color: transparent;
-    color: rgba(22,22,22,0.5)
+    color: rgba(22, 22, 22, 0.5);
 }
 
 .close:hover {
-    color: rgba(22,22,22,1)
+    color: rgba(22, 22, 22, 1);
 }
 
 .center {
@@ -30,8 +30,7 @@
 }
 
 @media (max-width: 95rem) {
-    .centerCol{
-        margin: 0rem
+    .centerCol {
+      margin: 0rem;
     }
-    
 }
