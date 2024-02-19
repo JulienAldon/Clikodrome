@@ -177,7 +177,7 @@ export default function Session(props) {
             </h2>
           </div>
 
-          {signLinks ? (
+          {intraRole === "pedago" ? (
             <Volet
               className={styles.signTitle}
               title={t("Sign edusign sessions")}
