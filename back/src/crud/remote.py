@@ -33,7 +33,7 @@ def read_remote_by_date(date):
     connection.ping(reconnect=True)
     cursor = connection.cursor()
     t = f"""
-        SELECT * from remote
+        SELECT remote.begin, remote.end, student.login, remote.id from remote JOIN student ON student.id=remote.student_id;
     """
     try:
         cursor.execute(t)
