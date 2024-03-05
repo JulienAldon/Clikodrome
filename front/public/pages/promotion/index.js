@@ -16,15 +16,11 @@ export default function Promotion(props) {
         console.log(event.target.value);
     }
 
-    const handleHideEdit = (event) => {
+    const handleHideEdit = (index) => (event) => {
         setEditElem(undefined);
-        console.log(event.target.value);
-    }
-
-    const handleEditCard = (index) => (event) => {
         editStudent(token, {card: event.target.value, id: index}, index).then((data) => {
-            console.log(data);
-            // TODO: show status of answer
+            fetchPromotionStudent();
+            // TODO show response state
         })
     }
 
@@ -45,13 +41,13 @@ export default function Promotion(props) {
                 {
                     students ? students.map((elem, index) => {
                         return (
-                            <li className={styles.tableRow}>
+                            <li key={index} className={styles.tableRow}>
                                 <label>{elem.id}</label>
                                 <label>{elem.login}</label>
                                 {
                                     editElem == index ?
-                                    <input type="text" value={elem.card} onChange={handleEditCard(elem.id)}/> :
-                                    <button onClick={handleShowEdit} value={index} onBlur={handleHideEdit}>{elem.card}</button>
+                                    <input type="text" value={elem.card} onBlur={handleHideEdit(elem.id)}/> :
+                                    <button onClick={handleShowEdit} value={index} >{elem.card}</button>
                                 } 
                             </li>
                         );

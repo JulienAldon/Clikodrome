@@ -8,7 +8,7 @@ from src.auth import router
 from src.identity import token, staff, manager
 from src.configuration import options
 
-from src.crud.student import read_student
+from src.crud.student import read_student, update_student
 from src.crud.student_session import read_student_session, update_student_session
 from src.crud.session import read_session, delete_session, update_session
 from src.crud.remote import delete_remote, create_remote, read_remote, read_remotes
@@ -49,6 +49,10 @@ class Student(BaseModel):
 
 class StudentList(BaseModel):
     data: List[Student]
+
+class StudentElem(BaseModel):
+    card: str
+    id: str
 
 class SessionCreation(BaseModel):
     sessionIndex: str
@@ -168,6 +172,13 @@ async def change_session(students: StudentList, session_id: str, token: dict[str
     for student in students.data:
         res.append({'login': student.login, 'updated': update_student_session(student.login, student.status, session_id)})
     return {'result': res}
+
+@app.put('/api/student/{student_id}', dependencies=[Depends(staff)])
+async def change_student(student: StudentElem, student_id, token: dict[str, Any] = Depends(token)):
+    res = update_student(student.id, student.card)
+    if not res:
+        raise HTTPException(status_code=400, detail='Server could not update student')
+    return {'result', res}
 
 @app.delete('/api/session/{session_id}', dependencies=[Depends(staff)])
 async def remove_session(session_id, token:dict[str, Any] = Depends(token)):

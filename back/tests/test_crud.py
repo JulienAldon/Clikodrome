@@ -362,7 +362,6 @@ def test_create_weekplan(cleanup, promotion_init):
 
 def test_read_weekplan(cleanup, weekplan_init):
     weekplans = read_weekplan()
-    print(weekplan_init)
     assert weekplans == [
         {'id': weekplan_init[4][6][0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
         {'id': weekplan_init[4][6][1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
