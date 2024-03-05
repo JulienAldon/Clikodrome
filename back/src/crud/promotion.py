@@ -37,6 +37,9 @@ def delete_promotion(promotion_id):
     t = f"""
         DELETE FROM weekplan WHERE promotion_id=%s
     """
+    z = f"""
+        DELETE remote FROM remote JOIN student ON student.id=remote.student_id where student.promotion_id=%s
+    """
     w = f"""
         DELETE FROM student WHERE promotion_id=%s
     """
@@ -45,6 +48,7 @@ def delete_promotion(promotion_id):
     """
     try:
         cursor.execute(t, (promotion_id))
+        cursor.execute(z, (promotion_id))
         cursor.execute(w, (promotion_id))
         cursor.execute(u, (promotion_id))
     except Exception as e:

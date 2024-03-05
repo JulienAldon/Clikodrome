@@ -28,7 +28,24 @@ def promotion_init():
     promo2 = create_promotion('Promo2', 'edusign_fake_id', 'BDX')
     promo3 = create_promotion('Promo3', 'edusign_fake_id', 'NTS')
     promo4 = create_promotion('Promo4', 'edusign_fake_id', 'PRS')
-    yield [promo1, promo2, promo3, promo4]
+    student1 = create_student('azer.qsd@epitech.eu', 'fake_card_id', promo1)
+    student2 = create_student('jean.jacques@epitech.eu', 'fake_card_id', promo2)
+    student3 = create_student('jean.michel@epitech.eu', 'fake_card_id', promo3)
+    student4 = create_student('jean.jean@epitech.eu', 'fake_card_id', promo4)
+    remote1 = create_remote(student1, '2022-10-10', '2022-12-25')
+    remote2 = create_remote(student2, '2023-10-10', '2024-12-25')
+    remote3 = create_remote(student3, '2022-10-10', '2022-12-25')
+    remote4 = create_remote(student4, '2023-10-10', '2024-12-25')
+    weekplan1 = create_weekplan('Monday', promo1, 'LYN')
+    weekplan2 = create_weekplan('Thuesday', promo2, 'BDX')
+    weekplan3 = create_weekplan('Wednesday', promo3, 'NTS')
+    weekplan4 = create_weekplan('Friday', promo4, 'PRS')
+    yield [
+        promo1, promo2, promo3, promo4, 
+        [student1, student2, student3, student4], 
+        [remote1, remote2, remote3, remote4], 
+        [weekplan1, weekplan2, weekplan3, weekplan4]
+    ]
 
 @pytest.fixture
 def student_init():
