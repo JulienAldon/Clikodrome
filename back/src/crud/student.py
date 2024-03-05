@@ -30,3 +30,18 @@ def read_student(id='', login='', card='', promotion_id=''):
         print('Error with sql :', e)
         return False
     return result
+
+def update_student(id='', card=''):
+    connection.ping(reconnect=True)
+    cursor = connection.cursor()
+    t = f"""
+        UPDATE student SET card=%s WHERE id=%s
+    """
+
+    try:
+        cursor.execute(t, (card, id))
+    except Exception as e:
+        print('Error with sql :', e)
+        return False
+    connection.commit()
+    return True

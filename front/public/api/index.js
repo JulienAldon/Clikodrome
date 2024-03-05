@@ -24,6 +24,19 @@ function getStudents(token) {
     });
 }
 
+function editStudent(token, student, id) {
+    return fetch(`${settings.SERVICE_URL}/student/${id}`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+			"Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(student)
+    }).then((res) => {
+        return res.json();
+    });
+}
+
 function getRemotes(token) {
     return fetch(`${settings.SERVICE_URL}/remotes`, {
         method:'GET',
@@ -219,7 +232,6 @@ function getPromotion(id, token) {
     });
 }
 
-
 function removePromotion(token, id) {
     return fetch(`${settings.SERVICE_URL}/promotion/${id}`, {
         method: 'DELETE',
@@ -287,6 +299,7 @@ export {
     getSessions,
     getSession,
     getStudents,
+    editStudent,
     getRemotes,
     validateSession,
     modifySession,

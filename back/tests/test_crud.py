@@ -3,7 +3,7 @@ from src.database import connection
 from src.crud.utils import generate_filter_condition
 from src.crud.promotion import create_promotion, read_promotion, delete_promotion
 from src.crud.remote import create_remote, read_remotes, read_remote, read_remote_by_date, delete_remote
-from src.crud.student import create_student, read_student
+from src.crud.student import create_student, read_student, update_student
 from src.crud.session import create_session, read_session, update_session, delete_session
 from src.crud.student_session import read_student_session, update_student_session, create_student_session
 from src.crud.weekplan import create_weekplan, read_weekplan, delete_weekplan
@@ -53,9 +53,9 @@ def student_init():
     promo2 = create_promotion('Promo2', 'edusign_fake_id', 'BDX')
     student1 = create_student('azer.qsd@epitech.eu', 'fake_card_id', promo1)
     student2 = create_student('jean.jacques@epitech.eu', 'fake_card_id', promo1)
-    student3 = create_student('jean.michel@epitech.eu', 'fake_card_id', promo2)
+    student3 = create_student('jean.michel@epitech.eu', 'fake_card_id1', promo2)
     student4 = create_student('jean.jean@epitech.eu', 'fake_card_id', promo2)
-    yield [student1, student2, student3, student4]
+    yield [student1, student2, student3, student4, promo1, promo2]
 
 @pytest.fixture
 def remote_init():
@@ -362,7 +362,12 @@ def test_create_weekplan(cleanup, promotion_init):
 
 def test_read_weekplan(cleanup, weekplan_init):
     weekplans = read_weekplan()
+    print(weekplan_init)
     assert weekplans == [
+        {'id': weekplan_init[4][6][0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
+        {'id': weekplan_init[4][6][1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[4][6][2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[4][6][3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]},
         {'id': weekplan_init[0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
         {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
         {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
@@ -379,6 +384,10 @@ def test_delete_weekplan(cleanup, weekplan_init):
     weekplan = delete_weekplan(weekplan_init[0])
     weekplans = read_weekplan()
     assert weekplans == [
+        {'id': weekplan_init[4][6][0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
+        {'id': weekplan_init[4][6][1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[4][6][2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[4][6][3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]},
         {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
         {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
         {'id': weekplan_init[3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]}
@@ -388,7 +397,27 @@ def test_delete_weekplan(cleanup, weekplan_init):
     weekplans = read_weekplan()
     assert weekplan == True
     assert weekplans == [
+        {'id': weekplan_init[4][6][0], 'day': 'Monday', 'city': 'LYN', 'promotion_id': weekplan_init[4][0]},
+        {'id': weekplan_init[4][6][1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
+        {'id': weekplan_init[4][6][2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
+        {'id': weekplan_init[4][6][3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]},
         {'id': weekplan_init[1], 'day': 'Thuesday', 'city': 'BDX', 'promotion_id': weekplan_init[4][1]},
         {'id': weekplan_init[2], 'day': 'Wednesday', 'city': 'NTS', 'promotion_id': weekplan_init[4][2]},
         {'id': weekplan_init[3], 'day': 'Friday', 'city': 'PRS', 'promotion_id': weekplan_init[4][3]}
     ]
+
+def test_read_student(cleanup, student_init):
+    students_by_id = read_student(id=student_init[0])
+    students_by_login = read_student(login='jean.jacques@epitech.eu')
+    students_by_card = read_student(card='fake_card_id1')
+    students_by_promo = read_student(promotion_id=student_init[5])
+    assert students_by_id[0] == {'id': student_init[0], 'login': 'azer.qsd@epitech.eu', 'card': 'fake_card_id', 'promotion_id': student_init[4]}
+    assert students_by_login[0] == {'id': student_init[1], 'login': 'jean.jacques@epitech.eu', 'card': 'fake_card_id', 'promotion_id': student_init[4]}
+    assert students_by_card[0] == {'id': student_init[2], 'login': 'jean.michel@epitech.eu', 'card': 'fake_card_id1', 'promotion_id': student_init[5]}
+    assert students_by_promo[1] == {'id': student_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'promotion_id': student_init[5]}
+
+def test_update_student(cleanup, student_init):
+    update_student(student_init[0], '9988776655')
+    students_by_id = read_student(id=student_init[0])
+
+    assert students_by_id[0] == {'id': student_init[0], 'login': 'azer.qsd@epitech.eu', 'card': '9988776655', 'promotion_id': student_init[4]}
