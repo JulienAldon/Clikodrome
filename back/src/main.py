@@ -171,7 +171,7 @@ async def get_session(session_id: str, token: dict[str, Any] = Depends(token)):
 async def change_session(students: StudentList, session_id: str, token: dict[str, Any] = Depends(token)):
     res = []
     for student in students.data:
-        res.append({'login': student.login, 'updated': update_student_session(student.login, student.begin, studend.end, session_id)})
+        res.append({'login': student.login, 'updated': update_student_session(student.login, student.begin, student.end, session_id)})
     return {'result': res}
 
 @app.put('/api/student/{student_id}', dependencies=[Depends(staff)])

@@ -88,7 +88,14 @@ function validateSession(token, id) {
 
 function modifySession(token, id, student) {
     let stu = {data: student.map((el) => {
-        return {status: el.status ? el.status : "NULL", login: el.login, id: el.id, session_id: el.session_id}
+        return {
+            status: el.status ? el.status : "NULL", 
+            begin: el.begin ? el.begin : "NULL",  
+            end: el.end ? el.end : "NULL", 
+            login: el.login, 
+            id: el.id, 
+            session_id: el.session_id
+        }
     })}
     return fetch(`${settings.SERVICE_URL}/session/${id}`, {
         method: 'PUT',

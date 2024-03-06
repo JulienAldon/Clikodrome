@@ -51,10 +51,10 @@ export default function Session(props) {
     setCurrentSearch(event.target.value);
   };
 
-  const setStudentStatus = (login) => {
+  const setStudentStatus = (login, elemChanged) => {
     const s = students.map((stud) => {
       if (stud.login === login) {
-        stud.status = stud.status === "present" ? "absent" : "present";
+        stud[elemChanged] = stud[elemChanged] === "present" ? "absent" : "present";
         return stud;
       }
       return stud;
@@ -62,9 +62,9 @@ export default function Session(props) {
     setStudents([...s]);
   };
 
-  const handleChange = (login) => {
+  const handleChange = (login, elemChanged) => (_event) => {
     if (!students) return;
-    setStudentStatus(login);
+    setStudentStatus(login, elemChanged);
     const added_stud = students.filter((el) => el.login === login);
     modifySession(token, props.id, added_stud).then((res) => {
       if (!res.detail) {
@@ -284,7 +284,13 @@ export default function Session(props) {
                 addStyle={styles.label}
               />
               <TableHead
-                title={t("Present")}
+                title={t("Begin")}
+                sortFunction={sortPresent}
+                toggleSort={toggleSortPresent}
+                addStyle={styles.padding}
+              />
+              <TableHead
+                title={t("End")}
                 sortFunction={sortPresent}
                 toggleSort={toggleSortPresent}
                 addStyle={styles.padding}
