@@ -8,7 +8,6 @@ export const useToast = () => useContext(ToastContext);
 export const ToastProvider = ({ children }) => {
     const [ toastList, setToastList ] = useState([]);
     
-    // XXX: Probably bugged submit to further testing 
     useEffect(() => {
         if (toastList.length > 1) {
             toastList.shift();
