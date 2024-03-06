@@ -78,10 +78,10 @@ def session_init():
 
 @pytest.fixture
 def student_session_init(session_init):
-    student_session1 = create_student_session('jean.michel@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
-    student_session2 = create_student_session('jean.jacques@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
-    student_session3 = create_student_session('jean.pierre@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
-    student_session4 = create_student_session('jean.jean@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
+    student_session1 = create_student_session('jean.michel@epitech.eu', 'fake_card_id',  'NULL', 'NULL', 'NULL', session_init[0])
+    student_session2 = create_student_session('jean.jacques@epitech.eu', 'fake_card_id',  'NULL', 'NULL', 'NULL', session_init[0])
+    student_session3 = create_student_session('jean.pierre@epitech.eu', 'fake_card_id',  'NULL', 'NULL', 'NULL', session_init[0])
+    student_session4 = create_student_session('jean.jean@epitech.eu', 'fake_card_id',  'NULL', 'NULL', 'NULL', session_init[0])
     yield [student_session1, student_session2, student_session3, student_session4, session_init[0]]
 
 @pytest.fixture
@@ -306,9 +306,9 @@ def test_update_session(cleanup, session_init):
         session = update_session(0)
 
 def test_create_student_session(cleanup, session_init):
-    student_session = create_student_session('jean.jean@epitech.eu', 'fake_card_id', 'NULL', session_init[0])
+    student_session = create_student_session('jean.jean@epitech.eu', 'fake_card_id', 'NULL', 'NULL', 'NULL', session_init[0])
     student_sessions = read_student_session(login='jean.jean@epitech.eu', session_id=session_init[0])
-    assert student_sessions[0] == {'id': student_session, 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': session_init[0]}
+    assert student_sessions[0] == {'id': student_session, 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': session_init[0]}
 
     with pytest.raises(Exception) as e_info:
         student_session = create_student_session()
@@ -317,29 +317,28 @@ def test_read_student_session(cleanup, student_session_init):
     student_sessions = read_student_session()
     assert len(student_sessions) == 4
     assert student_sessions == [
-        {'id': student_session_init[0], 'login': 'jean.michel@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}, 
-        {'id': student_session_init[1], 'login': 'jean.jacques@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]},
-        {'id': student_session_init[2], 'login': 'jean.pierre@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]},
-        {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}
+        {'id': student_session_init[0], 'login': 'jean.michel@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}, 
+        {'id': student_session_init[1], 'login': 'jean.jacques@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]},
+        {'id': student_session_init[2], 'login': 'jean.pierre@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]},
+        {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}
     ]
     
     student_sessions = read_student_session(login='jean.michel@epitech.eu')
-    assert student_sessions[0] == {'id': student_session_init[0], 'login': 'jean.michel@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}
+    assert student_sessions[0] == {'id': student_session_init[0], 'login': 'jean.michel@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}
 
     student_sessions = read_student_session(id=student_session_init[1])
-    assert student_sessions[0] == {'id': student_session_init[1], 'login': 'jean.jacques@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}
+    assert student_sessions[0] == {'id': student_session_init[1], 'login': 'jean.jacques@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}
 
     student_sessions = read_student_session(status='NULL', session_id= student_session_init[4], id=student_session_init[2])
-    assert student_sessions[0] == {'id': student_session_init[2], 'login': 'jean.pierre@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}
+    assert student_sessions[0] == {'id': student_session_init[2], 'login': 'jean.pierre@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}
 
     student_sessions = read_student_session(id=student_session_init[3], login='jean.jean@epitech.eu', status='NULL', session_id=student_session_init[4])
-    assert student_sessions[0] == {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'session_id': student_session_init[4]}
+    assert student_sessions[0] == {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'NULL', 'begin': 'NULL', 'end': 'NULL', 'session_id': student_session_init[4]}
 
 def test_update_student_session(cleanup, student_session_init):
-    student_session = update_student_session('jean.jean@epitech.eu', 'present', student_session_init[4])
+    student_session = update_student_session('jean.jean@epitech.eu', 'present', 'present', student_session_init[4])
     student_sessions = read_student_session(login='jean.jean@epitech.eu', session_id=student_session_init[4])
-    print(student_sessions)
-    assert student_sessions[0] == {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'present', 'session_id': student_session_init[4]}
+    assert student_sessions[0] == {'id': student_session_init[3], 'login': 'jean.jean@epitech.eu', 'card': 'fake_card_id', 'status': 'present', 'session_id': student_session_init[4], 'begin': 'present', 'end': 'present'}
     assert student_session == True
 
     with pytest.raises(Exception) as e_info:

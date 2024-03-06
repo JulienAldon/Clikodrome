@@ -45,21 +45,21 @@ async def get_students_ids(edusign_students, intra_students):
 async def get_edusign_sessions_from_database_session(session_id):
     database_session = read_session(id=session_id)[0]
     if not database_session:
-        raise SessionNotCreatedException("Database session not created")
+        raise SessionNotCreatedException('Database session not created')
 
-    day = datetime.datetime.strptime(database_session['date'], "%Y-%m-%d").strftime('%A')
+    day = datetime.datetime.strptime(database_session['date'], '%Y-%m-%d').strftime('%A')
     plans = read_weekplan(day=day, city=database_session['city'])
     groups = [read_promotion(id=plan['promotion_id'])[0]['sign_id'] for plan in plans]
     sessions = await get_all_edusign_sessions(groups, database_session['date'])
     if not sessions:
-        raise SessionNotAvailableException("No edusign session linked to this clikodrome session")
+        raise SessionNotAvailableException('No edusign session linked to this clikodrome session')
     to_sign_edusign_sessions = [e for e in sessions if e['begin'][11:-1] == database_session['hour'] or e['end'][11:-1] == database_session['hour']]
     return to_sign_edusign_sessions
 
 async def sign_database_session(session_id):
     database_session = read_session(id=session_id)[0]
     if database_session['is_approved'] == 0:
-        raise SessionNotValidatedException("Session need validation")
+        raise SessionNotValidatedException('Session need validation')
 
     sessions = await get_edusign_sessions_from_database_session(session_id)
 
@@ -117,26 +117,25 @@ async def create_database_session(session_date, session_index, city):
         students += read_student(promotion_id=plan['promotion_id'])
 
     for student in students:
-        create_student_session(student['login'], student['card'], "NULL", session_id)
+        create_student_session(student['login'], student['card'], 'NULL', 'NULL', 'NULL', session_id)
 
 async def fetch_session_from_intra(session_id, intra_event):
     Intra = Yawaei.intranet.AutologinIntranet(f'auth-{options.intranet_secret}')
     intra_url = urlparse(intra_event)
     session_path = intra_url.path
-    if "registered" in session_path:
+    if 'registered' in session_path:
         session_path = session_path.replace('/registered', '')
     try:
         students = Intra.get_registered_students(session_path)
     except:
         print(f'Unable to find intranet activity, please provide a correct url : {intra_event} is not valid')
-        raise KeyError("Event activity does not exist")
+        raise KeyError('Event activity does not exist')
 
     database_students = read_student_session(session_id=session_id)    
     for student in students.keys():
-        print(student)
         current_student = list(filter(lambda x: x['login'] == student, database_students))
         if len(current_student) <= 0:
             print(f'Student {student} is present on intra but not in session_student this might be on purpose, skipping...')
             continue
         if current_student[0]['status'] == None or current_student[0]['status'] == 'NULL':
-            update_student_session(student, students[student], session_id)
+            update_student_session(student, students[student], students[student], session_id)

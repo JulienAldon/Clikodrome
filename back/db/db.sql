@@ -23,6 +23,8 @@ CREATE TABLE student_session (
     login VARCHAR(200),
     card VARCHAR(200),
     status VARCHAR(200),
+    begin VARCHAR(200),
+    end VARCHAR(200),
     session_id INT,
     INDEX sess_ind(session_id),
     FOREIGN KEY (session_id) 

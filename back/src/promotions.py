@@ -13,7 +13,6 @@ class PromotionAlreadyCreated(BaseCustomException):
 class SignGroupDoesNotExist(BaseCustomException):
     pass
 
-# TODO: Create student even if there is no card associated
 async def create_single_promotion(name, sign_id, city):
     """Create a promotion entry, create related students from intranet
     """
@@ -24,7 +23,6 @@ async def create_single_promotion(name, sign_id, city):
     bocal_token = await card_login()
     edusign = Edusign(options.edusign_secret)
 
-    # Get edusign group from sign_id
     try:
         group = await edusign.get_group(sign_id)
         students = group['students']
