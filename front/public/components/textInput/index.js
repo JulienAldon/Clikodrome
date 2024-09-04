@@ -2,7 +2,7 @@ import styles from './style.module.css';
 
 export default function TextInput(props) {
     return (
-        <div class={`${props.class} ${styles.center}`}>
+        <div className={`${props.class} ${styles.center}`}>
             <input 
                 id={props.id}
                 className={`${props.class} ${styles.search}`}

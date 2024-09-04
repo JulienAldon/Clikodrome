@@ -11,7 +11,7 @@ export default function ComboBox(props) {
     }
 
     return (
-        <div class={`${props.class} ${styles.center}`}>
+        <div className={`${props.class} ${styles.center}`}>
             <input 
                 ref={inputRef}
                 onChange={props.onChange}
@@ -26,7 +26,7 @@ export default function ComboBox(props) {
             <datalist id={props.datalist_id}>
                 {props.children}
             </datalist>
-            <button onClick={handleClear} class={styles.close}></button>
+            <button onClick={handleClear} className={styles.close}></button>
         </div>
     );
 }

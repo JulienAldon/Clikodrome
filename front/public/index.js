@@ -19,7 +19,7 @@ export function App() {
 		<AuthProvider>
 			<ToastProvider>
 				<LocationProvider>
-					<div class="app wrapper">
+					<div className="app wrapper">
 						<Header />
 						<ErrorBoundary>
 							<Router>

@@ -14,7 +14,7 @@ export default function Button(props) {
         >
             <label value={props.id} for={props.id}>{props.title}</label>
             {props.children}
-            <div class={`${ props.loading ? styles.ldsEllipsis : ""}`}><div></div><div></div><div></div><div></div></div>
+            <div className={`${ props.loading ? styles.ldsEllipsis : ""}`}><div></div><div></div><div></div><div></div></div>
         </button>
     );
 }

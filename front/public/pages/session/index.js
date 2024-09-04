@@ -169,8 +169,8 @@ export default function Session(props) {
   return (
     <>
       {session ? (
-        <section class="page-body">
-          <div class={`${styles.sessionTitle}`}>
+        <section className="page-body">
+          <div className={`${styles.sessionTitle}`}>
             <h2>
               Session n°{session[0].id} {session[0].date}{" "}
               {session[0].hour.slice(0, 8)}
@@ -190,7 +190,7 @@ export default function Session(props) {
             </Volet>
           ) : null}
           {intraRole === "pedago" ? (
-            <div class={`${styles.center} ${styles.buttonBox}`}>
+            <div className={`${styles.center} ${styles.buttonBox}`}>
               <Button
                 deactivated={false}
                 description={t("Allow session to be signed.")}
@@ -265,7 +265,7 @@ export default function Session(props) {
               />
             </div>
           ) : null}
-          <div class={`${styles.center}`}>
+          <div className={`${styles.center}`}>
             <SearchBar
               placeholder={t("Search Student")}
               description={t("Search student")}
@@ -275,8 +275,8 @@ export default function Session(props) {
               }}
             ></SearchBar>
           </div>
-          <table class={styles.centerCol}>
-            <tr class={styles.box}>
+          <table className={styles.centerCol}>
+            <tr className={styles.box}>
               <TableHead
                 title={t("Login")}
                 sortFunction={sortLogin}
@@ -305,7 +305,7 @@ export default function Session(props) {
           </table>
         </section>
       ) : (
-        <section class="page-body">
+        <section className="page-body">
           <h2>{t("This session does not exist")}</h2>
           <Link href={"/sessions"}>{t("Go back to sessions list")}</Link>
         </section>

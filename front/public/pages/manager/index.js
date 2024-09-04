@@ -195,7 +195,7 @@ export default function Manager(props) {
                     <div className={styles.addPromoVolet}>
                         <ComboBox 
                             {...promotionProps}
-                            class={styles.managerInputCombo}
+                            className={styles.managerInputCombo}
                             title={t("Select promotion name")} 
                             datalist_id={"promotion_list"}
                             handleClear={() => {}}
@@ -209,13 +209,13 @@ export default function Manager(props) {
                         <TextInput
                             {...cityProps}
                             id="city"
-                            class={styles.managerInputDate}
+                            className={styles.managerInputDate}
                             title={t('Enter city linked to promotion')}
                             placeholder={t('Enter city')}
                         />
                     </div>
                     <Button
-                        class={styles.manageButton}
+                        className={styles.manageButton}
                         deactivated={false}
                         loading={loadingAddPromotion}
                         action={handleCreatePromotion} 
@@ -228,7 +228,7 @@ export default function Manager(props) {
                     {
                         cities ?
                         <ComboBox 
-                            class={styles.managerInputCombo}
+                            className={styles.managerInputCombo}
                             title={t("Filter by city")}
 							value={cityFilter}
                             onChange={handleCityFilterChange}
@@ -278,7 +278,7 @@ export default function Manager(props) {
                                                 {t(elem)}
                                             </label>
                                             <Button
-                                                class={`${styles.deleteButton}`}
+                                                className={`${styles.deleteButton}`}
                                                 deactivated={false}
                                                 action={() => {
                                                     handleAddWeekplan(elem)
@@ -313,7 +313,7 @@ export default function Manager(props) {
                                                         <label>{elem[0].name}</label>
                                                         <Button
                                                             id={current_plan[0].id}
-                                                            class={`${styles.deleteButton}`}
+                                                            className={`${styles.deleteButton}`}
                                                             deactivated={false}
                                                             action={handleDeleteWeekplan} 
                                                             title={""}

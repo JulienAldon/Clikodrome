@@ -14,7 +14,7 @@ const sessionCreationPanel = ({cities, cityProps, periodProps, dateProps, loadin
             {
             cities ?
             <ComboBox
-                class={styles.sessionInputCombo}
+                className={styles.sessionInputCombo}
                 title={t("Enter city")}
                 {...cityProps}
                 handleClear={cityProps.resetFormValue}
@@ -27,14 +27,14 @@ const sessionCreationPanel = ({cities, cityProps, periodProps, dateProps, loadin
             </ComboBox> : null
             }
             <DateInput
-                class={styles.sessionDateSelect}
+                className={styles.sessionDateSelect}
                 description={t("Date of the session")}
                 title={t("Date")}
                 {...dateProps}
             >
             </DateInput>
             <ComboBox
-                class={styles.sessionInputCombo}
+                className={styles.sessionInputCombo}
                 title={t('Select half day')}
                 {...periodProps}
                 handleClear={periodProps.resetFormValue}
@@ -48,7 +48,7 @@ const sessionCreationPanel = ({cities, cityProps, periodProps, dateProps, loadin
             </ComboBox>
         </div>
         <Button
-            class={styles.createButton}
+            className={styles.createButton}
             deactivated={(periodProps.value === "" || periodProps.value === null || dateProps.value === "" || dateProps.value === null || cityProps.value === "" || cityProps.value === null) ? true : false}
             description={t('Create session')}
             title={"+"}

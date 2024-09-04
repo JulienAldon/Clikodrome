@@ -99,13 +99,13 @@ export default function Remote(props) {
     }
 
     return (
-        <section class={styles.pageBody}>
+        <section className={styles.pageBody}>
             <h1>{t('Manage Remote')}</h1>
             <Volet
                 className={styles.center }
                 title={t('Add remote')}
             >
-                <div class={`${styles.remotePanel}`}>
+                <div className={`${styles.remotePanel}`}>
                     <ComboBox 
                         handleClear={() => {}}
                         title={t("Select student")} 
@@ -136,12 +136,12 @@ export default function Remote(props) {
                     />
                 </div>
             </Volet>
-            <h2 class={styles.center}>{t('Remote Students')}</h2>
+            <h2 className={styles.center}>{t('Remote Students')}</h2>
             {
                 cities ?
                 <div className={styles.remoteFilterBox}>
                     <ComboBox 
-                        class={styles.remoteInputCombo}
+                        className={styles.remoteInputCombo}
                         title={t("Filter by city")}
                         value={cityFilter}
                         onChange={handleCityFilterChange}

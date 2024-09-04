@@ -10,11 +10,11 @@ export default function About() {
 	const { t, i18n } = useTranslation();
 
 	return (
-		<section class={`page-body ${styles.about} ${token ? "" : styles.disconnected}`}>
+		<section className={`page-body ${styles.about} ${token ? "" : styles.disconnected}`}>
 			<h1>{t('Welcome to Clicodrome')}</h1>
 			{
 				token ?
-				<div class={`${styles.divLink}`}>
+				<div className={`${styles.divLink}`}>
 					<Volet title={t("Why clicodrome ?")}>
 					<p>
 						Clicodrome is a tool designed to manage attendance sheets. It is linked with a sign provider, for now edusign.

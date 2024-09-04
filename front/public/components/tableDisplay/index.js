@@ -92,7 +92,7 @@ const TableDisplay = ({tableList, tableHead, defaultSort="id", loadingList, hand
                             </a>
                             <div className={styles.deleteButtonCell}>
                                 <Button
-                                        class={styles.deleteButton}
+                                        className={styles.deleteButton}
                                         id={elem.id}
                                         value={elem.id}
                                         title={""}

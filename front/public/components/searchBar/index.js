@@ -12,17 +12,17 @@ export default function SearchBar(props) {
 
     return (
         <>
-            <div class={styles.searchContainer}>
+            <div className={styles.searchContainer}>
                 <input 
                     ref={inputRef}
                     id="search" 
                     onInput={props.onChange} 
-                    class={styles.search} 
+                    className={styles.search} 
                     type="search" 
                     title={props.description} 
                     placeholder={props.placeholder}>
                 </input>
-                <button onClick={handleClear} class={styles.close}></button>
+                <button onClick={handleClear} className={styles.close}></button>
             </div>
         </>
     );

@@ -13,17 +13,17 @@ export default function Header() {
 	}, []);
 
 	return (
-		<header class="page-header">
+		<header className="page-header">
 			<nav>
-				<a class="home" href="/"></a>
+				<a className="home" href="/"></a>
 				{ token ? <a href={`/sessions${argument ? `/${argument}` : ''}`}>{t('Sessions')}</a> : null }
 				{ intraRole === "pedago" ? <a href={`/remote${argument ? `/${argument}` : ''}`}>{t('Remote')}</a> : null}
 				{ intraRole === "pedago" ? <a href={`/manager${argument ? `/${argument}` : ''}`}>{t('Manager')}</a> : null}	
 			</nav>
 			<label>
 			{
-				token ? <button class="button" onClick={logout}>{t('Logout')}</button> :
-				<button class="button" onClick={login}>{t('Login')}</button>
+				token ? <button className="button" onClick={logout}>{t('Logout')}</button> :
+				<button className="button" onClick={login}>{t('Login')}</button>
 			}
 			</label>
 		</header>

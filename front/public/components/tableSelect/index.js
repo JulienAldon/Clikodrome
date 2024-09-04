@@ -97,7 +97,7 @@ export default function TableSelect({tableList, tableHead, defaultSort="id", lin
                             </a>
                             <div className={`${styles.licell} ${styles.deleteButtonCell}`}>
                                 <Button
-                                    class={styles.deleteButton}
+                                    className={styles.deleteButton}
                                     id={elem.id}
                                     value={elem.id}
                                     title={""}

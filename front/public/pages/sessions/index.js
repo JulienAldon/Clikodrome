@@ -98,9 +98,9 @@ export default function Sessions(props) {
 
 	return (
 		<>
-			<section class={`${styles.pageBody} ${styles.home}`}>
+			<section className={`${styles.pageBody} ${styles.home}`}>
 			{
-				sessionStatus ? <main class={styles.main}>
+				sessionStatus ? <main className={styles.main}>
 				<Volet 
 					className={styles.showTitle}
 					title={t('Create session')}
@@ -119,7 +119,7 @@ export default function Sessions(props) {
 					{
 						cities ?
 						<ComboBox 
-							class={styles.sessionInputCombo}
+							className={styles.sessionInputCombo}
 							title={t("Enter city")}
 							value={cityFilter}
 							onChange={handleCityFilterChange}
