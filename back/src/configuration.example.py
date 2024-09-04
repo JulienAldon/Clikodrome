@@ -19,8 +19,6 @@ class Configuration(pydantic.BaseSettings):
     db_password:        str = os.getenv('DATABASE_PASSWORD')
     database:           str = os.getenv('DATABASE_NAME')
 
-    event_activity:     str = '/module/2021/W-ADM-007/LYN-0-1/acti-505014/'
-
     assistant_authorized_groups = ['assistants-wac-lyon']
     pedago_authorized_groups = ['pedago']
 
@@ -28,7 +26,5 @@ class Configuration(pydantic.BaseSettings):
     bocal_email:        str = os.getenv('BOCAL_EMAIL')
     bocal_password:     str = os.getenv('BOCAL_PASSWORD')
     edusign_url:        str = 'https://api.edusign.fr'
-    edusign_signature:  str = open('signature.txt').readline()
-
 
 options = Configuration()

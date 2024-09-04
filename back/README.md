@@ -16,7 +16,6 @@ You need to setup every environment variables present in configuration.py
 - db_user : Clikodrome Database User
 - db_password : Clikodrome Database password
 - database : Clikodrome Database name
-- event_activity : Intranet Activity url to retreive sign sessions
 
 # Deploy
 - Backend : FastAPI using uvicorn and pipenv or hatch if you prefer

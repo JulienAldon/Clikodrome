@@ -48,10 +48,6 @@ Here are the mandatory variables :
 - `EDUSIGN_LOGIN` : Edusign login.
 - `EDUSIGN_PASSWORD` : Edusign password.
 
-## Signature
-Create a `signature.txt` at the root of the repository, this is the signature used when signing edusign session.
-
-
 ## Deploy
 You can deploy this application on any machine, all you need, is a domain name and correct oauth2 configuration.
 Dont forget to configure SSL with Certbot.
